@@ -1,0 +1,62 @@
+@use '../../../styles/helpers/variables' as theme;
+@use '../../../styles/helpers/mixins' as mixins;
+
+.section {
+  padding: clamp(3rem, 6vw, 6rem) clamp(1rem, 3vw, 4rem);
+  background-color: #fff;
+  color: theme.$colorFont;
+}
+
+.content {
+  max-inline-size: 81.25rem;
+  margin-inline: auto;
+  text-align: center;
+  h2 {
+    font-size: clamp(mixins.toRem(28), 2.8vw, mixins.toRem(40));
+    font-weight: 400;
+    line-height: 1.3;
+  }
+}
+
+.subtitle {
+  margin-block: 0.5rem clamp(2rem, 4vw, 3rem);
+  color: theme.$colorGoldText;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.list { margin-block-end: clamp(2.5rem, 5vw, 5rem); text-align: start; }
+.item + .item { margin-block-start: 1.5rem; }
+
+.item {
+  p {
+    margin-block-start: 0.25rem;
+    color: #62645f;
+    font-size: 1rem;
+    line-height: 1.65;
+    overflow-wrap: break-word;
+  }
+}
+
+.itemHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  h3 {
+    min-inline-size: 0;
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    font-weight: 400;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    small { font-size: 0.75em; white-space: nowrap; }
+  }
+}
+
+.leader { flex: 1; min-inline-size: 1rem; border-block-end: 1px dotted #81847d; }
+.price { flex-shrink: 0; margin-inline-start: auto; font-size: 1.25rem; line-height: 1.4; }
+
+@media (max-width: 767px) {
+  .itemHeading { gap: 0.75rem; }
+  .leader { display: none; }
+}

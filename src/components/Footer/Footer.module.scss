@@ -1,0 +1,85 @@
+@use '../../styles/helpers/variables' as theme;
+@use '../../styles/helpers/mixins' as mixins;
+
+.footer {
+  background-color: theme.$colorBgWhite;
+  color: theme.$colorFont;
+  font-size: clamp(mixins.toRem(16), 1.2vw, mixins.toRem(18));
+  line-height: 1.65;
+
+  a { transition: color 0.2s ease; }
+  a:hover { color: theme.$colorGoldText; }
+  a:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 4rem);
+  max-inline-size: 85rem;
+  padding: clamp(3rem, 6vw, 7rem) clamp(1rem, 3vw, 4rem);
+  margin-inline: auto;
+}
+
+.brand,
+.column { min-inline-size: 0; overflow-wrap: break-word; }
+
+.logo {
+  display: block;
+  inline-size: min(100%, 19rem);
+  block-size: auto;
+  margin-block-end: 1.5rem;
+}
+
+.column {
+  h2 {
+    font-size: clamp(1.25rem, 1.7vw, 1.625rem);
+    font-weight: 400;
+    line-height: 1.4;
+    &::after {
+      display: block;
+      inline-size: 2.25rem;
+      block-size: 0.25rem;
+      margin-block: 1.25rem 1.5rem;
+      background-color: #bfd9ce;
+      content: '';
+    }
+  }
+  li + li { margin-block-start: 0.75rem; }
+}
+
+.socials {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-block-start: 1rem;
+  margin-inline-start: -0.75rem;
+  a, span {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    font-size: 1.375rem;
+  }
+}
+
+.copyright {
+  padding: 1.25rem 1rem;
+  background-color: #154d3b;
+  color: #fff;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .content { grid-template-columns: minmax(0, 1fr); text-align: center; }
+  .brand { max-inline-size: 50rem; margin-inline: auto; }
+  .logo { margin-inline: auto; }
+  .column h2::after { margin-inline: auto; }
+  .socials { justify-content: center; margin-inline: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer a { transition: none; }
+}

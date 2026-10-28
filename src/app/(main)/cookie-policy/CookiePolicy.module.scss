@@ -1,0 +1,47 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.cookiePolicy {
+  max-width: rem(900);
+  padding: calc(rem(15) + (25 - 15) * ((100vw - rem(320)) / (1440 - 320))) rem(15);
+  margin: 0 auto;
+  animation: pageAnimation .75s ease-in-out;
+
+  &__header {
+    padding: rem(15) rem(0);
+    border-top: rem(2) solid black;
+    border-bottom: rem(2) solid black;
+    margin-bottom: rem(30);
+
+    .title {
+      font-size: calc(rem(16) + (32 - 16) * ((100vw - rem(320)) / (1440 - 320)));
+      font-weight: 500;
+      line-height: 150%;
+      text-transform: uppercase;
+      text-align: center;
+    }
+  }
+
+  &__subtitle {
+    font-size: calc(rem(14) + (16 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+    font-weight: 600;
+    line-height: 150%;
+    text-transform: uppercase;
+    margin: rem(15) 0;
+  }
+
+  &__text {
+    font-size: calc(rem(14) + (16 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+    line-height: 150%;
+    margin-bottom: rem(10);
+  }
+
+  & a {
+    transition: color $transitionMain;
+
+    &:hover {
+      color: $colorGreen;
+    }
+  }
+}

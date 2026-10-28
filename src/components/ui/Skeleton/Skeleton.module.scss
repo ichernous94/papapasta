@@ -1,0 +1,388 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+// PRODUCT SEARCH ITEM SKELETON
+.productSearchItemSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: calc(rem(10) + (15 - 10) * ((100vw - rem(320)) / (1440 - 320)));
+
+  &__img {
+    position: relative;
+    width: 100%;
+    height: rem(175);
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+
+    @media (min-width: 771px) and (max-width: 1032px) {
+      height: calc(rem(155) + (215 - 155) * ((100vw - rem(771)) / (1032 - 771)));
+    }
+
+    @media (min-width: 320px) and (max-width: 770px) {
+      height: calc(rem(90) + (245 - 90) * ((100vw - rem(320)) / (770 - 320)));
+    }
+
+    .logo {
+      position: absolute;
+      width: calc(rem(110) + (180 - 110) * ((100vw - rem(320)) / (1440 - 320)));
+      height: calc(rem(110) + (180 - 110) * ((100vw - rem(320)) / (1440 - 320)));
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $colorLightGrey;
+    }
+  }
+
+  &__title {
+    position: relative;
+    width: 75%;
+    height: calc(rem(18) + (21 - 18) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+
+  &__price {
+    position: relative;
+    width: 25%;
+    height: calc(rem(18) + (21 - 18) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+}
+
+// PRODUCT ITEM SKELETON
+.productItemSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: calc(rem(10) + (15 - 10) * ((100vw - rem(320)) / (1440 - 320)));
+
+  &__img {
+    position: relative;
+    width: 100%;
+    height: rem(175);
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+
+    @media (min-width: 771px) and (max-width: 1032px) {
+      height: calc(rem(155) + (215 - 155) * ((100vw - rem(771)) / (1032 - 771)));
+    }
+
+    @media (min-width: 320px) and (max-width: 770px) {
+      height: calc(rem(90) + (245 - 90) * ((100vw - rem(320)) / (770 - 320)));
+    }
+
+    .logo {
+      position: absolute;
+      width: calc(rem(110) + (180 - 110) * ((100vw - rem(320)) / (1440 - 320)));
+      height: calc(rem(110) + (180 - 110) * ((100vw - rem(320)) / (1440 - 320)));
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $colorLightGrey;
+    }
+  }
+
+  &__title {
+    position: relative;
+    width: 75%;
+    height: calc(rem(18) + (21 - 18) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+
+  &__price {
+    position: relative;
+    width: 25%;
+    height: calc(rem(18) + (21 - 18) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+}
+
+// PRODUCT BREADCRUMB SKELETON
+.productBreadCrumbSkeleton {
+  position: relative;
+  width: rem(320);
+  height: rem(20);
+  box-shadow: $colorShadow;
+  background-color: $colorSkeleton;
+  border-radius: rem(5);
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: calc(rem(180) + (320 - 180) * ((100vw - rem(320)) / (768 - 320)));
+    height: calc(rem(16) + (20 - 16) * ((100vw - rem(320)) / (768 - 320)));
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+    animation: skeleton-loading 1.5s infinite;
+  }
+}
+
+// PRODUCT DESCRIPTION SLIDER SKELETON
+.productDescriptionSliderSkeleton {
+  position: relative;
+  width: rem(680);
+  height: rem(480);
+  box-shadow: $colorShadow;
+  background-color: $colorSkeleton;
+  border-radius: rem(5);
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: calc(rem(200) + (480 - 200) * ((100vw - rem(320)) / (768 - 320)));
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+    animation: skeleton-loading 1.5s infinite;
+  }
+
+  .logo {
+    position: absolute;
+    width: calc(rem(180) + (375 - 180) * ((100vw - rem(320)) / (1440 - 320)));
+    height: calc(rem(180) + (375 - 180) * ((100vw - rem(320)) / (1440 - 320)));
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $colorLightGrey;
+  }
+}
+
+// PRODUCT OPTIONS SKELETON
+.productOptionsSkeleton {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: calc(rem(15) + (25 - 15) * ((100vw - rem(320)) / (1440 - 320)));
+
+  &__title {
+    position: relative;
+    width: 75%;
+    height: calc(rem(24) + (36 - 24) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    @media (max-width: 1024px) {
+      width: calc(rem(175) + (375 - 175) * ((100vw - rem(320)) / (1024 - 320)));
+    }
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+
+  &__price {
+    position: relative;
+    width: 25%;
+    height: calc(rem(24) + (36 - 24) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    @media (max-width: 1024px) {
+      width: calc(rem(75) + (100 - 75) * ((100vw - rem(320)) / (1024 - 320)));
+    }
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+
+  &__btn {
+    position: relative;
+    width: 100%;
+    height: calc(rem(40) + (45 - 40) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+
+  &__contents {
+    position: relative;
+    width: 100%;
+    height: calc(rem(161) + (262 - 161) * ((100vw - rem(320)) / (1440 - 320)));
+    box-shadow: $colorShadow;
+    background-color: $colorSkeleton;
+    border-radius: rem(5);
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+}
+
+// PRODUCT INFO SKELETON
+.productInfoSkeleton {
+  position: relative;
+  width: 100%;
+  height: calc(rem(180) + (220 - 180) * ((100vw - rem(320)) / (1440 - 320)));
+  box-shadow: $colorShadow;
+  background-color: $colorSkeleton;
+  border-radius: rem(5);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, $colorSkeleton 0%, #bdcad5 50%, $colorSkeleton 100%);
+    animation: skeleton-loading 1.5s infinite;
+  }
+}
+
+// ANIMATION
+@keyframes skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

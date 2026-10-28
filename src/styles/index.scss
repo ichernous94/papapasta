@@ -1,0 +1,9 @@
+@use "./helpers/reset";
+@use "./helpers/components";
+@use "./layout/wrapper";
+
+[class*="__container"] {
+  max-width: $maxWidthContainer;
+  margin: 0 auto;
+  padding: $containerPadding;
+}

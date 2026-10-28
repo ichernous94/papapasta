@@ -1,0 +1,102 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1500;
+  width: 100vw;
+  height: 100vh;
+  background: $colorGradientBlue;
+  animation: fadeOut 0.75s forwards 1s;
+  overflow: hidden;
+}
+
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loader {
+  display: block;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  width: calc(rem(250) + (300 - 250) * ((100vw - rem(320)) / (1440 - 320)));
+  height: calc(rem(250) + (300 - 250) * ((100vw - rem(320)) / (1440 - 320)));
+  margin: calc(rem(-125) + (-150 - -125) * ((100vw - rem(320)) / (1440 - 320))) rem(0) rem(0) calc(rem(-125) + (-150 - -125) * ((100vw - rem(320)) / (1440 - 320)));
+  border-radius: 50%;
+  border: rem(3) solid transparent;
+  border-top-color: #9370DB;
+  -webkit-animation: spin 2.5s linear infinite;
+  animation: spin 2.5s linear infinite;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: rem(5);
+    left: rem(5);
+    right: rem(5);
+    bottom: rem(5);
+    border-radius: 50%;
+    border: rem(3) solid transparent;
+    border-top-color: #BA55D3;
+    -webkit-animation: spin 2.5s linear infinite;
+    animation: spin 3.5s linear infinite;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: rem(15);
+    left: rem(15);
+    right: rem(15);
+    bottom: rem(15);
+    border-radius: 50%;
+    border: rem(3) solid transparent;
+    border-top-color: #FF00FF;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+}
+
+.text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: calc(rem(18) + (24 - 18) * ((100vw - rem(320)) / (1440 - 320)));
+  line-height: 150%;
+  color: $colorSkeleton;
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100% {
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

@@ -1,0 +1,134 @@
+@use '../../styles/helpers/variables' as theme;
+@use '../../styles/helpers/mixins' as mixins;
+
+.header {
+  position: sticky;
+  z-index: 50;
+  inset-block-start: 0;
+  background-color: theme.$colorBgWhite;
+  color: theme.$colorFont;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+  line-height: 1.4;
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 3px solid theme.$colorGold;
+    outline-offset: 4px;
+  }
+}
+
+.bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2vw, 2rem);
+  max-inline-size: 90rem;
+  min-block-size: mixins.toRem(96);
+  padding: 1.25rem clamp(1rem, 3vw, 4rem);
+  margin-inline: auto;
+  background-color: theme.$colorBgWhite;
+}
+
+.logoLink { flex-shrink: 1; min-inline-size: 0; }
+
+.logo {
+  display: block;
+  inline-size: clamp(12rem, 22vw, 22rem);
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.desktopNavigation {
+  ul { display: flex; align-items: center; gap: clamp(1rem, 2vw, 2rem); }
+  a {
+    display: block;
+    padding-block: 0.75rem;
+    font-size: clamp(0.8125rem, 1vw, 1rem);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  a:hover,
+  a[aria-current='page'] { color: theme.$colorGoldText; }
+}
+
+.phone {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(0.75rem, 1vw, 1rem);
+  letter-spacing: 0.03em;
+  a { font-size: clamp(1.25rem, 1.8vw, 1.75rem); font-weight: 700; }
+}
+
+.mobilePhone,
+.menuToggle { display: none; }
+
+.backdrop {
+  position: fixed;
+  z-index: 0;
+  inset: var(--restaurant-header-height, 96px) 0 0;
+  inline-size: 100%;
+  background-color: rgb(0 0 0 / 65%);
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .desktopNavigation { display: none; }
+  .logo { inline-size: clamp(14rem, 37vw, 25rem); }
+  .menuToggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    inline-size: 3rem;
+    block-size: 3rem;
+    color: theme.$colorFont;
+    font-size: 2.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobilePhone {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #101310;
+    color: #fff;
+    font-size: 0.875rem;
+    a { font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+  }
+  .bar {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-block: 1rem;
+  }
+  .logo { inline-size: min(76vw, 22rem); }
+  .phone { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktopNavigation a { transition: none; }
+}
+
+@media (max-width: 1024px) and (max-height: 480px) {
+  .header[aria-modal='true'] {
+    max-block-size: 100vh;
+    max-block-size: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    [id='papapasta-mobile-menu'] {
+      position: relative;
+      inset: auto;
+      max-block-size: none;
+    }
+  }
+}

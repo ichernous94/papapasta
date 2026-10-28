@@ -1,0 +1,149 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: calc(rem(15) + (30 - 15) * ((100vw - rem(320)) / (1440 - 320)));
+  font-size: calc(rem(22) + (24 - 22) * ((100vw - rem(320)) / (1440 - 320)));
+
+  &__searchField {
+    display: block;
+    width: rem(220);
+    display: flex;
+    align-items: center;
+    gap: rem(5);
+    font-weight: 500;
+    color: $colorGrey;
+    padding: rem(8) rem(10);
+    background-color: #EFF2F5;
+    border-radius: rem(10);
+    cursor: pointer;
+    transition: background-color $transitionMain;
+
+    &:hover {
+      background-color: $colorSkeleton;
+    }
+
+    .icon {
+      font-size: calc(rem(14) + (18 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+    }
+
+    span {
+      font-size: calc(rem(12) + (14 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+    }
+
+    @media (max-width: 1024px) {
+      display: none;
+    }
+  }
+
+  &__searchIcon {
+    display: none;
+    cursor: pointer;
+    transition: color $transitionMain;
+
+    &:hover {
+      color: $colorYellow;
+    }
+
+    @media (max-width: 1024px) {
+      display: block;
+    }
+  }
+
+  &__cart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: color $transitionMain;
+
+    &:hover {
+      color: $colorYellow;
+    }
+  }
+
+  &__cart {
+    position: relative;
+
+    & span {
+      position: absolute;
+      left: calc(rem(12) + (13 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+      bottom: calc(rem(12) + (13 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: calc(rem(14) + (21 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+      height: calc(rem(14) + (21 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+      font-size: calc(rem(7) + (12 - 7) * ((100vw - rem(320)) / (1440 - 320)));
+      font-weight: 700;
+      color: $colorFont;
+      background-color: $colorWhite;
+      border: rem(1) solid $colorFont;
+      border-radius: 50%;
+    }
+  }
+
+  &__burger {
+    display: none;
+
+    @media (max-width: 1024px) {
+      position: relative;
+      display: block;
+      width: rem(25);
+      height: rem(18);
+      cursor: pointer;
+
+      &:hover {
+
+        span,
+        &::before,
+        &::after {
+          background: $colorYellow;
+        }
+      }
+
+      span,
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        width: 100%;
+        height: rem(2);
+        background: $colorFont;
+        transition: all $transitionMain;
+      }
+
+      &::before {
+        top: 0;
+      }
+
+      &::after {
+        bottom: 0;
+      }
+
+      span {
+        top: calc(50% - rem(1));
+      }
+    }
+  }
+}
+
+.burgerTransform {
+  span {
+    width: 0;
+  }
+
+  &::before {
+    top: calc(50% - 1px);
+    transform: rotate(-45deg);
+  }
+
+  &::after {
+    bottom: calc(50% - 1px);
+    transform: rotate(45deg);
+  }
+}

@@ -1,0 +1,139 @@
+@use '../../styles/helpers/variables' as theme;
+
+.selection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-block-size: 100vh;
+  min-block-size: 100svh;
+  background-color: #121212;
+  color: #fff;
+}
+
+.panel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 0;
+  min-block-size: max(50vh, 360px);
+  min-block-size: max(50svh, 360px);
+  padding-block: clamp(1.5rem, 4vh, 3rem);
+  padding-inline-start: max(clamp(1rem, 3vw, 1.5rem), env(safe-area-inset-left, 0px));
+  padding-inline-end: max(clamp(1rem, 3vw, 1.5rem), env(safe-area-inset-right, 0px));
+  background-color: #121212;
+  text-align: center;
+
+  &::after {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background-color: rgb(0 0 0 / 60%);
+    pointer-events: none;
+    content: '';
+  }
+
+  & + & {
+    border-block-start: 2px solid theme.$colorGold;
+  }
+
+  &:first-of-type {
+    padding-block-start: max(clamp(1.5rem, 4vh, 3rem), env(safe-area-inset-top, 0px));
+  }
+
+  &:last-of-type {
+    padding-block-end: max(clamp(1.5rem, 4vh, 3rem), env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.backgroundImage {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 2vw, 2rem);
+  inline-size: 100%;
+  max-inline-size: 36rem;
+  min-inline-size: 0;
+}
+
+.logoHeading {
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+  line-height: 1;
+}
+
+.logo {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.papaPastaLogo {
+  inline-size: min(100%, 24rem);
+}
+
+.centroLogo {
+  inline-size: min(65%, 14rem);
+}
+
+.address {
+  max-inline-size: 100%;
+  font-size: clamp(1.125rem, 2vw, 2rem);
+  font-weight: 400;
+  line-height: 1.4;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.restaurantLink {
+  inline-size: min(100%, 22rem);
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .selection {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panel {
+    min-block-size: max(100vh, 480px);
+    min-block-size: max(100svh, 480px);
+    padding-block-start: max(clamp(1.5rem, 4vh, 3rem), env(safe-area-inset-top, 0px));
+    padding-block-end: max(clamp(1.5rem, 4vh, 3rem), env(safe-area-inset-bottom, 0px));
+    padding-inline-start: max(clamp(2rem, 4vw, 5rem), env(safe-area-inset-left, 0px));
+    padding-inline-end: max(clamp(2rem, 4vw, 5rem), env(safe-area-inset-right, 0px));
+
+    & + & {
+      border-block-start: 0;
+      border-inline-start: 2px solid theme.$colorGold;
+    }
+  }
+
+  .papaPastaLogo {
+    inline-size: min(100%, 32rem);
+  }
+
+  .centroLogo {
+    inline-size: min(100%, 28rem);
+  }
+}

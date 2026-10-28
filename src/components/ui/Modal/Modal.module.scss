@@ -1,0 +1,49 @@
+@use '../../../styles/helpers/variables' as theme;
+
+.dialog {
+  inline-size: min(var(--modal-width, 40rem), calc(100% - 2rem));
+  max-inline-size: none;
+  max-block-size: calc(100vh - 2rem);
+  max-block-size: calc(100svh - 2rem);
+  padding: var(--modal-padding, clamp(2rem, 5vw, 3rem));
+  border: 0;
+  margin: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--modal-surface, theme.$colorBgWhite);
+  color: var(--modal-color, theme.$colorFont);
+  box-shadow: 0 1rem 4rem rgb(0 0 0 / 25%);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+
+  &[open] { animation: reveal 0.2s ease-out; }
+  &::backdrop { background-color: rgb(0 0 0 / 72%); }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 3px solid theme.$colorGold;
+    outline-offset: 4px;
+  }
+}
+
+.close {
+  position: absolute;
+  z-index: 5;
+  inset-block-start: 0.25rem;
+  inset-inline-end: 0.25rem;
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  color: inherit;
+  font-size: 1.75rem;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] { animation: none; }
+}

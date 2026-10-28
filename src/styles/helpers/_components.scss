@@ -1,0 +1,55 @@
+@use "./variables" as *;
+
+.confirmBtn {
+  position: relative;
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -2.5%;
+  color: #FAFAFF;
+  background-color: $colorDarkPink;
+  border-radius: 24px;
+  transition: background-color $transitionMain;
+  overflow: hidden;
+
+  &:hover {
+    background-color: $colorHotPink;
+  }
+
+  &:disabled {
+    opacity: .75;
+    cursor: not-allowed;
+  }
+}
+
+.returnBtn {
+  position: relative;
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -2.5%;
+  color: #FAFAFF;
+  background-color: $colorHotPink;
+  border-radius: 8px;
+  transition: background-color $transitionMain;
+  overflow: hidden;
+
+  &:hover {
+    background-color: $colorDarkPink;
+  }
+
+  &:disabled {
+    opacity: .75;
+    cursor: not-allowed;
+  }
+}

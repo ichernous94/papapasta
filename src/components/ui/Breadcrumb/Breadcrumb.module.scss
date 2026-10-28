@@ -1,0 +1,62 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(rem(5) + (10 - 5) * ((100vw - rem(320)) / (1440 - 320)));
+  margin-bottom: calc(rem(25) + (50 - 25) * ((100vw - rem(320)) / (1440 - 320)));
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+    font-size: rem(14);
+    color: $colorFont;
+
+    a {
+      font-size: calc(rem(12) + (14 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+      font-weight: 500;
+      line-height: 150%;
+      transition: color $transitionMain;
+
+      &:hover {
+        color: $colorYellow;
+      }
+    }
+
+    span {
+      font-size: calc(rem(12) + (15 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+      line-height: 150%;
+    }
+
+    &:last-child span {
+      font-weight: 700;
+    }
+
+    .desktop {
+      display: inline;
+    }
+
+    .mobile {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .desktop {
+        display: none;
+      }
+
+      .mobile {
+        display: inline;
+      }
+    }
+  }
+
+  &__icon {
+    font-size: rem(16);
+    color: $colorGrey;
+  }
+}

@@ -1,0 +1,78 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.dropdownCategory {
+  position: relative;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    gap: calc(rem(5) + (10 - 5) * ((100vw - rem(320)) / (1440 - 320)));
+
+    p {
+      font-size: calc(rem(12) + (14 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+      line-height: 150%;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .chevronRotate {
+      font-size: calc(rem(15) + (18 - 15) * ((100vw - rem(320)) / (1440 - 320)));
+      transform: rotate(180deg);
+      transition: transform .6s cubic-bezier(0.080, 1.090, 0.320, 1.275);
+    }
+
+    .chevronDown {
+      font-size: calc(rem(15) + (18 - 15) * ((100vw - rem(320)) / (1440 - 320)));
+      transition: transform .6s cubic-bezier(0.080, 1.090, 0.320, 1.275);
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    z-index: 15;
+    top: calc(rem(30) + (45 - 30) * ((100vw - rem(320)) / (1440 - 320)));
+    left: 0;
+    min-width: calc(rem(280) + (525 - 280) * ((100vw - rem(320)) / (1440 - 320)));
+    background-color: $colorWhite;
+    backdrop-filter: blur(rem(10));
+    box-shadow: $colorShadow;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10%);
+    transition: opacity $transitionMain, visibility $transitionMain, transform $transitionMain;
+    will-change: opacity, visibility, transform;
+
+    &__list {
+      display: flex;
+      flex-direction: column;
+
+      .item {
+        font-size: calc(rem(12) + (14 - 12) * ((100vw - rem(320)) / (1440 - 320)));
+        line-height: 150%;
+        font-weight: 700;
+        cursor: pointer;
+        transition: color $transitionMain, background-color $transitionMain;
+
+        &:hover {
+          color: $colorYellow;
+          background-color: $colorLightGrey;
+        }
+
+        a {
+          width: 100%;
+          display: inline-block;
+          padding: rem(15);
+        }
+      }
+    }
+  }
+}
+
+// ACTIONS
+.openDropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}

@@ -1,0 +1,40 @@
+@use '../../styles/helpers/variables' as theme;
+
+.menu {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  max-block-size: calc(100vh - var(--restaurant-header-height, 96px));
+  max-block-size: calc(100dvh - var(--restaurant-header-height, 96px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: theme.$colorBgWhite;
+  box-shadow: 0 8px 16px rgb(0 0 0 / 8%);
+  animation: reveal 0.2s ease-out;
+
+  li { border-block-start: 1px solid #e4e4e1; }
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 3.5rem;
+    padding: clamp(1rem, 2.5vh, 1.75rem) 1.5rem;
+    color: theme.$colorFont;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    line-height: 1.4;
+    text-align: center;
+    transition: color 0.2s ease;
+  }
+  a:hover,
+  a[aria-current='page'] { color: theme.$colorGoldText; }
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(-0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu { animation: none; a { transition: none; } }
+}

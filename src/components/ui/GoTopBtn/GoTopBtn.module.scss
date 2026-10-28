@@ -1,0 +1,34 @@
+@use "sass:math";
+@import "../../../styles/helpers/variables";
+@import "../../../styles/helpers/mixins";
+
+.goTopBtn {
+  position: fixed;
+  z-index: 999;
+  right: rem(15);
+  bottom: rem(15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(rem(30) + (40 - 30) * ((100vw - rem(320)) / (1440 - 320)));
+  height: calc(rem(30) + (40 - 30) * ((100vw - rem(320)) / (1440 - 320)));
+  color: $colorWhite;
+  background-color: $colorGrey;
+  box-shadow: $colorShadowLight;
+  border-radius: 50%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(100%);
+  transition: background-color $transitionMain, opacity $transitionMain, visibility $transitionMain, transform $transitionMain;
+  will-change: background-color, opacity, visibility, transform;
+
+  &:hover {
+    background-color: $colorGreyHover;
+  }
+}
+
+.showBtn {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}

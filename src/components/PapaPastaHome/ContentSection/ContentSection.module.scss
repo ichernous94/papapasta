@@ -1,0 +1,75 @@
+@use '../../../styles/helpers/variables' as theme;
+@use '../../../styles/helpers/mixins' as mixins;
+
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  background-color: theme.$colorBgWhite;
+  color: theme.$colorFont;
+  scroll-margin-block-start: var(--restaurant-header-height, 96px);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.5rem, 2.5vw, 2rem);
+  min-inline-size: 0;
+  padding: clamp(2rem, 5vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  text-align: center;
+}
+
+.title {
+  max-inline-size: 100%;
+  font-size: clamp(mixins.toRem(28), 2.8vw, mixins.toRem(40));
+  font-weight: 400;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+
+  &::after {
+    display: block;
+    inline-size: 2.75rem;
+    block-size: 0.25rem;
+    margin: 1.5rem auto 0;
+    background-color: #bfd9ce;
+    content: '';
+  }
+}
+
+.body {
+  max-inline-size: 36rem;
+  font-size: clamp(mixins.toRem(16), 1.2vw, mixins.toRem(18));
+  line-height: 1.75;
+  overflow-wrap: break-word;
+  p + p { margin-block-start: 1rem; }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  inline-size: 100%;
+}
+
+.photo {
+  position: relative;
+  min-block-size: clamp(24rem, 40vw, 42rem);
+  min-inline-size: 0;
+  img { object-fit: cover; object-position: center; }
+}
+
+.imageLeft {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  .copy { grid-column: 2; grid-row: 1; }
+  .photo { grid-column: 1; grid-row: 1; }
+}
+
+@media (max-width: 1023px) {
+  .section { grid-template-columns: minmax(0, 1fr); }
+  .imageLeft .copy,
+  .imageLeft .photo { grid-column: auto; grid-row: auto; }
+  .photo { min-block-size: 0; aspect-ratio: 17 / 13.3; }
+  .copy { padding: clamp(2.5rem, 7vw, 4rem) clamp(1rem, 3vw, 1.5rem); }
+}

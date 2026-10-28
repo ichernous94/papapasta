@@ -1,0 +1,67 @@
+@use '../../../styles/helpers/variables' as theme;
+
+.gallery { background-color: #171a16; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.thumbnail {
+  position: relative;
+  display: block;
+  min-inline-size: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: #171a16;
+
+  img { object-fit: cover; transition: transform 0.25s ease; }
+  &:focus-visible { z-index: 1; outline: 3px solid theme.$colorGold; outline-offset: -5px; }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover img { transform: scale(1.035); }
+  }
+}
+
+.lightbox {
+  --modal-width: 90rem;
+  --modal-padding: 3rem 1rem 1rem;
+  --modal-surface: #121512;
+  --modal-color: #fff;
+}
+
+.slider { block-size: clamp(10rem, calc(100svh - 10rem), 50rem); }
+.slide { position: relative; img { object-fit: contain; } }
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-block-start: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  p { min-inline-size: 4rem; text-align: center; }
+}
+
+.control {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border: 1px solid rgb(255 255 255 / 70%);
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumbnail img { transition: none; }
+}
