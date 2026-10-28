@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { IoPauseOutline, IoPlayOutline } from 'react-icons/io5';
 import Button from '@/components/ui/Button';
 import useReducedMotion from '@/hooks/useReducedMotion';
-import { grilledSteak } from '../images';
+import { grilledSteak } from '@/config/papapasta-images';
 import styles from './VideoHero.module.scss';
 
 type DataConnection = {

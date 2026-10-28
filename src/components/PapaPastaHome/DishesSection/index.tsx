@@ -1,8 +1,8 @@
 import Button from '@/components/ui/Button';
 import { papaPasta, papaPastaCopy } from '@/config/papapasta';
 import ContentSection from '../ContentSection';
-import Reservation from '../Reservation';
-import { grilledSteak } from '../images';
+import Reservation from '@/components/Reservation';
+import { grilledSteak } from '@/config/papapasta-images';
 
 export default function DishesSection() {
   return (

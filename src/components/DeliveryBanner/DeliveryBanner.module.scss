@@ -1,0 +1,16 @@
+.banner {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-block-size: clamp(22rem, 42vw, 38rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 3vw, 4rem);
+  background: #171a16;
+  color: #fff;
+  text-align: center;
+  &::after { position: absolute; z-index: -1; inset: 0; background: rgb(0 0 0 / 60%); content: ''; }
+}
+.background { z-index: -2; object-fit: cover; }
+.content { display: flex; flex-direction: column; align-items: center; gap: clamp(1.5rem, 3vw, 2rem); max-inline-size: 60rem; }
+.logo { inline-size: clamp(14rem, 35vw, 28rem); max-inline-size: 100%; block-size: auto; }
+.content p { font-size: clamp(1rem, 1.4vw, 1.125rem); line-height: 1.7; }

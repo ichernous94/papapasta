@@ -3,6 +3,10 @@ export const papaPasta = {
   phone: '798 017 284',
   phoneHref: 'tel:+48798017284',
   email: 'kontakt@papapasta.pl',
+  street: 'Rzemieślnicza 40/1U',
+  postalAddress: '15-773 Białystok',
+  mapsUrl: 'https://maps.app.goo.gl/7k9DgkNbieJqvPiw8',
+  mapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2393.1851617585457!2d23.110980499999997!3d53.1427714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ffdac8a1d6643%3A0x9913a5c291001280!2sPapa%20Pasta%20Restauracja!5e0!3m2!1sru!2spl!4v1793220841487!5m2!1sru!2spl',
   address: 'Rzemieślnicza 40/1U, Białystok',
   orderUrl: 'https://www.pyszne.pl/menu/papa-pasta',
   facebookUrl: 'https://www.facebook.com/PapaPasta.Bialystok',
@@ -27,6 +31,9 @@ export const papaPastaNavigation = [
 ];
 
 export const papaPastaCopy = {
+  local: 'Restauracja Papa Pasta to nie tylko przepyszna kuchnia toskańska, ale i wyjątkowa atmosfera. Lokal w stylu industrialnym przyciąga detalami takimi jak drewno, ręcznie wypalana cegła i duże przeszklenia. Dopełnieniem wystroju jest przestronna sala z antresolą, z której roztacza się widok na bar. To właśnie tam pod okiem naszych miksologów powstają wyjątkowe drinki. Coś dla siebie znajdą również fani dobrego, kraftowego piwa, wermutu oraz whisky. Na gości restauracji czeka także sporo zieleni, 20 stolików (z możliwością ich łączenia i dowolnej aranżacji) oraz bezpłatny parking.',
+  delivery: 'Dania z naszego menu zamów online, wygodnie, nie wychodząc z domu.',
+
   about:
     'Restauracja włoska Papa Pasta w Białymstoku powstała z miłości do dobrego jedzenia oraz… Toskanii! Kuchnia toskańska to nie tylko pizza, steki oraz wyśmienite wino, ale i wspaniała atmosfera, która porwie nie tylko zakochanych. Industrialne wnętrze oraz swobodna atmosfera sprawiają, że Papa Pasta to miejsce idealne zarówno na śniadanie, spotkania biznesowe, jak i wypad ze znajomymi. Zapraszamy do naszego lokalu przy ul. Rzemieślniczej 40 oraz do składania zamówień na dowóz!',
   dishes: [

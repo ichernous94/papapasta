@@ -71,5 +71,5 @@
   .imageLeft .copy,
   .imageLeft .photo { grid-column: auto; grid-row: auto; }
   .photo { min-block-size: 0; aspect-ratio: 17 / 13.3; }
-  .copy { padding: clamp(2.5rem, 7vw, 4rem) clamp(1rem, 3vw, 1.5rem); }
+  .copy { padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 3vw, 1.5rem); }
 }

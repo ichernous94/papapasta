@@ -1,0 +1,18 @@
+.site {
+  min-block-size: 100svh;
+  // A full-content containing block keeps the sticky header attached through the footer.
+  // Do not add overflow or a transform here: the menu backdrop is viewport-positioned.
+}
+
+.site > main { min-inline-size: 0; }
+
+.site :global([id]) {
+  scroll-margin-block-start: calc(var(--restaurant-header-height, 96px) + 1rem);
+}
+
+@media (max-width: 767px) {
+  .site {
+    --button-padding: 0.75rem clamp(1.25rem, 5vw, 1.5rem);
+    --button-font-size: 0.875rem;
+  }
+}

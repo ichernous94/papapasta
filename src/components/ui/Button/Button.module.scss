@@ -6,13 +6,13 @@
   justify-content: center;
   min-block-size: 3rem;
   max-inline-size: 100%;
-  padding: clamp(0.75rem, 1vw, 1rem) clamp(1.5rem, 2.2vw, 2rem);
+  padding: var(--button-padding, clamp(0.75rem, 1vw, 1rem) clamp(1.5rem, 2.2vw, 2rem));
   border: 2px solid #e2e0db;
   border-radius: 0;
   background-color: transparent;
   color: #fff;
   font-family: inherit;
-  font-size: clamp(0.875rem, 1.4vw, 1.25rem);
+  font-size: var(--button-font-size, clamp(0.875rem, 1.4vw, 1.25rem));
   font-weight: 400;
   line-height: 1.4;
   text-align: center;

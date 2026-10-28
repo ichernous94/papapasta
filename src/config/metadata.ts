@@ -31,6 +31,17 @@ export const papaPastaMetadata = {
   },
 } satisfies Metadata;
 
+export function papaPastaPageMetadata(path: string, title: string, description: string): Metadata {
+  return {
+    ...papaPastaMetadata,
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { ...papaPastaMetadata.openGraph, title, description, url: path },
+    twitter: { ...papaPastaMetadata.twitter, title, description },
+  };
+}
+
 const centroTitle =
   'Papa Pasta Centro - Cocktail Bar i Restauracja włoska - Pizza Wino Steki';
 const centroDescription =

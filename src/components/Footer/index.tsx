@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FaFacebookF, FaInstagram, FaTripadvisor } from 'react-icons/fa';
+import SocialLinks from '@/components/SocialLinks';
 import CurrentYear from '@/components/ui/CurrentYear';
 import { papaPasta } from '@/config/papapasta';
 import styles from './Footer.module.scss';
@@ -18,11 +18,7 @@ export default function Footer() {
             unoptimized
           />
           <p>{papaPasta.description}</p>
-          <div className={styles.socials}>
-            <a href={papaPasta.facebookUrl} aria-label="Facebook Papa Pasta"><FaFacebookF aria-hidden="true" /></a>
-            <a href={papaPasta.instagramUrl} aria-label="Instagram Papa Pasta"><FaInstagram aria-hidden="true" /></a>
-            <span role="img" aria-label="Tripadvisor" title="Tripadvisor"><FaTripadvisor aria-hidden="true" /></span>
-          </div>
+          <div className={styles.socials}><SocialLinks /></div>
         </div>
         <section className={styles.column} aria-labelledby="footer-contact-title">
           <h2 id="footer-contact-title">KONTAKT</h2>

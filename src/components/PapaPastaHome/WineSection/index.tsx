@@ -1,7 +1,7 @@
 import Button from '@/components/ui/Button';
 import { papaPastaCopy } from '@/config/papapasta';
 import ContentSection from '../ContentSection';
-import { wineBottles } from '../images';
+import { wineBottles } from '@/config/papapasta-images';
 
 export default function WineSection() {
   return (

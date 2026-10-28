@@ -1,6 +1,6 @@
 import { papaPastaCopy } from '@/config/papapasta';
 import ContentSection from '../ContentSection';
-import { diningExperience } from '../images';
+import { diningExperience } from '@/config/papapasta-images';
 
 export default function AboutSection() {
   return (
