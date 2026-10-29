@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <ReactQueryProvider>
           <ToastContainer />
-          {children}
+          <div className="siteWrapper">{children}</div>
         </ReactQueryProvider>
       </body>
     </html>

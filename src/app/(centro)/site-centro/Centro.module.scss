@@ -1,0 +1,23 @@
+@use '../../../styles/helpers/variables' as theme;
+.site {
+  --site-surface: #00191b;
+  --site-text: #f7f7f5;
+  --site-muted: #c4cfce;
+  --site-divider: #536665;
+  --site-accent: #{theme.$colorGold};
+  --site-copyright-bg: #{theme.$colorGold};
+  --site-copyright-text: #00191b;
+  --site-social-color: #{theme.$colorGold};
+  --site-social-bg: #{theme.$colorGold};
+  min-block-size: 100svh;
+  background: var(--site-surface);
+  color: var(--site-text);
+  line-height: 1.65;
+  > main { min-inline-size: 0; }
+  :global([id]) { scroll-margin-block-start: calc(var(--restaurant-header-height, 112px) + 1rem); }
+  h2::after { display: none; }
+  @media (max-width: 767px) {
+    --button-padding: 0.5625rem 1.125rem;
+    --button-font-size: 0.8125rem;
+  }
+}

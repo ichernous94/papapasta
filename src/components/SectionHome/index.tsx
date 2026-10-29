@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
+import CentroLink from './CentroLink';
 import papaPastaImage from '../../../public/images/shared/papapasta-pizza-wino-steki.jpg';
 import centroImage from '../../../public/images/shared/papapasta-centro.jpg';
 import styles from './SectionHome.module.scss';
@@ -36,8 +37,9 @@ export default function SectionHome() {
         Wybierz restaurację
       </h1>
 
-      {restaurants.map((restaurant, index) => (
-        <article
+      {restaurants.map((restaurant, index) => {
+        const RestaurantLink = restaurant.id === 'centro' ? CentroLink : Button;
+        return <article
           key={restaurant.id}
           className={styles.panel}
           aria-labelledby={`${restaurant.id}-title`}
@@ -48,7 +50,7 @@ export default function SectionHome() {
             alt=""
             fill
             placeholder="blur"
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            sizes="(min-width: 1920px) 960px, (min-width: 1024px) 50vw, 100vw"
             preload={index === 0}
             loading={index === 0 ? undefined : 'eager'}
           />
@@ -67,16 +69,16 @@ export default function SectionHome() {
 
             <p className={styles.address}>{restaurant.address}</p>
 
-            <Button
+            <RestaurantLink
               className={styles.restaurantLink}
               href={restaurant.href}
               aria-label={`Przejdź do restauracji ${restaurant.name}`}
             >
               PRZEJDŹ DO RESTAURACJI
-            </Button>
+            </RestaurantLink>
           </div>
-        </article>
-      ))}
+        </article>;
+      })}
     </section>
   );
 }

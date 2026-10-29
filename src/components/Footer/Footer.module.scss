@@ -2,8 +2,8 @@
 @use '../../styles/helpers/mixins' as mixins;
 
 .footer {
-  background-color: theme.$colorBgWhite;
-  color: theme.$colorFont;
+  background-color: var(--site-surface, #{theme.$colorBgWhite});
+  color: var(--site-text, #{theme.$colorFont});
   font-size: clamp(mixins.toRem(15), 1.1vw, mixins.toRem(16));
   line-height: 1.65;
 
@@ -16,9 +16,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(2rem, 4vw, 4rem);
-  max-inline-size: 85rem;
-  padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 3vw, 4rem);
-  margin-inline: auto;
+  padding-block: clamp(2rem, 5vw, 5rem);
 }
 
 .brand,
@@ -41,7 +39,7 @@
       inline-size: 2.25rem;
       block-size: 0.25rem;
       margin-block: 1.25rem 1.5rem;
-      background-color: #bfd9ce;
+      background-color: var(--site-accent, #bfd9ce);
       content: '';
     }
   }
@@ -58,8 +56,8 @@
 
 .copyright {
   padding: 1.25rem 1rem;
-  background-color: #154d3b;
-  color: #fff;
+  background-color: var(--site-copyright-bg, #154d3b);
+  color: var(--site-copyright-text, #fff);
   font-size: 0.875rem;
   line-height: 1.6;
   text-align: center;

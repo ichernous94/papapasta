@@ -1,11 +1,11 @@
-@use '../../../styles/helpers/variables' as theme;
-@use '../../../styles/helpers/mixins' as mixins;
+@use '../../styles/helpers/variables' as theme;
+@use '../../styles/helpers/mixins' as mixins;
 
 .section {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  background-color: theme.$colorBgWhite;
-  color: theme.$colorFont;
+  background-color: var(--site-surface, #{theme.$colorBgWhite});
+  color: var(--site-text, #{theme.$colorFont});
   scroll-margin-block-start: var(--restaurant-header-height, 96px);
 }
 
@@ -32,7 +32,7 @@
     inline-size: 2.75rem;
     block-size: 0.25rem;
     margin: 1.5rem auto 0;
-    background-color: #bfd9ce;
+    background-color: var(--site-accent, #bfd9ce);
     content: '';
   }
 }

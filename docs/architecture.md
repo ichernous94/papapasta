@@ -16,9 +16,9 @@
 - `https://papapasta.pl/` remains the restaurant-selection page; `https://papapasta.pl/home/` opens PapaPasta Pizza Wino Steki.
 - `https://centro.papapasta.pl/` opens the Centro site.
 - `https://admin.papapasta.pl/` will open the shared administration interface for both restaurants.
-- A later `src/proxy.ts` will map approved hostnames to separate internal route branches without changing public URLs. Internal route paths must not be exposed as duplicate public pages.
+- `src/proxy.ts` maps Centro hostnames to a separate internal branch without changing public URLs. Internal paths return 404 when requested directly; administration routing remains a future stage.
 - Each site will have its own layout and metadata. The root layout remains shared and contains no restaurant-specific metadata.
-- Domain routing and the administration interface remain subsequent implementation steps; the landing page does not implement hostname routing.
+- Centro hostname routing is implemented in Proxy; the landing page remains independent. Domain/HTTPS deployment setup and the administration interface remain subsequent steps.
 
 **Confirmed landing page**
 - The restaurant-selection page lives at `src/app/(landing)/page.tsx`, outside the existing `(main)` layout. Its public URL remains `/` and it exports the full PapaPasta metadata with its own canonical and Open Graph URL.
@@ -26,12 +26,12 @@
 - Use the supplied images by their agreed filenames: `papapasta-pizza-wino-steki.jpg` for the PapaPasta panel and `papapasta-centro.jpg` for Centro, even though their interior photographs do not match those names. Do not rename the assets.
 - The two panels are side by side from 1024 CSS px and stacked below that width. Center the content in both layouts, preserve safe padding, and allow panels to grow when text needs more space.
 - Statically import both JPEGs and use `next/image` blur placeholders with responsive sizes. Preserve clear SVG logos and darken only the background photographs.
-- The PapaPasta landing link opens the internal `/home` route. Centro still opens `https://centro.papapasta.pl/` in the same tab until its internal hostname routing is implemented.
+- The PapaPasta landing link opens the internal `/home` route. Centro opens `https://centro.papapasta.pl/` in the same tab, where Proxy selects the Centro branch. During local development, the Centro selection button uses `centro.localhost` with the current protocol and port; production keeps the canonical domain.
 - Shared `src/components/ui/Button/` supports typed anchor and native button modes. Use Next Link for internal destinations, native anchors for external destinations, visible keyboard focus, and a light fill with dark text on hover.
 
 **Confirmed PapaPasta home page**
 - The `/home` route lives in `src/app/(papapasta)/home/page.tsx`. Its restaurant layout contains the shared Header, main content and Footer, independently of landing and legacy `(main)` UI. The page sets its canonical and Open Graph URL to `/home` using the PapaPasta metadata defaults.
-- Compose the page from VideoHero, AboutSection, DishesSection, WineSection, Recommendations and Gallery under `src/components/PapaPastaHome/`, with colocated SCSS Modules. Keep static copy, navigation, contacts, opening hours and typed recommended dishes in `src/config/papapasta.ts`.
+- Compose the page from VideoHero, AboutSection, DishesSection, WineSection, Recommendations and Gallery. Shared ContentSection, VideoHero, Recommendations and Gallery live directly in `src/components/`; PapaPastaHome retains its restaurant-specific sections and default adapters, with colocated SCSS Modules. Keep static copy, navigation, contacts, opening hours and typed recommended dishes in `src/config/papapasta.ts`.
 - Navigation retains `/home`, `/nasz-lokal`, `/menu`, the supplied external ordering URL and `/kontakt`. These are distinct public pages; do not substitute invented content or redirect them to `/home`.
 - Header is sticky. Desktop navigation is shown above 1024 CSS px; 768–1024 uses the logo, burger and phone row; below 768 the phone appears in a dark top strip. Burger state is kept in the existing Zustand store without persistence and has explicit open/close actions.
 - Closing the menu via its toggle, navigation, backdrop, Escape, route change or desktop breakpoint restores page interaction. Constrain keyboard focus while open and share a reference-counted body scroll lock with dialogs, preserving previous styles and scroll position.
@@ -52,7 +52,7 @@
 - Contact details, social URLs, maps URLs and shared page copy live in `src/config/papapasta.ts`. The contact page reuses Reservation, embeds the supplied lazy Google Maps iframe, offers an ordinary external map link, and finishes with the shared photo strip. Tripadvisor stays noninteractive pending a real profile URL.
 - Every public page has its own title, description, canonical and Open Graph URL, keeping shared robots/brand defaults. A permanent Next.js redirect (308) maps legacy `/menu-restauracji` to `/menu`; no other route or domain migration is implied.
 - Restaurant pages, including `/home`, share bounded spacing and compact mobile buttons via layout-scoped CSS variables. Landing styles remain unchanged. Light surfaces remain plain; Allura is applied to decorative subtitles on home, venue, menu and contact pages, and the home/menu price columns, using normal style and weight 400. Decorative Allura subtitles are 48px and use $colorGoldText (#D7BB91); price sizes and inherited dark colors remain unchanged.
-- Administration, APIs, hostname routing, and the broader sitemap/robots migration remain future stages. Autumn content is static and does not expire automatically.
+- Administration, APIs and the broader PapaPasta sitemap/robots migration remain future stages; Centro has separate hostname routing and metadata routes. Autumn content is static and does not expire automatically.
 
 **Confirmed motion and navigation refinements**
 - Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 36px above over 1200ms once; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
@@ -62,8 +62,27 @@
 - The gallery dialog has a transparent surface and a lightly dimmed page backdrop, with centered contain-fit photographs, a 70% dark backdrop with 4px blur, and 650ms entry/exit. Scroll lock persists through the closing animation. Native dialog focus behavior and Swiper keyboard/swipe support are retained.
 - Public text and logos use slightly smaller bounded sizes, including landing. Shared buttons retain at least a 44px target with compact padding. Hover transitions are gradual; active menu tabs use gold text without a gold underline. Keyboard focus indicators remain visible.
 
+**Confirmed site wrapper and containers**
+- A root `.siteWrapper` wraps route content (including landing and restaurant layouts) with width 100%, min-width 320px, max-width 1920px, centered margins and min-height 100svh. Toasts remain outside it. Do not add overflow clipping, transforms or a fixed height to the active site wrappers; sticky Header and viewport overlays depend on this.
+- Shared `src/components/ui/Container/` accepts default (1170px) and text (768px) sizes, div/section tags and standard HTML attributes. Width includes 15px horizontal padding on each side: default content width is 1140px. Reuse the existing SCSS width/padding tokens and `$maxWidthTextContainer: 768px`; vertical spacing belongs to each section.
+- Header/Footer inner content, recommendations, contact information, menu lists and the venue photo grid use the default Container. Only the introductory paragraphs on `/nasz-lokal` and `/menu` use text size. Remove competing section widths/horizontal padding instead of nesting additional page gutters.
+- Banners, video, home split sections, photo strips and landing photography stay full-width within the 1920px wrapper. Image sizes reflect the wrapper and container caps. The fixed burger panel is centered and capped at 1920px; modal/backdrop behavior remains viewport-based.
+
+**Confirmed Centro site**
+- One application serves Centro at `centro.papapasta.pl`, with `centro.localhost:3000` for local development. Proxy rewrites public paths into `src/app/(centro)/site-centro/`, preserves query/RSC parameters, and passes through API, Next.js internals and shared static assets. The existing main-domain routes and localhost retain PapaPasta behavior. Direct technical paths return 404 on all hosts; unknown Centro paths use Centro's 404.
+- Centro routes are `/`, `/nasz-lokal`, `/menu`, `/cocktail-bar`, `/promocje`, `/zestawy-obiadowe` and `/kontakt`. Next.js retains its existing trailing-slash normalization. `/menu-restauracji` redirects permanently to `/menu` on both hosts. Each page has Centro metadata and public canonical/OG URL; Centro robots and sitemap contain only Centro URLs. PapaPasta's legacy sitemap/robots migration remains outstanding.
+- Header, BurgerMenu, Footer and SocialLinks accept a typed restaurant configuration. PapaPasta defaults preserve existing behavior; normalize internal rewrite paths when matching active navigation and top-of-page navigation targets. Shared ContentSection, VideoHero and Recommendations accept input data, with lightweight PapaPasta adapters. No request headers or hostname-dependent fetching are needed in the shared root layout.
+- Centro owns static copy/contact/navigation/recommendation data in `src/config/centro.ts`, a separate `centro-menu.ts`, image collections and a 14-page drink-book manifest. Shared menu and restaurant types live in `src/types/`. Recommendation prices intentionally remain independent from full menu prices (gnocchi 53 vs 54). Preserve the supplied Gambero piccante 51 and Burrata Piccante 58, including identical descriptions, and confirmed Cappy pomarańczowy 9.
+- Theme variables are scoped to the Centro layout: #00191B surface, #F7F7F5 text, #C4CFCE secondary text and existing gold accents. Shared components keep their original fallbacks for PapaPasta. Allura subtitles retain 48px/gold styling; prices inherit light text. No WordPress texture, decorative heading bars, dark-on-dark text or PapaPasta reservation/delivery controls are copied into Centro.
+- Reuse the 1920px site wrapper, 1170px default and 768px text containers, responsive split sections, blur placeholders, reduced-motion support and existing heading/image animations. Centro uses its own logo proportions, sticky header, shared burger/focus/scroll-lock behavior, and a four-image Gallery ribbon.
+- Centro contact details are Jurowiecka 11/1, 15-001 Białystok, +48 883 317 389, kontakt@papapasta.pl. Facebook/Instagram are the user-confirmed papapasta.centro profiles, with no Tripadvisor placeholder. Preserve the supplied Google Maps embed URL exactly. Footer hours are Mon 09–20, Tue–Wed 09–21, Thu 09–22, Fri–Sat 09–24, Sun 09–20; year uses CurrentYear. Gold copyright band uses dark text for contrast.
+- The promotion listing links to the static `/zestawy-obiadowe` page, published 2025-10-28. Terms: Mon–Fri 12–17, soup + pasta 59 zł / salad 55 zł / pizza 57 zł, dessert with a set -50%. Publication dates are static and independent of the current footer year; no expiry automation is implied.
+- The user approved `page-flip` 2.0.7 as the only new dependency. CocktailBook dynamically imports it near the viewport and renders the 14 existing PNGs in the approved order, including the Cyrillic initial in `сoffee-and-cocktails.png`. No PDF or PDF renderer is required. The library owns imperatively created DOM inside an isolated React mount.
+- The drink book shows a spread from 1024px and one page below; front/back covers are separate, navigation is bounded, and controls provide thumbnails, keyboard arrows/Home/End, swipes, zoom 1–2 in 0.25 steps and browser fullscreen with Modal fallback. Zoom disables page gestures and permits panning. Reduced motion uses immediate page changes. Keep a static cover and image links without JS, and load only nearby page images. A versioned pnpm patch stops page-flip's RAF loop and delayed initialization on destroy; keep it when updating the package.
+- No DNS/HTTPS/deployment changes, administration, APIs, additional state manager or dependency are part of this implementation. Browser/production verification requires the corresponding local execution permission; do not infer visual fidelity from static checks.
+
 **Not yet decided**
-- Detailed page-to-route mapping beyond the entry URLs above, including migration redirects.
+- Additional migration redirects beyond the explicitly confirmed public routes above.
 - Admin role model and content editing workflow.
 - Database, ORM, authentication/2FA provider and media storage provider.
 
@@ -116,10 +135,10 @@ Use `next/font/local` for local fonts; colocate font files in `src/assets/fonts/
 - Allura exposes `--font-allura`, uses latin/latin-ext, display swap and no additional preload. Only Lato remains preloaded. No font package or dependency is added.
 - Font CSS variables are `--font-lato`, `--font-open-sans`, `--font-roboto` and `--font-noto-sans`. Global text and form controls use Lato with a sans-serif fallback.
 - The shared root layout uses `lang="pl-PL"` and places client providers inside `body`.
-- Keep typed restaurant metadata defaults in `src/config/metadata.ts`; apply PapaPasta defaults to the landing page and PapaPasta/legacy public layouts. Centro defaults and admin noindex/nofollow metadata will be connected when their route branches are implemented.
+- Keep typed restaurant metadata defaults in `src/config/metadata.ts`; apply PapaPasta defaults to the landing page and PapaPasta/legacy public layouts. Centro defaults are connected to the Centro branch. Admin noindex/nofollow metadata remains prepared for its future branch.
 - Preserve the supplied Polish titles and descriptions. Public metadata allows indexing and following, large image previews and unrestricted snippet/video previews; Open Graph uses `website` and `pl_PL`.
 - Set canonical and Open Graph URLs per page, not to `/` in a shared layout. Spread shared Open Graph fields when adding page-specific values because nested metadata objects are replaced rather than deeply merged.
-- Do not invent keywords, social images or social account handles. JSON-LD, robots.txt, sitemap and legacy product metadata require separate migration work before launch.
+- Do not invent keywords, social images or social account handles. JSON-LD, PapaPasta robots.txt/sitemap and legacy product metadata require separate migration work before launch; Centro has its own robots/sitemap.
 
 - For new components, default to `src/components/ComponentName/index.tsx` and `ComponentName.module.scss`, matching the existing project if it differs.
 - Prefer reusable components for shared navigation, buttons, cards and layout patterns.
@@ -152,7 +171,7 @@ Preserve existing URLs where feasible; use appropriate permanent redirects if pa
 ## 7. Open architecture decisions
 
 Discuss and document before implementation:
-- Detailed host-to-route mapping, local domain testing and deployment domain configuration, following the confirmed single-deployment direction.
+- Deployment domain/HTTPS configuration and administration host mapping, following the confirmed single-deployment direction. Centro application routing and local hostname are confirmed below.
 - Admin permission model and content editing workflow, using the confirmed `admin.papapasta.pl` hostname.
 - Content model for restaurants, menus, pages and media.
 - PostgreSQL/other database and ORM choice.

@@ -12,17 +12,16 @@
   h3, h4 { min-inline-size: 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
   small { font-size: 0.8em; font-weight: 400; }
 }
-.leader { flex: 1 1 1rem; min-inline-size: 0.5rem; border-block-end: 1px dotted #777; }
+.leader { flex: 1 1 1rem; min-inline-size: 0.5rem; border-block-end: 1px dotted var(--site-divider, #777); }
 .price { flex: 0 0 auto; max-inline-size: 40%; font-family: var(--font-allura), cursive; font-size: clamp(1.375rem, 2vw, 1.625rem); font-weight: 400; font-style: normal; line-height: 1.2; text-align: end; }
 .description, .note, .afterNote { font-size: clamp(0.9375rem, 1.1vw, 1rem); line-height: 1.65; overflow-wrap: break-word; }
-.description { color: #51545a; }
-.note, .afterNote { color: #62656b; }
+.description { color: var(--site-muted, #51545a); }
+.note, .afterNote { color: var(--site-muted, #62656b); }
 .note { margin-block-end: 1.5rem; }
 .afterNote { margin-block-start: 1.5rem; }
 .badge { display: inline-block; margin-inline-start: 0.5rem; color: theme.$colorGoldText; font-size: max(0.75em, 0.75rem); font-weight: 400; }
 @media (max-width: 1023px) { .columns { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 767px) {
   .heading { justify-content: space-between; gap: 1rem; }
-  .leader { display: none; }
   .price { max-inline-size: 35%; }
 }

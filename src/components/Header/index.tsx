@@ -3,18 +3,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { IoCloseOutline, IoMenuOutline } from 'react-icons/io5';
+import Container from '@/components/ui/Container';
 import BurgerMenu from '@/components/BurgerMenu';
-import { papaPasta, papaPastaNavigation } from '@/config/papapasta';
+import { papaPastaSite } from '@/config/papapasta';
+import type { RestaurantConfig } from '@/types/restaurant';
+import { restaurantPath } from '@/utils/restaurantPath';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import useExitPresence from '@/hooks/useExitPresence';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import useBurgerMenuStore from '@/store/useBurgerMenuStore';
 import styles from './Header.module.scss';
 
-export default function Header() {
-  const pathname = usePathname();
+export default function Header({ site = papaPastaSite }: { site?: RestaurantConfig }) {
+  const pathname = restaurantPath(usePathname());
+  const menuId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const isOpen = useBurgerMenuStore((state) => state.isBurgerMenuOpen);
@@ -84,7 +88,7 @@ export default function Header() {
       branch = parent;
     }
 
-    header.querySelector<HTMLAnchorElement>('#papapasta-mobile-menu a')?.focus({ preventScroll: true });
+    document.getElementById(menuId)?.querySelector<HTMLAnchorElement>('a')?.focus({ preventScroll: true });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -112,26 +116,27 @@ export default function Header() {
       if (trigger?.getClientRects().length) trigger.focus({ preventScroll: true });
       else header.querySelector<HTMLAnchorElement>('a[href]')?.focus({ preventScroll: true });
     };
-  }, [menuPresent, closeMenu]);
+  }, [menuPresent, closeMenu, menuId]);
 
   return (
     <header
       ref={headerRef}
       className={styles.header}
+      data-site={site.id}
       role={menuPresent ? 'dialog' : undefined}
       aria-modal={menuPresent ? true : undefined}
       aria-label={menuPresent ? 'Nawigacja restauracji' : undefined}
     >
       <div className={styles.mobilePhone}>
-        ZAMÓW Z DOSTAWĄ <a href={papaPasta.phoneHref}>{papaPasta.phone}</a>
+        {site.phoneLabel} <a href={site.phoneHref}>{site.phone}</a>
       </div>
-      <div className={styles.bar}>
-        <Link href="/home" className={styles.logoLink} scroll={false} onNavigate={() => navigateToTop('/home')} aria-label="Papa Pasta — strona główna">
-          <Image src="/icons/logo.svg" alt="Papa Pasta Restauracja" width={481} height={51} className={styles.logo} unoptimized />
+      <Container className={styles.bar}>
+        <Link href={site.homeHref} className={styles.logoLink} scroll={false} onNavigate={() => navigateToTop(site.homeHref)} aria-label={site.name + " — strona główna"}>
+          <Image src={site.logo.src} alt={site.name} width={site.logo.width} height={site.logo.height} className={styles.logo} unoptimized />
         </Link>
         <nav className={styles.desktopNavigation} aria-label="Główna nawigacja">
           <ul>
-            {papaPastaNavigation.map((item) => (
+            {site.navigation.map((item) => (
               <li key={item.id}>
                 {item.href.startsWith('https://') ? (
                   <a href={item.href}>{item.label}</a>
@@ -148,20 +153,20 @@ export default function Header() {
           className={styles.menuToggle}
           onClick={toggleMenu}
           aria-expanded={isOpen}
-          aria-controls="papapasta-mobile-menu"
+          aria-controls={menuId}
           aria-label={isOpen ? 'Zamknij menu' : 'Otwórz menu'}
         >
           {isOpen ? <IoCloseOutline aria-hidden="true" /> : <IoMenuOutline aria-hidden="true" />}
         </button>
         <div className={styles.phone}>
-          <span>ZAMÓW Z DOSTAWĄ</span>
-          <a href={papaPasta.phoneHref}>{papaPasta.phone}</a>
+          <span>{site.phoneLabel}</span>
+          <a href={site.phoneHref}>{site.phone}</a>
         </div>
-      </div>
+      </Container>
       {menuPresent && (
         <button className={styles.backdrop} data-state={isOpen ? 'open' : 'closing'} type="button" tabIndex={-1} onClick={closeMenu} aria-label="Zamknij menu" />
       )}
-      <BurgerMenu pathname={pathname} open={isOpen} present={menuPresent} onNavigate={navigateToTop} />
+      <BurgerMenu id={menuId} navigation={site.navigation} pathname={pathname} open={isOpen} present={menuPresent} onNavigate={navigateToTop} />
     </header>
   );
 }

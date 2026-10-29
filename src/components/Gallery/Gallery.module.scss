@@ -4,9 +4,7 @@
 .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 .contained {
-  max-inline-size: 80rem;
-  padding: 0 clamp(1rem, 3vw, 4rem) clamp(2rem, 5vw, 5rem);
-  margin-inline: auto;
+  padding-block-end: clamp(2rem, 5vw, 5rem);
   background-color: transparent;
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
 }

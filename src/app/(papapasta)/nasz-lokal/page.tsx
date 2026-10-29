@@ -1,3 +1,4 @@
+import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
 import ImageBanner from '@/components/ImageBanner';
 import Gallery from '@/components/Gallery';
@@ -17,7 +18,7 @@ export default function RestaurantPage() {
   return (
     <>
       <ImageBanner image={restaurantInterior} title="NASZ LOKAL" subtitle="pizza wino steki" headingLevel="h1" preload />
-      <div className={styles.intro}><p>{papaPastaCopy.local}</p></div>
+      <Container size="text" className={styles.intro}><p>{papaPastaCopy.local}</p></Container>
       <Gallery images={localGalleryImages} variant="grid" />
       <DeliveryBanner />
     </>

@@ -1,14 +1,6 @@
 // Display-only menu data. Keep recommendation prices on /home independent.
-export type MenuItem = {
-  id: string;
-  name: string;
-  portion?: string;
-  price?: string;
-  description?: string[];
-  isNew?: boolean;
-};
-export type MenuGroup = { id: string; title?: string; note?: string; items: readonly MenuItem[]; afterNote?: string };
-export type MenuCategory = { id: string; label: string; columns?: 2; columnBreak?: number; note?: string; groups: readonly MenuGroup[] };
+import type { MenuCategory, MenuGroup } from '@/types/menu';
+export type { MenuItem, MenuGroup, MenuCategory } from '@/types/menu';
 
 export const mainMenu: readonly MenuCategory[] = [
   { id: 'przystawki', label: 'PRZYSTAWKI', groups: [{ id: 'przystawki', items: [

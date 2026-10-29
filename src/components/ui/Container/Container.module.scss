@@ -1,0 +1,14 @@
+@use '../../../styles/helpers/variables' as theme;
+@use 'sass:list';
+
+.container {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: theme.$maxWidthContainer;
+  margin-inline: auto;
+  // Only horizontal padding: each section keeps its own vertical rhythm.
+  padding-inline: list.nth(theme.$containerPadding, 2);
+}
+
+.text { max-inline-size: theme.$maxWidthTextContainer; }

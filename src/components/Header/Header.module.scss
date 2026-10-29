@@ -5,8 +5,8 @@
   position: sticky;
   z-index: 50;
   inset-block-start: 0;
-  background-color: theme.$colorBgWhite;
-  color: theme.$colorFont;
+  background-color: var(--site-surface, #{theme.$colorBgWhite});
+  color: var(--site-text, #{theme.$colorFont});
   border-block-end: 1px solid rgb(30 33 40 / 9%);
   box-shadow: 0 4px 18px rgb(0 0 0 / 12%);
   line-height: 1.4;
@@ -25,11 +25,9 @@
   align-items: center;
   justify-content: space-between;
   gap: clamp(1rem, 2vw, 2rem);
-  max-inline-size: 90rem;
   min-block-size: mixins.toRem(80);
-  padding: 1rem clamp(1rem, 3vw, 4rem);
-  margin-inline: auto;
-  background-color: theme.$colorBgWhite;
+  padding-block: 1rem;
+  background-color: var(--site-surface, #{theme.$colorBgWhite});
 }
 
 .logoLink { flex-shrink: 1; min-inline-size: 0; }
@@ -91,7 +89,7 @@
     justify-content: center;
     inline-size: 3rem;
     block-size: 3rem;
-    color: theme.$colorFont;
+    color: var(--site-text, #{theme.$colorFont});
     font-size: 2.25rem;
   }
 }
@@ -132,4 +130,12 @@
     overscroll-behavior: contain;
 
   }
+}
+
+.header[data-site='centro'] {
+  .logo { inline-size: clamp(7rem, 11vw, 8.5rem); }
+  .desktopNavigation ul { gap: clamp(0.75rem, 1.4vw, 1.5rem); }
+  .desktopNavigation a { font-size: 0.8125rem; }
+  .phone { text-align: center; max-inline-size: 11rem; }
+  @media (max-width: 767px) { .logo { inline-size: 7rem; } }
 }

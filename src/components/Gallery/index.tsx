@@ -6,6 +6,7 @@ import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y, Keyboard } from 'swiper/modules';
 import type { Swiper as SwiperInstance } from 'swiper';
+import Container from '@/components/ui/Container';
 import Reveal from '@/components/ui/Reveal';
 import Modal from '@/components/ui/Modal';
 import useReducedMotion from '@/hooks/useReducedMotion';
@@ -13,13 +14,14 @@ import 'swiper/css';
 import styles from './Gallery.module.scss';
 
 export type GalleryImage = { id: string; image: StaticImageData; alt: string };
-type GalleryProps = { images: readonly GalleryImage[]; variant?: 'strip' | 'grid' };
+type GalleryProps = { images: readonly GalleryImage[]; variant?: 'strip' | 'grid'; name?: string };
 
-export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
+export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta' }: GalleryProps) {
   const titleId = useId();
+  const GridWrapper = variant === 'grid' ? Container : 'div';
   const sizes = variant === 'grid'
-    ? '(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'
-    : '(min-width: 1024px) 25vw, 50vw';
+    ? '(min-width: 1170px) 375px, (min-width: 1024px) calc((100vw - 46px) / 3), (min-width: 768px) calc((100vw - 38px) / 2), calc(100vw - 30px)'
+    : '(min-width: 1920px) 480px, (min-width: 1024px) 25vw, 50vw';
   const [activeIndex, setActiveIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,8 +29,8 @@ export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
   const reducedMotion = useReducedMotion();
 
   return (
-    <section className={[styles.gallery, variant === 'grid' && styles.contained].filter(Boolean).join(' ')} aria-label="Galeria restauracji Papa Pasta">
-      <div className={styles.grid}>
+    <section className={[styles.gallery, variant === 'grid' && styles.contained].filter(Boolean).join(' ')} aria-label={"Galeria restauracji " + name}>
+      <GridWrapper className={styles.grid}>
         {images.map((item, index) => (
           <Reveal key={item.id} direction="up" delay={(index % 4) * 60}>
             <button
@@ -42,7 +44,7 @@ export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
             </button>
           </Reveal>
         ))}
-      </div>
+      </GridWrapper>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -50,7 +52,7 @@ export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
         className={styles.lightbox}
         animationDuration={650}
       >
-        <h2 id={titleId} className={styles.visuallyHidden}>Galeria Papa Pasta</h2>
+        <h2 id={titleId} className={styles.visuallyHidden}>{"Galeria " + name}</h2>
         <Swiper
           className={styles.slider}
           modules={[Keyboard, A11y]}
@@ -59,7 +61,7 @@ export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
           loop
           speed={reducedMotion ? 0 : 450}
           keyboard={{ enabled: true, onlyInViewport: false }}
-          a11y={{ containerMessage: 'Zdjęcia restauracji Papa Pasta', slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
+          a11y={{ containerMessage: 'Zdjęcia restauracji ' + name, slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
             requestAnimationFrame(() => { if (!swiper.destroyed) swiper.update(); });
@@ -68,7 +70,7 @@ export default function Gallery({ images, variant = 'strip' }: GalleryProps) {
         >
           {images.map((item) => (
             <SwiperSlide key={item.id} className={styles.slide}>
-              <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes="(min-width: 1600px) 1440px, 100vw" />
+              <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes="(min-width: 1248px) 1200px, calc(100vw - 48px)" />
             </SwiperSlide>
           ))}
         </Swiper>

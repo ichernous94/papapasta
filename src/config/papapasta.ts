@@ -1,3 +1,6 @@
+import type { RecommendationItem, RestaurantConfig } from '@/types/restaurant';
+export type { RecommendationItem } from '@/types/restaurant';
+
 export const papaPasta = {
   name: 'Papa Pasta Pizza Wino Steki',
   phone: '798 017 284',
@@ -46,14 +49,6 @@ export const papaPastaCopy = {
   ],
   reservation:
     'Stolik będzie czekał na Ciebie 15 minut. Po tym czasie nie gwarantujemy ważności rezerwacji. Jeśli Twoje plany uległy zmianie, poinformuj nas o tym. Rezerwacja powyżej 6 osób w dni: piątek, sobota, niedziela, wymaga wpłacenia zadatku w wysokości 50 zł od osoby. Zadatek zostanie odliczony od rachunku i nie podlega zwrotowi. Zadatek należy wpłacić w lokalu min. 1 dzień przed planowaną rezerwacją.',
-};
-
-export type RecommendationItem = {
-  id: string;
-  name: string;
-  weight?: string;
-  description: string;
-  price: number;
 };
 
 export const papaPastaRecommendations: RecommendationItem[] = [
@@ -117,3 +112,14 @@ export const papaPastaRecommendations: RecommendationItem[] = [
     description: '150g poliki wołowe w sosie warzywnym na bazie białego wina, puree z pietruszki i selera, marchewka i pietruszka karmelizowana, natka pietruszki',
   },
 ];
+
+export const papaPastaSite: RestaurantConfig = {
+  ...papaPasta,
+  id: 'papapasta',
+  homeHref: '/home',
+  logo: { src: '/icons/logo.svg', width: 481, height: 51 },
+  footerLogo: { src: '/icons/logo_papapasta_dark.svg', width: 319, height: 72 },
+  navigation: papaPastaNavigation,
+  phoneLabel: 'ZAMÓW Z DOSTAWĄ',
+  showTripadvisor: true,
+};

@@ -6,7 +6,7 @@
   gap: clamp(0.25rem, 1vw, 1rem);
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  border-block-end: 2px solid theme.$colorFont;
+  border-block-end: 2px solid var(--site-divider, #{theme.$colorFont});
   padding: 0.25rem 0.25rem 0.75rem;
   margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
   scrollbar-width: thin;
@@ -14,7 +14,7 @@
     flex: 1 0 auto;
     min-block-size: 2.75rem;
     padding: 0.75rem clamp(0.75rem, 1vw, 1.25rem);
-    color: theme.$colorFont;
+    color: var(--site-text, #{theme.$colorFont});
     font-size: clamp(0.8125rem, 1vw, 0.9375rem);
     letter-spacing: 0.035em;
     line-height: 1.4;

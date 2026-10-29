@@ -1,4 +1,4 @@
-import type { MenuGroup } from '@/config/papapasta-menu';
+import type { MenuGroup } from '@/types/menu';
 import styles from './MenuList.module.scss';
 
 type MenuListProps = { groups: readonly MenuGroup[]; columns?: 2; columnBreak?: number };

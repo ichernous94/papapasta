@@ -1,40 +1,42 @@
+import Container from '@/components/ui/Container';
 import Image from 'next/image';
 import SocialLinks from '@/components/SocialLinks';
 import CurrentYear from '@/components/ui/CurrentYear';
-import { papaPasta } from '@/config/papapasta';
+import { papaPastaSite } from '@/config/papapasta';
+import type { RestaurantConfig } from '@/types/restaurant';
 import styles from './Footer.module.scss';
 
-export default function Footer() {
+export default function Footer({ site = papaPastaSite }: { site?: RestaurantConfig }) {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.content}>
+    <footer className={styles.footer} data-site={site.id}>
+      <Container className={styles.content}>
         <div className={styles.brand}>
           <Image
-            src="/icons/logo_papapasta_dark.svg"
-            alt="Papa Pasta Pizza Wino Steki"
-            width={319}
-            height={72}
+            src={site.footerLogo.src}
+            alt={site.name}
+            width={site.footerLogo.width}
+            height={site.footerLogo.height}
             className={styles.logo}
             unoptimized
           />
-          <p>{papaPasta.description}</p>
-          <div className={styles.socials}><SocialLinks /></div>
+          <p>{site.description}</p>
+          <div className={styles.socials}><SocialLinks site={site} /></div>
         </div>
         <section className={styles.column} aria-labelledby="footer-contact-title">
           <h2 id="footer-contact-title">KONTAKT</h2>
           <ul>
-            <li>{papaPasta.address}</li>
-            <li><a href={papaPasta.phoneHref}>tel. {papaPasta.phone}</a></li>
-            <li><a href={'mailto:' + papaPasta.email}>{papaPasta.email}</a></li>
+            <li>{site.address}</li>
+            <li><a href={site.phoneHref}>tel. {site.phone}</a></li>
+            <li><a href={'mailto:' + site.email}>{site.email}</a></li>
           </ul>
         </section>
         <section className={styles.column} aria-labelledby="footer-hours-title">
           <h2 id="footer-hours-title">GODZINY OTWARCIA</h2>
           <ul>
-            {papaPasta.openingHours.map((item) => <li key={item.day}>{item.day} - {item.hours}</li>)}
+            {site.openingHours.map((item) => <li key={item.day}>{item.day} - {item.hours}</li>)}
           </ul>
         </section>
-      </div>
+      </Container>
       <div className={styles.copyright}>
         <p>Papa Pasta ©<CurrentYear /> Wszelkie Prawa Zastrzeżone</p>
       </div>

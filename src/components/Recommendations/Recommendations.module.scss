@@ -1,15 +1,13 @@
-@use '../../../styles/helpers/variables' as theme;
-@use '../../../styles/helpers/mixins' as mixins;
+@use '../../styles/helpers/variables' as theme;
+@use '../../styles/helpers/mixins' as mixins;
 
 .section {
-  padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 3vw, 4rem);
-  background-color: #fff;
-  color: theme.$colorFont;
+  padding-block: clamp(2rem, 5vw, 5rem);
+  background-color: var(--site-surface, #fff);
+  color: var(--site-text, #{theme.$colorFont});
 }
 
 .content {
-  max-inline-size: 81.25rem;
-  margin-inline: auto;
   text-align: center;
   h2 {
     font-size: clamp(mixins.toRem(26), 2.6vw, mixins.toRem(34));
@@ -34,7 +32,7 @@
 .item {
   p {
     margin-block-start: 0.25rem;
-    color: #62645f;
+    color: var(--site-muted, #62645f);
     font-size: 0.9375rem;
     line-height: 1.65;
     overflow-wrap: break-word;
@@ -68,5 +66,4 @@
 
 @media (max-width: 767px) {
   .itemHeading { gap: 0.75rem; }
-  .leader { display: none; }
 }

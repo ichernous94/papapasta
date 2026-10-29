@@ -15,10 +15,10 @@ type ImageBannerProps = {
 export default function ImageBanner({ image, title, subtitle, headingLevel: Heading = 'h2', preload = false, id, variant = 'photo' }: ImageBannerProps) {
   return (
     <section id={id} className={[styles.banner, variant === 'kids' && styles.kids].filter(Boolean).join(' ')} aria-label={title}>
-      <Image src={image} alt="" fill placeholder="blur" sizes="100vw" preload={preload} className={styles.image} />
+      <Image src={image} alt="" fill placeholder="blur" sizes="(min-width: 1920px) 1920px, 100vw" preload={preload} className={styles.image} />
       <div className={styles.content}>
         <Reveal as={Heading}>{title}</Reveal>
-        <p>{subtitle}</p>
+        {subtitle && <p>{subtitle}</p>}
       </div>
     </section>
   );

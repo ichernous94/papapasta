@@ -1,3 +1,4 @@
+import Container from '@/components/ui/Container';
 import Reveal from '@/components/ui/Reveal';
 import Reservation from '@/components/Reservation';
 import SocialLinks from '@/components/SocialLinks';
@@ -6,7 +7,7 @@ import styles from './ContactSection.module.scss';
 
 export default function ContactSection() {
   return (
-    <section className={styles.section} aria-labelledby="contact-title">
+    <Container as="section" className={styles.section} aria-labelledby="contact-title">
       <header className={styles.heading}>
         <Reveal as="h1" id="contact-title">ZAPRASZAMY</Reveal>
         <p>do kontaktu</p>
@@ -30,6 +31,6 @@ export default function ContactSection() {
         </section>
       </div>
       <Reservation />
-    </section>
+    </Container>
   );
 }

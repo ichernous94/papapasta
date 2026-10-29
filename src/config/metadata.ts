@@ -47,7 +47,6 @@ const centroTitle =
 const centroDescription =
   'Papa Pasta Centro Restauracja włoska i cocktail bar w Białymstoku. To miejsce dla tych, którzy kochają życie, dobre jedzenie i spotkania przy doskonałych koktajlach.';
 
-// Connect these defaults to the Centro layout when hostname routing is added.
 export const centroMetadata = {
   metadataBase: new URL('https://centro.papapasta.pl'),
   title: centroTitle,
@@ -75,3 +74,12 @@ export const adminMetadata = {
     googleBot: { index: false, follow: false },
   },
 } satisfies Metadata;
+
+export function centroPageMetadata(path: string, title: string, description: string): Metadata {
+  return {
+    ...centroMetadata, title, description,
+    alternates: { canonical: path },
+    openGraph: { ...centroMetadata.openGraph, title, description, url: path },
+    twitter: { ...centroMetadata.twitter, title, description },
+  };
+}

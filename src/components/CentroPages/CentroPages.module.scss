@@ -1,0 +1,21 @@
+@use '../../styles/helpers/variables' as theme;
+.intro { padding-block: clamp(2rem, 5vw, 5rem); font-size: clamp(0.9375rem, 1.1vw, 1rem); line-height: 1.75; text-align: center; }
+.section { padding-block: clamp(2rem, 4vw, 4rem); min-inline-size: 0; }
+.intro + .section { padding-block-start: 0; }
+.note { margin-block-end: 1.5rem; color: var(--site-muted); font-size: 0.9375rem; }
+.contact { padding-block: clamp(2rem, 5vw, 5rem); text-align: center; }
+.title { font-size: clamp(1.625rem, 2.6vw, 2.125rem); font-weight: 400; line-height: 1.3; }
+.subtitle { color: theme.$colorGoldText; font-family: var(--font-allura), cursive; font-size: 3rem; font-weight: 400; line-height: 1.4; margin-block: 0.5rem 2rem; }
+.contacts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.contactBlock { padding: 1.25rem 1rem; overflow-wrap: anywhere; border-inline-start: 1px solid theme.$colorGold; h2 { font-size: 1.125rem; margin-block-end: 1rem; } &:first-child { border: 0; } a { transition: color 350ms; } a:hover { color: theme.$colorGoldText; } }
+.map { display: block; inline-size: 100%; block-size: clamp(20rem, 32vw, 28.125rem); border: 0; }
+.cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+.card { display: block; overflow: hidden; border-radius: 0.75rem; background: #fff9ec; color: #00313b; transition: box-shadow 400ms; &:hover { box-shadow: 0 8px 32px rgb(0 0 0 / 35%); } img { inline-size: 100%; block-size: auto; transition: transform 800ms ease; } &:hover img { transform: scale(1.025); } }
+.cardImage { overflow: hidden; }
+.cardBody { padding: clamp(1.25rem, 3vw, 2rem); h2 { font-size: clamp(1.125rem, 1.7vw, 1.375rem); line-height: 1.4; margin-block-end: 1.5rem; } span { font-size: 0.8125rem; } }
+.cardDate { display: block; border-block-start: 1px solid #e6dece; padding: 0.75rem 1.25rem; font-size: 0.875rem; }
+.article { font-size: 1rem; line-height: 1.75; h2 { font-size: 1.5rem; margin-block: 2rem 1rem; } p + p { margin-block-start: 1rem; } ul { margin-block: 1.5rem; list-style: disc; } img { inline-size: 100%; block-size: auto; margin-block-end: 2rem; } }
+.link:focus-visible, .card:focus-visible, .contact a:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+@media (max-width: 1023px) { .contacts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .contactBlock { &:nth-child(3) { border-inline-start: 0; } &:nth-child(n+3) { border-block-start: 1px solid theme.$colorGold; } } }
+@media (max-width: 767px) { .contacts, .cards { grid-template-columns: minmax(0, 1fr); } .contactBlock { border-inline-start: 0; &:not(:first-child) { border-block-start: 1px solid theme.$colorGold; } } }
+@media (prefers-reduced-motion: reduce) { .card, .card img, .contact a { transition: none; } }
