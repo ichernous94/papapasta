@@ -1,4 +1,13 @@
-import { Lato, Noto_Sans, Open_Sans, Roboto } from 'next/font/google';
+import { Allura, Lato, Noto_Sans, Open_Sans, Roboto } from 'next/font/google';
+
+export const allura = Allura({
+  weight: '400',
+  style: 'normal',
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
+  variable: '--font-allura',
+  preload: false,
+});
 
 export const lato = Lato({
   weight: ['400', '700'],

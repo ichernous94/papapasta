@@ -39,7 +39,7 @@
 - Gallery uses four columns from 1024 CSS px and two columns below. Information sections use a 40/60 text/image split on desktop and text before the image below 1024 px. Import local JPEGs statically with responsive sizes and blur placeholders.
 - The video hero uses the existing muted inline looping video. Keep a static steak image before playback, when autoplay fails, or when reduced motion/data saving is enabled. Expose play/pause controls and pause offscreen video.
 - Footer has three columns above 1024 CSS px and centered stacked content below. Its small CurrentYear client component computes the Warsaw calendar year after hydration, on returning to the tab and periodically, so it is independent of the build date. Tripadvisor remains a noninteractive icon until a real profile URL is supplied.
-- Use plain light surfaces and Lato. Omnipop is deferred until its font file is supplied. Reuse `$colorGold: #c9a579` for decorative accents and `$colorGoldText: #80613b` for text on light surfaces, with explicit Sass module imports. Original SVG colors remain unchanged; the footer has a separate dark logo variant.
+- Use plain light surfaces and Lato. Allura is the selected script font, loaded through next/font/google for decorative subtitles and price columns; Lato remains the body font. Reuse `$colorGold: #c9a579` for decorative accents and `$colorGoldText: #D7BB91` for text on light surfaces, with explicit Sass module imports. Original SVG colors remain unchanged; the footer has a separate dark logo variant.
 - Shared Button has light (default) and dark variants. Preserve the landing appearance; use the dark variant on light content sections. Bound fluid typography and spacing with clamp and the existing toRem helper.
 - Recommendation prices and portions on `/home` remain independent from the full `/menu` assortment, as explicitly agreed. Do not synchronize them automatically.
 
@@ -51,8 +51,16 @@
 - MenuList is shared presentation. MenuTabs is a small client component with independent local state for each tab group, accessible keyboard navigation and horizontally scrollable mobile tabs. All panel content is server-composed and present in the initial render; inactive panels are hidden. Pizza and soft drinks use two explicit reading-order columns from 1024 px, one below. `/menu#kartawin` remains the wine-section anchor with a dynamic sticky-header offset.
 - Contact details, social URLs, maps URLs and shared page copy live in `src/config/papapasta.ts`. The contact page reuses Reservation, embeds the supplied lazy Google Maps iframe, offers an ordinary external map link, and finishes with the shared photo strip. Tripadvisor stays noninteractive pending a real profile URL.
 - Every public page has its own title, description, canonical and Open Graph URL, keeping shared robots/brand defaults. A permanent Next.js redirect (308) maps legacy `/menu-restauracji` to `/menu`; no other route or domain migration is implied.
-- Restaurant pages, including `/home`, share bounded spacing and compact mobile buttons via layout-scoped CSS variables. Landing styles remain unchanged. Light surfaces remain plain; Lato italic substitutes for decorative script until Omnipop is supplied.
-- Omnipop, administration, APIs, hostname routing, and the broader sitemap/robots migration remain future stages. Autumn content is static and does not expire automatically.
+- Restaurant pages, including `/home`, share bounded spacing and compact mobile buttons via layout-scoped CSS variables. Landing styles remain unchanged. Light surfaces remain plain; Allura is applied to decorative subtitles on home, venue, menu and contact pages, and the home/menu price columns, using normal style and weight 400. Decorative Allura subtitles are 48px and use $colorGoldText (#D7BB91); price sizes and inherited dark colors remain unchanged.
+- Administration, APIs, hostname routing, and the broader sitemap/robots migration remain future stages. Autumn content is static and does not expire automatically.
+
+**Confirmed motion and navigation refinements**
+- Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 36px above over 1200ms once; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
+- Header navigation explicitly scrolls to the document top after the target route commits and the exiting menu releases its scroll lock. Re-selecting the current page also goes to the top. Wine hash links retain their section-anchor behavior.
+- Scroll locking changes only the root viewport overflow, preserving body overflow so a second scroll container cannot detach the sticky Header. Overlay focus changes use preventScroll. Keep locks and focus containment until exit animations finish, including rapid reopen and concurrent overlays.
+- Burger navigation is viewport-positioned immediately below the measured Header, with a sliding/fading entrance and exit, independent internal scrolling and a lightly dimmed backdrop. Header has a visible bottom shadow.
+- The gallery dialog has a transparent surface and a lightly dimmed page backdrop, with centered contain-fit photographs, a 70% dark backdrop with 4px blur, and 650ms entry/exit. Scroll lock persists through the closing animation. Native dialog focus behavior and Swiper keyboard/swipe support are retained.
+- Public text and logos use slightly smaller bounded sizes, including landing. Shared buttons retain at least a 44px target with compact padding. Hover transitions are gradual; active menu tabs use gold text without a gold underline. Keyboard focus indicators remain visible.
 
 **Not yet decided**
 - Detailed page-to-route mapping beyond the entry URLs above, including migration redirects.
@@ -105,6 +113,7 @@ Use `next/font/local` for local fonts; colocate font files in `src/assets/fonts/
 **Confirmed fonts and metadata**
 - Use `next/font/google` for Lato (the default font, weights 400 and 700), Open Sans, Roboto and Noto Sans. The latter three use variable fonts.
 - Define fonts in `src/config/fonts.ts` with normal style, `display: 'swap'` and `latin`/`latin-ext` subsets. Preload only Lato; expose all four fonts as CSS variables.
+- Allura exposes `--font-allura`, uses latin/latin-ext, display swap and no additional preload. Only Lato remains preloaded. No font package or dependency is added.
 - Font CSS variables are `--font-lato`, `--font-open-sans`, `--font-roboto` and `--font-noto-sans`. Global text and form controls use Lato with a sans-serif fallback.
 - The shared root layout uses `lang="pl-PL"` and places client providers inside `body`.
 - Keep typed restaurant metadata defaults in `src/config/metadata.ts`; apply PapaPasta defaults to the landing page and PapaPasta/legacy public layouts. Centro defaults and admin noindex/nofollow metadata will be connected when their route branches are implemented.

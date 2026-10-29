@@ -8,6 +8,8 @@ import { IoCloseOutline, IoMenuOutline } from 'react-icons/io5';
 import BurgerMenu from '@/components/BurgerMenu';
 import { papaPasta, papaPastaNavigation } from '@/config/papapasta';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import useExitPresence from '@/hooks/useExitPresence';
+import useReducedMotion from '@/hooks/useReducedMotion';
 import useBurgerMenuStore from '@/store/useBurgerMenuStore';
 import styles from './Header.module.scss';
 
@@ -19,7 +21,25 @@ export default function Header() {
   const closeMenu = useBurgerMenuStore((state) => state.closeBurgerMenu);
   const toggleMenu = useBurgerMenuStore((state) => state.toggleBurgerMenu);
 
-  useBodyScrollLock(isOpen);
+  const reducedMotion = useReducedMotion();
+  const menuPresent = useExitPresence(isOpen, reducedMotion ? 0 : 280);
+  const navigationTarget = useRef<string | null>(null);
+  useBodyScrollLock(menuPresent);
+
+  const navigateToTop = (href: string) => {
+    navigationTarget.current = href;
+    closeMenu();
+    if (pathname === href && !menuPresent) {
+      navigationTarget.current = null;
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  };
+
+  useEffect(() => {
+    if (menuPresent || navigationTarget.current !== pathname) return;
+    navigationTarget.current = null;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname, menuPresent]);
 
   useEffect(() => { closeMenu(); }, [pathname, closeMenu]);
 
@@ -47,7 +67,7 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!menuPresent) return;
     const header = headerRef.current;
     if (!header) return;
     const trigger = toggleRef.current;
@@ -64,7 +84,7 @@ export default function Header() {
       branch = parent;
     }
 
-    header.querySelector<HTMLAnchorElement>('#papapasta-mobile-menu a')?.focus();
+    header.querySelector<HTMLAnchorElement>('#papapasta-mobile-menu a')?.focus({ preventScroll: true });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -80,9 +100,9 @@ export default function Header() {
       if (!first || !last) return;
       const outside = !header.contains(document.activeElement);
       if (event.shiftKey && (document.activeElement === first || outside)) {
-        event.preventDefault(); last.focus();
+        event.preventDefault(); last.focus({ preventScroll: true });
       } else if (!event.shiftKey && (document.activeElement === last || outside)) {
-        event.preventDefault(); first.focus();
+        event.preventDefault(); first.focus({ preventScroll: true });
       }
     };
     document.addEventListener('keydown', onKeyDown);
@@ -92,21 +112,21 @@ export default function Header() {
       if (trigger?.getClientRects().length) trigger.focus({ preventScroll: true });
       else header.querySelector<HTMLAnchorElement>('a[href]')?.focus({ preventScroll: true });
     };
-  }, [isOpen, closeMenu]);
+  }, [menuPresent, closeMenu]);
 
   return (
     <header
       ref={headerRef}
       className={styles.header}
-      role={isOpen ? 'dialog' : undefined}
-      aria-modal={isOpen ? true : undefined}
-      aria-label={isOpen ? 'Nawigacja restauracji' : undefined}
+      role={menuPresent ? 'dialog' : undefined}
+      aria-modal={menuPresent ? true : undefined}
+      aria-label={menuPresent ? 'Nawigacja restauracji' : undefined}
     >
       <div className={styles.mobilePhone}>
         ZAMÓW Z DOSTAWĄ <a href={papaPasta.phoneHref}>{papaPasta.phone}</a>
       </div>
       <div className={styles.bar}>
-        <Link href="/home" className={styles.logoLink} onClick={closeMenu} aria-label="Papa Pasta — strona główna">
+        <Link href="/home" className={styles.logoLink} scroll={false} onNavigate={() => navigateToTop('/home')} aria-label="Papa Pasta — strona główna">
           <Image src="/icons/logo.svg" alt="Papa Pasta Restauracja" width={481} height={51} className={styles.logo} unoptimized />
         </Link>
         <nav className={styles.desktopNavigation} aria-label="Główna nawigacja">
@@ -116,7 +136,7 @@ export default function Header() {
                 {item.href.startsWith('https://') ? (
                   <a href={item.href}>{item.label}</a>
                 ) : (
-                  <Link href={item.href} aria-current={pathname === item.href ? 'page' : undefined}>{item.label}</Link>
+                  <Link href={item.href} scroll={false} onNavigate={() => navigateToTop(item.href)} aria-current={pathname === item.href ? 'page' : undefined}>{item.label}</Link>
                 )}
               </li>
             ))}
@@ -138,10 +158,10 @@ export default function Header() {
           <a href={papaPasta.phoneHref}>{papaPasta.phone}</a>
         </div>
       </div>
-      {isOpen && (
-        <button className={styles.backdrop} type="button" tabIndex={-1} onClick={closeMenu} aria-label="Zamknij menu" />
+      {menuPresent && (
+        <button className={styles.backdrop} data-state={isOpen ? 'open' : 'closing'} type="button" tabIndex={-1} onClick={closeMenu} aria-label="Zamknij menu" />
       )}
-      <BurgerMenu pathname={pathname} />
+      <BurgerMenu pathname={pathname} open={isOpen} present={menuPresent} onNavigate={navigateToTop} />
     </header>
   );
 }

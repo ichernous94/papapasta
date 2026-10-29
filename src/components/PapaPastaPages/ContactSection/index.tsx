@@ -1,3 +1,4 @@
+import Reveal from '@/components/ui/Reveal';
 import Reservation from '@/components/Reservation';
 import SocialLinks from '@/components/SocialLinks';
 import { papaPasta } from '@/config/papapasta';
@@ -7,7 +8,7 @@ export default function ContactSection() {
   return (
     <section className={styles.section} aria-labelledby="contact-title">
       <header className={styles.heading}>
-        <h1 id="contact-title">ZAPRASZAMY</h1>
+        <Reveal as="h1" id="contact-title">ZAPRASZAMY</Reveal>
         <p>do kontaktu</p>
       </header>
       <div className={styles.details}>

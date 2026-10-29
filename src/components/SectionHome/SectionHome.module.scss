@@ -78,16 +78,16 @@
 }
 
 .papaPastaLogo {
-  inline-size: min(100%, 24rem);
+  inline-size: min(100%, 20rem);
 }
 
 .centroLogo {
-  inline-size: min(65%, 14rem);
+  inline-size: min(60%, 12rem);
 }
 
 .address {
   max-inline-size: 100%;
-  font-size: clamp(1.125rem, 2vw, 2rem);
+  font-size: clamp(1rem, 1.7vw, 1.5rem);
   font-weight: 400;
   line-height: 1.4;
   text-wrap: balance;
@@ -95,7 +95,7 @@
 }
 
 .restaurantLink {
-  inline-size: min(100%, 22rem);
+  max-inline-size: 20rem;
 }
 
 .visuallyHidden {
@@ -130,10 +130,10 @@
   }
 
   .papaPastaLogo {
-    inline-size: min(100%, 32rem);
+    inline-size: min(100%, 26rem);
   }
 
   .centroLogo {
-    inline-size: min(100%, 28rem);
+    max-inline-size: 20rem;
   }
 }

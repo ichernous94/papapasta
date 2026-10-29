@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { IoCloseOutline } from 'react-icons/io5';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import useExitPresence from '@/hooks/useExitPresence';
+import useReducedMotion from '@/hooks/useReducedMotion';
 import styles from './Modal.module.scss';
 
 type ModalProps = {
@@ -11,30 +13,38 @@ type ModalProps = {
   labelledBy: string;
   children: ReactNode;
   className?: string;
+  animationDuration?: number;
 };
 
-export default function Modal({ open, onClose, labelledBy, children, className }: ModalProps) {
+export default function Modal({ open, onClose, labelledBy, children, className, animationDuration = 280 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  useBodyScrollLock(open);
+  const reducedMotion = useReducedMotion();
+  const present = useExitPresence(open, reducedMotion ? 0 : animationDuration);
+  useBodyScrollLock(present);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
-    if (!dialog || !open) return;
+    if (!dialog || !present) return;
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const x = window.scrollX;
+    const y = window.scrollY;
     dialog.showModal();
     dialog.querySelector<HTMLElement>('[data-modal-heading]')?.focus({ preventScroll: true });
+    window.scrollTo({ left: x, top: y, behavior: 'instant' });
 
     return () => {
       dialog.close();
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
     };
-  }, [open]);
+  }, [present]);
 
   return (
     <dialog
       ref={dialogRef}
       className={[styles.dialog, className].filter(Boolean).join(' ')}
       aria-labelledby={labelledBy}
+      data-state={open ? 'open' : 'closing'}
+      style={{ '--modal-duration': `${animationDuration}ms` } as CSSProperties}
       onCancel={(event) => { event.preventDefault(); onClose(); }}
       onClick={(event) => {
         if (event.target !== event.currentTarget) return;
@@ -46,7 +56,7 @@ export default function Modal({ open, onClose, labelledBy, children, className }
       <button type="button" className={styles.close} aria-label="Zamknij okno" onClick={onClose}>
         <IoCloseOutline aria-hidden="true" />
       </button>
-      {children}
+      {present && children}
     </dialog>
   );
 }

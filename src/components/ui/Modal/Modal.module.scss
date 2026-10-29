@@ -1,7 +1,10 @@
 @use '../../../styles/helpers/variables' as theme;
 
 .dialog {
+  position: fixed;
+  inset: 0;
   inline-size: min(var(--modal-width, 40rem), calc(100% - 2rem));
+  block-size: fit-content;
   max-inline-size: none;
   max-block-size: calc(100vh - 2rem);
   max-block-size: calc(100svh - 2rem);
@@ -12,12 +15,14 @@
   overscroll-behavior: contain;
   background-color: var(--modal-surface, theme.$colorBgWhite);
   color: var(--modal-color, theme.$colorFont);
-  box-shadow: 0 1rem 4rem rgb(0 0 0 / 25%);
+  box-shadow: var(--modal-shadow, 0 1rem 4rem rgb(0 0 0 / 25%));
   line-height: 1.65;
   overflow-wrap: anywhere;
 
-  &[open] { animation: reveal 0.2s ease-out; }
-  &::backdrop { background-color: rgb(0 0 0 / 72%); }
+  &[open] { animation: reveal var(--modal-duration, 280ms) ease both; }
+  &[open][data-state='closing'] { animation: dismiss var(--modal-duration, 280ms) ease both; }
+  &::backdrop { background-color: var(--modal-backdrop, rgb(0 0 0 / 55%)); animation: backdropIn var(--modal-duration, 280ms) ease both; }
+  &[data-state='closing']::backdrop { animation: backdropOut var(--modal-duration, 280ms) ease both; }
 
   a:focus-visible,
   button:focus-visible {
@@ -40,10 +45,13 @@
 }
 
 @keyframes reveal {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
+@keyframes dismiss { to { opacity: 0; transform: scale(0.98); } }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes backdropOut { to { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .dialog[open] { animation: none; }
+  .dialog[open], .dialog[open][data-state='closing'], .dialog::backdrop { animation: none; }
 }

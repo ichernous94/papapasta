@@ -1,3 +1,4 @@
+import Reveal from '@/components/ui/Reveal';
 import Button from '@/components/ui/Button';
 import { papaPastaRecommendations } from '@/config/papapasta';
 import styles from './Recommendations.module.scss';
@@ -6,7 +7,7 @@ export default function Recommendations() {
   return (
     <section className={styles.section} aria-labelledby="recommendations-title">
       <div className={styles.content}>
-        <h2 id="recommendations-title">Z CAŁEGO SERCA</h2>
+        <Reveal as="h2" id="recommendations-title">Z CAŁEGO SERCA</Reveal>
         <p className={styles.subtitle}>polecamy</p>
         <ul className={styles.list}>
           {papaPastaRecommendations.map((item) => (

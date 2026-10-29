@@ -12,5 +12,5 @@
 }
 .background { z-index: -2; object-fit: cover; }
 .content { display: flex; flex-direction: column; align-items: center; gap: clamp(1.5rem, 3vw, 2rem); max-inline-size: 60rem; }
-.logo { inline-size: clamp(14rem, 35vw, 28rem); max-inline-size: 100%; block-size: auto; }
-.content p { font-size: clamp(1rem, 1.4vw, 1.125rem); line-height: 1.7; }
+.logo { inline-size: clamp(12rem, 30vw, 22rem); max-inline-size: 100%; block-size: auto; }
+.content p { font-size: clamp(0.9375rem, 1.2vw, 1rem); line-height: 1.7; }
