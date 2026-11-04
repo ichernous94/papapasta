@@ -77,3 +77,7 @@ Apply `0002_dish_allergens` with `pnpm db:migrate` after backing up the working 
 In Add/Edit Dish, expand Additional details and select all applicable Allergens. Unchecking every option clears the selection. The field is available for both restaurants. Centro displays chosen categories under Alergeny in the photo dish modal and standalone dish page; list rows are unchanged. An empty selection hides the entire public block. Recommendations have independent selections.
 
 See `docs/allergens.md` for the file inventory and validation results.
+
+## Temporary deployment
+
+The exact requested sslip.io deployment has explicit admin/Centro host aliases. See [temporary domains](temporary-domains.md) for the three Coolify hostnames and BETTER_AUTH_URL setup. Production login still requires HTTPS; Secure cookies and origin checks have not been relaxed.

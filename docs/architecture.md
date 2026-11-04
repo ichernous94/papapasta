@@ -258,3 +258,9 @@ Discuss and document before implementation:
 - Removed global Sass additionalData injection: imports belong to each entrypoint/module, including explicit variables in styles/index.scss. Legacy CookiePolicy/Cookie/GoTopBtn use the existing toRem helper and defined palette values; Cookie Policy remains available.
 - The nonfunctional Sfora shop `/products/[id]` route now returns 404 with no foreign API request or product metadata. Its obsolete layout/stylesheet and unreferenced HeaderActions/Dropdown shop components were removed. No restaurant route or administration functionality was removed.
 - Full default Turbopack production build, all 36 generated static pages, tsc --noEmit and 31 targeted tests pass. Production HTTP checks passed for both restaurant hosts, admin login, sitemap, Cookie Policy and legacy product 404. Earlier reported build/type blockers are resolved; details and deployment instructions are in docs/production-build-fix.md.
+
+
+**Confirmed exact temporary deployment aliases — 2026-11-04**
+- The explicitly requested fwos8o44go04wg8gc4cwsows.178.104.181.157.sslip.io host and its admin./centro. subdomains are supported via shared config/hosts.ts. Routing, auth host guards and the landing Centro link share these exact names; no arbitrary sslip.io suffix is trusted.
+- Temporary page responses are noindex/nofollow; canonical metadata stays on real domains. Production auth continues to require Secure host-only cookies and the configured BETTER_AUTH_URL origin, so admin login needs HTTPS even when the public preview uses HTTP.
+- Coolify must register all three names on the same application and configure admin HTTPS plus BETTER_AUTH_URL separately. No remote infrastructure or secrets were changed. See docs/temporary-domains.md.
