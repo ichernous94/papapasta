@@ -18,7 +18,8 @@ function load(relativePath) {
   const source = ts.transpileModule(fs.readFileSync(path.join(__dirname, '..', relativePath), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
   }).outputText;
-  new Function('exports', 'require', source)(exports, requireModule);
+  const requireSource = id => id.startsWith('@/') ? load(`src/${id.slice(2)}.ts`) : requireModule(id);
+  new Function('exports', 'require', source)(exports, requireSource);
   return exports;
 }
 const { proxy } = load('src/proxy.ts');
