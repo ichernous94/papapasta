@@ -27,3 +27,10 @@
 @media (prefers-reduced-motion: reduce) { .tablist button { transition: none; } }
 .panel:focus-visible { outline: 2px solid theme.$colorGold; outline-offset: 0.5rem; }
 .visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.centro .tablist {
+  border-block-end: 1px solid #53666566;
+  padding-block-end: 0;
+  button { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
+  button[aria-selected='true'] { border-block-end-color: theme.$colorGoldText; }
+}

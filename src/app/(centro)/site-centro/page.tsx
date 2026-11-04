@@ -1,9 +1,10 @@
 import VideoHero from '@/components/VideoHero';
 import ContentSection from '@/components/ContentSection';
-import Recommendations from '@/components/Recommendations';
+import { Suspense } from 'react';
+import DatabaseRecommendations from '@/components/DatabaseRecommendations';
 import Gallery from '@/components/Gallery';
 import Button from '@/components/ui/Button';
-import { centroCopy, centroRecommendations } from '@/config/centro';
+import { centroCopy } from '@/config/centro';
 import { centroImages as images, centroGallery } from '@/config/centro-images';
 import { centroMetadata, centroPageMetadata } from '@/config/metadata';
 
@@ -14,7 +15,7 @@ export default function CentroHome() {
     <ContentSection id="o-nas" title="O NAS" image={images.interior} imageAlt="Wnętrze Papa Pasta Centro"><p>{centroCopy.about}</p></ContentSection>
     <ContentSection id="cocktail-bar" title="COCKTAIL BAR" image={images.mojito} imageAlt="Autorski zielony koktajl" imageSide="left" actions={<Button href="/cocktail-bar#karta-koktajli">KARTA KOKTAJLI</Button>}><p>{centroCopy.cocktails}</p></ContentSection>
     <ContentSection id="nasze-potrawy" title="NASZE POTRAWY" image={images.chicken} imageAlt="Kurczak ze szparagami" actions={<Button href="/menu">ZOBACZ MENU</Button>}><p>{centroCopy.dishes}</p></ContentSection>
-    <Recommendations items={centroRecommendations} variant="light" />
+    <Suspense fallback={<p>Ładowanie menu…</p>}><DatabaseRecommendations restaurantId="centro" /></Suspense>
     <Gallery name="Papa Pasta Centro" images={centroGallery} />
   </>;
 }

@@ -14,9 +14,10 @@ type ModalProps = {
   children: ReactNode;
   className?: string;
   animationDuration?: number;
+  closeLabel?: string;
 };
 
-export default function Modal({ open, onClose, labelledBy, children, className, animationDuration = 280 }: ModalProps) {
+export default function Modal({ open, onClose, labelledBy, children, className, animationDuration = 280, closeLabel = 'Zamknij okno' }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const reducedMotion = useReducedMotion();
   const present = useExitPresence(open, reducedMotion ? 0 : animationDuration);
@@ -53,7 +54,7 @@ export default function Modal({ open, onClose, labelledBy, children, className, 
             event.clientY < rect.top || event.clientY > rect.bottom) onClose();
       }}
     >
-      <button type="button" className={styles.close} aria-label="Zamknij okno" onClick={onClose}>
+      <button type="button" className={styles.close} aria-label={closeLabel} onClick={onClose}>
         <IoCloseOutline aria-hidden="true" />
       </button>
       {present && children}

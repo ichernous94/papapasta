@@ -1,0 +1,12 @@
+@use '../../styles/helpers/variables' as theme;
+.card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; color: var(--site-text, #f7f7f5); }
+.image { aspect-ratio: 1; overflow: hidden; border-radius: clamp(1rem, 2vw, 1.75rem); border: 1px solid #c9a57966; background: #092727; img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; } }
+.copy { min-inline-size: 0; padding-block-start: 0.5rem; }
+.category { display: table; max-inline-size: 100%; color: theme.$colorGoldText; text-transform: uppercase; font-size: 0.8125rem; line-height: 1.5; font-weight: 700; border-block-end: 1px solid theme.$colorGold; padding-block-end: 0.5rem; margin-block-end: 1.25rem; overflow-wrap: anywhere; }
+.heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1.25rem; h1,h2 { min-inline-size: 0; font-size: clamp(1.25rem, 2.4vw, 2rem); font-weight: 700; line-height: 1.3; margin: 0; overflow-wrap: anywhere; } }
+.price { flex: 0 0 auto; max-inline-size: 35%; font: 400 clamp(1.75rem, 3vw, 2.75rem)/1.2 var(--font-allura), cursive; text-align: end; overflow-wrap: anywhere; }
+.portion { margin-block-start: 0.5rem; font-size: 1.125rem; }
+.description { margin-block-start: 1rem; color: var(--site-muted, #c4cfce); font-size: clamp(0.9375rem, 1.2vw, 1.125rem); line-height: 1.65; white-space: pre-line; overflow-wrap: anywhere; }
+.badge { margin-block-start: 0.5rem; color: theme.$colorGoldText; }
+@media (min-width: 600px) and (max-width: 1023px) { .card { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); gap: 1.25rem; } .category { margin-block-end: 0.75rem; } }
+@media (max-width: 599px) { .card { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; } .image { aspect-ratio: 4 / 3; border-radius: 1rem; } .copy { padding: 0; } .category { margin-block-end: 0.875rem; } .heading { gap: 0.75rem; } .portion { font-size: 1rem; } }

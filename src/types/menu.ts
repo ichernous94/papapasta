@@ -1,4 +1,8 @@
+import type { AllergenId } from '@/config/allergens';
+export type DishImage = { src: string; width: number; height: number; blurDataURL: string; alt: string };
 export type MenuItem = {
+  image?: DishImage;
+  allergens?: AllergenId[];
   id: string;
   name: string;
   portion?: string;

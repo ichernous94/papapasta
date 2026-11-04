@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793566969098,
+      "tag": "0000_gray_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793566969099,
+      "tag": "0001_public_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793566969100,
+      "tag": "0002_dish_allergens",
+      "breakpoints": true
+    }
+  ]
+}

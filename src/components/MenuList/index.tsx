@@ -1,18 +1,22 @@
+import CentroDishRow from '@/components/CentroDishRow';
+import DishPhoto from '@/components/DishPhoto';
 import type { MenuGroup } from '@/types/menu';
 import styles from './MenuList.module.scss';
 
-type MenuListProps = { groups: readonly MenuGroup[]; columns?: 2; columnBreak?: number };
+type MenuListProps = { groups: readonly MenuGroup[]; columns?: 2; columnBreak?: number; variant?: 'default' | 'centro' };
 
-function Groups({ groups }: Pick<MenuListProps, 'groups'>) {
+function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) {
   return groups.map((group) => (
     <div key={group.id} className={styles.group}>
       {group.title && <h3 className={styles.groupTitle}>{group.title}</h3>}
       {group.note && <p className={styles.note}>{group.note}</p>}
-      <ul className={styles.list}>
+      <ul className={[styles.list, variant === 'centro' && group.items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
         {group.items.map((item) => {
           const Heading = group.title ? 'h4' : 'h3';
+          if (variant === 'centro' && item.image) return <li key={item.id}><CentroDishRow item={item} headingLevel={Heading}/></li>;
           return (
             <li key={item.id} className={styles.item}>
+              {item.image && <DishPhoto image={item.image} />}
               <div className={styles.heading}>
                 <Heading>
                   {item.name}{item.portion && <small> {item.portion}</small>}
@@ -33,11 +37,12 @@ function Groups({ groups }: Pick<MenuListProps, 'groups'>) {
   ));
 }
 
-export default function MenuList({ groups, columns, columnBreak = 1 }: MenuListProps) {
-  return columns === 2 ? (
+export default function MenuList({ groups, columns, columnBreak = 1, variant = 'default' }: MenuListProps) {
+  const hasPhotos = variant === 'centro' && groups.some(group => group.items.some(item => item.image));
+  return columns === 2 && !hasPhotos ? (
     <div className={styles.columns}>
-      <div><Groups groups={groups.slice(0, columnBreak)} /></div>
-      <div><Groups groups={groups.slice(columnBreak)} /></div>
+      <div><Groups groups={groups.slice(0, columnBreak)} variant={variant} /></div>
+      <div><Groups groups={groups.slice(columnBreak)} variant={variant} /></div>
     </div>
-  ) : <div><Groups groups={groups} /></div>;
+  ) : <div><Groups groups={groups} variant={variant} /></div>;
 }

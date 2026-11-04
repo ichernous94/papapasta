@@ -18,6 +18,7 @@ import styles from './Header.module.scss';
 
 export default function Header({ site = papaPastaSite }: { site?: RestaurantConfig }) {
   const pathname = restaurantPath(usePathname());
+  const navigationPathname = site.id === 'centro' && pathname.startsWith('/menu/') ? '/menu' : pathname;
   const menuId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -141,7 +142,7 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
                 {item.href.startsWith('https://') ? (
                   <a href={item.href}>{item.label}</a>
                 ) : (
-                  <Link href={item.href} scroll={false} onNavigate={() => navigateToTop(item.href)} aria-current={pathname === item.href ? 'page' : undefined}>{item.label}</Link>
+                  <Link href={item.href} scroll={false} onNavigate={() => navigateToTop(item.href)} aria-current={navigationPathname === item.href ? 'page' : undefined}>{item.label}</Link>
                 )}
               </li>
             ))}
@@ -166,7 +167,7 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
       {menuPresent && (
         <button className={styles.backdrop} data-state={isOpen ? 'open' : 'closing'} type="button" tabIndex={-1} onClick={closeMenu} aria-label="Zamknij menu" />
       )}
-      <BurgerMenu id={menuId} navigation={site.navigation} pathname={pathname} open={isOpen} present={menuPresent} onNavigate={navigateToTop} />
+      <BurgerMenu id={menuId} navigation={site.navigation} pathname={navigationPathname} open={isOpen} present={menuPresent} onNavigate={navigateToTop} />
     </header>
   );
 }

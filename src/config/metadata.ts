@@ -66,7 +66,7 @@ export const centroMetadata = {
   },
 } satisfies Metadata;
 
-// Apply only to the future admin layout, not to the public restaurant layouts.
+// Apply only to the administration layout, never to public restaurant layouts.
 export const adminMetadata = {
   robots: {
     index: false,

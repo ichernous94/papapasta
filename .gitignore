@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local bootstrap SQL and credentials
+/.local/
+!.env.example

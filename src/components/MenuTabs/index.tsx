@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import styles from './MenuTabs.module.scss';
 
 type MenuTab = { id: string; label: string; content: ReactNode };
-type MenuTabsProps = { label: string; tabs: readonly MenuTab[] };
+type MenuTabsProps = { label: string; tabs: readonly MenuTab[]; variant?: 'default' | 'centro' };
 
 function revealTab(list: HTMLDivElement, index: number, focus = false) {
   const tab = list.querySelectorAll<HTMLButtonElement>('[role="tab"]')[index];
@@ -17,7 +17,7 @@ function revealTab(list: HTMLDivElement, index: number, focus = false) {
   else if (bounds.right > container.right) list.scrollLeft += bounds.right - container.right;
 }
 
-export default function MenuTabs({ label, tabs }: MenuTabsProps) {
+export default function MenuTabs({ label, tabs, variant = 'default' }: MenuTabsProps) {
   const groupId = useId();
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ export default function MenuTabs({ label, tabs }: MenuTabsProps) {
   };
 
   return (
-    <div className={styles.tabs}>
+    <div className={[styles.tabs, variant === 'centro' ? styles.centro : ''].filter(Boolean).join(' ')}>
       <div ref={listRef} className={styles.tablist} role="tablist" aria-label={label}>
         {tabs.map((tab, index) => (
           <button

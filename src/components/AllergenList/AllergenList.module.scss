@@ -1,0 +1,19 @@
+@use '../../styles/helpers/variables' as theme;
+.section {
+  margin-block-start: clamp(1.5rem, 3vw, 2.5rem);
+  padding-block-start: clamp(1.25rem, 2vw, 1.75rem);
+  border-block-start: 1px solid #b6a68b80;
+  color: theme.$colorGoldText;
+  h3 { font-size: 1rem; line-height: 1.5; font-weight: 700; margin-block-end: 0.875rem; }
+}
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 1rem;
+  padding: 0;
+  margin: 0;
+  li { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex: 0 1 5.5rem; min-inline-size: 0; text-align: center; list-style: none; }
+  svg { display: block; inline-size: 3rem; block-size: 3rem; flex-shrink: 0; }
+  span { font-size: 0.875rem; line-height: 1.4; overflow-wrap: anywhere; }
+}
+@media (max-width: 599px) { .list { gap: 1rem 0.625rem; li { flex-basis: 5rem; } svg { inline-size: 2.625rem; block-size: 2.625rem; } } }

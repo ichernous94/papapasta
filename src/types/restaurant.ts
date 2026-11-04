@@ -20,5 +20,5 @@ export type RestaurantConfig = {
   openingHours: readonly { day: string; hours: string }[];
 };
 export type RecommendationItem = {
-  id: string; name: string; weight?: string; description: string; price: number;
+  id: string; name: string; weight?: string; description: string; price: number | string; image?: import('./menu').DishImage;
 };

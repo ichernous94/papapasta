@@ -1,0 +1,44 @@
+@use '../../styles/helpers/variables' as theme;
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 30%);
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  color: var(--site-text, #f7f7f5);
+  text-decoration: none;
+  padding-block: clamp(1.25rem, 2.5vw, 2rem);
+  border-block-end: 1px dotted var(--site-divider, #536665);
+  border-radius: 2px;
+  &:focus-visible { outline: 2px solid theme.$colorGold; outline-offset: 6px; }
+}
+.copy { min-inline-size: 0; }
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.25rem;
+  h3, h4 { min-inline-size: 0; font-size: clamp(1.125rem, 1.75vw, 1.5rem); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+  small { display: inline-block; margin-inline-start: 0.4rem; font-size: 0.72em; font-weight: 400; white-space: nowrap; }
+}
+.price { flex: 0 0 auto; max-inline-size: 35%; font: 400 clamp(1.75rem, 2.5vw, 2.25rem)/1.2 var(--font-allura), cursive; text-align: end; overflow-wrap: anywhere; }
+.row .description { margin-block-start: 0.75rem; color: var(--site-muted, #c4cfce); font-size: clamp(0.9375rem, 1.2vw, 1.125rem); line-height: 1.6; overflow-wrap: anywhere; white-space: pre-line; }
+.photo {
+  aspect-ratio: 3 / 2;
+  border: 1px solid #c9a57966;
+  border-radius: clamp(0.875rem, 1.5vw, 1.25rem);
+  overflow: hidden;
+  background: #0b2828;
+  img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; transition: transform 450ms ease; }
+}
+.badge { display: inline-block; margin-inline-start: 0.5rem; font-size: 0.75em; font-weight: 400; color: theme.$colorGoldText; }
+@media (hover: hover) { .row:hover .photo img { transform: scale(1.035); } .row:hover h3, .row:hover h4 { color: theme.$colorGoldText; } }
+@media (min-width: 600px) and (max-width: 1023px) {
+  .row { grid-template-columns: minmax(0, 1fr) minmax(9rem, 28%); gap: 1.25rem; }
+}
+@media (max-width: 599px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .photo { grid-row: 1; aspect-ratio: 3 / 2; }
+  .heading { gap: 0.875rem; h3, h4 { font-size: 1.125rem; } }
+  .price { font-size: 1.875rem; }
+}
+@media (prefers-reduced-motion: reduce) { .photo img { transition: none; } }

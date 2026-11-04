@@ -25,3 +25,9 @@
   .heading { justify-content: space-between; gap: 1rem; }
   .price { max-inline-size: 35%; }
 }
+
+.item { display: flow-root; }
+
+.note, .afterNote { white-space: pre-line; }
+
+.photoList { gap: 0; > .item { margin-block: 1rem; } }

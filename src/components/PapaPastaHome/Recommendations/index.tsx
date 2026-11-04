@@ -1,3 +1,3 @@
-import Recommendations from '@/components/Recommendations';
-import { papaPastaRecommendations } from '@/config/papapasta';
-export default function PapaPastaRecommendations() { return <Recommendations items={papaPastaRecommendations} />; }
+import { Suspense } from 'react';
+import DatabaseRecommendations from '@/components/DatabaseRecommendations';
+export default function PapaPastaRecommendations() { return <Suspense fallback={<p>Ładowanie menu…</p>}><DatabaseRecommendations restaurantId="papapasta" /></Suspense>; }

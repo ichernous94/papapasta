@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { publicMenus } from '@/server/content/public';
 import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
 import ImageBanner from '@/components/ImageBanner';
@@ -5,7 +7,6 @@ import MenuList from '@/components/MenuList';
 import MenuTabs from '@/components/MenuTabs';
 import Gallery from '@/components/Gallery';
 import Button from '@/components/ui/Button';
-import { mainMenu, autumnMenu, kidsMenu, wineMenu } from '@/config/papapasta-menu';
 import { galleryImages, steakAndSides, autumnMenuImage, kidsMenuImage, wineCellar } from '@/config/papapasta-images';
 import { papaPasta, papaPastaCopy } from '@/config/papapasta';
 import { papaPastaPageMetadata } from '@/config/metadata';
@@ -17,10 +18,14 @@ export const metadata: Metadata = papaPastaPageMetadata(
   'Poznaj menu Papa Pasta w Białymstoku: domowe makarony, włoska pizza, steki, desery i wina. Kuchnia toskańska to prawdziwa fantazja smaków!',
 );
 
-export default function MenuPage() {
+export default function MenuPage() { return <Suspense fallback={<p>Ładowanie menu…</p>}><MenuContent /></Suspense>; }
+async function MenuContent() {
+  const data = await publicMenus('papapasta');
+  const section = (key: string) => { const menu = data.find(m => m.key === key); if (!menu) throw new Error('Menu not seeded'); return menu; };
+  const mainMenu = section('main').categories, autumnMenu = section('autumn').categories.flatMap(c => c.groups), kidsMenu = section('kids').categories.flatMap(c => c.groups), wineMenu = section('wine').categories;
   return (
     <>
-      <ImageBanner image={steakAndSides} title="MENU GŁÓWNE" subtitle="specjalności lokalu" headingLevel="h1" preload />
+      <ImageBanner image={steakAndSides} title={section('main').title} subtitle={section('main').subtitle} headingLevel="h1" preload />
       <Container size="text" className={styles.intro}>{papaPastaCopy.dishes.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</Container>
       <Container as="section" className={styles.menuSection} aria-label="Menu główne">
         <MenuTabs label="Kategorie menu" tabs={mainMenu.map((category) => ({
@@ -36,11 +41,11 @@ export default function MenuPage() {
           <Button href={papaPasta.orderUrl} variant="dark">ZAMÓW Z DOSTAWĄ NA PYSZNE.PL</Button>
         </div>
       </Container>
-      <ImageBanner image={autumnMenuImage} title="MENU JESIENNE" subtitle="Sapori d’Autunno" />
+      <ImageBanner image={autumnMenuImage} title={section('autumn').title} subtitle={section('autumn').subtitle} />
       <Container as="section" className={styles.menuSection} aria-label="Menu jesienne"><MenuList groups={autumnMenu} /></Container>
-      <ImageBanner image={kidsMenuImage} title="MENU" subtitle="bambini" variant="kids" />
+      <ImageBanner image={kidsMenuImage} title={section('kids').title} subtitle={section('kids').subtitle} variant="kids" />
       <Container as="section" className={styles.menuSection} aria-label="Menu bambini"><MenuList groups={kidsMenu} /></Container>
-      <ImageBanner id="kartawin" image={wineCellar} title="WINO" subtitle="i inne alkohole" />
+      <ImageBanner id="kartawin" image={wineCellar} title={section('wine').title} subtitle={section('wine').subtitle} />
       <Container as="section" className={styles.menuSection} aria-label="Wino i inne alkohole">
         <MenuTabs label="Kategorie win i piw" tabs={wineMenu.map((category) => ({
           id: category.id,
