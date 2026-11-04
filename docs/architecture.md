@@ -244,3 +244,11 @@ Discuss and document before implementation:
 - The supplied vertical promotional-image.jpg is shown whole, with a gold frame and blurred dark backdrop, without added visual copy or CTA. Normal viewports fit the image within 16 px margins and 680 px maximum width; short viewports allow internal scrolling with a sticky close control. A hidden transcript supplies the poster's text alternative.
 - Existing close/Escape/backdrop, scroll-lock and reduced-motion behavior is reused. Modal accepts an optional keyboard callback used only by this single-control popup to retain Tab/Shift+Tab on its close button; other consumers' behavior remains unchanged.
 - No schema, working DB, R2, environment or deployment changes. See `docs/centro-promotional-popup.md` for tests and changed files.
+
+
+**Confirmed restaurant-branded menu QR codes — 2026-11-04**
+- Menu QR preview, saved cards and 1024×1024 PNG export share RestaurantQRCode. The record/selection restaurantId chooses the existing dark PapaPasta logo or a QR-only dark-letter Centro SVG variant, regardless of the URL domain. Logos retain their aspect ratio at 20% matrix width on a 28% white disc, with no green background. QR uses H correction and four-module white margins derived from actual matrix size.
+- Verified local logo data is embedded in the SVG, making export self-contained. Generation errors are isolated by a client boundary; oversized saved URLs cannot fail server rendering. Creation/download require a ready branded QR. Existing oversized records retain Copy/Open/Delete. Logo and export failures report English errors without silently exporting an unbranded code.
+- Existing records need no migration, and no new files are stored in R2. TOTP/auth QR rendering is unchanged. Validation, decoding evidence and inventory: docs/restaurant-qr-logos.md.
+
+- QR cards use three columns at 1200 px and above, two from 768–1199 px, and one below 768 px. Container queries select 104/120 px thumbnails. Open/Download/Delete are accessible 40×40 icon actions below an ellipsized URL; long headings wrap, and all actions stay inside the card. Updated layout and PNG decoding checks are documented in docs/restaurant-qr-logos.md.
