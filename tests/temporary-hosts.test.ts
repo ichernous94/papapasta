@@ -5,6 +5,16 @@ import { proxy } from '../src/proxy';
 import { temporarySiteHost, temporaryAdminHost, temporaryCentroHost, centroPreviewURL } from '../src/config/hosts';
 import { isAdminHost } from '../src/server/auth/origin';
 
+test('Workbase replaces the previous temporary aliases without accepting old admin/restaurant hosts', () => {
+  assert.equal(temporarySiteHost, 'workbase.sbs');
+  assert.equal(temporaryAdminHost, 'admin.workbase.sbs');
+  assert.equal(temporaryCentroHost, 'centro.workbase.sbs');
+  const old = 'fwos8o44go04wg8gc4cwsows.178.104.181.157.sslip.io';
+  assert.equal(isAdminHost(`admin.${old}`), false);
+  assert.equal(proxy(new NextRequest(`http://centro.${old}/menu`)).headers.get('x-middleware-rewrite'), null);
+  assert.equal(centroPreviewURL(old, 'http:', ''), undefined);
+});
+
 test('Explicit temporary restaurant/admin hosts route with query preservation and noindex', () => {
   for (const [host, prefix] of [[temporarySiteHost, ''], [temporaryCentroHost, '/site-centro'], [temporaryAdminHost, '/site-admin']]) {
     for (const path of ['/', '/menu', '/kontakt']) {

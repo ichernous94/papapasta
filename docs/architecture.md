@@ -261,6 +261,6 @@ Discuss and document before implementation:
 
 
 **Confirmed exact temporary deployment aliases — 2026-11-04**
-- The explicitly requested fwos8o44go04wg8gc4cwsows.178.104.181.157.sslip.io host and its admin./centro. subdomains are supported via shared config/hosts.ts. Routing, auth host guards and the landing Centro link share these exact names; no arbitrary sslip.io suffix is trusted.
-- Temporary page responses are noindex/nofollow; canonical metadata stays on real domains. Production auth continues to require Secure host-only cookies and the configured BETTER_AUTH_URL origin, so admin login needs HTTPS even when the public preview uses HTTP.
+- The explicitly requested workbase.sbs host and its admin./centro. subdomains are supported via shared config/hosts.ts. Routing, auth host guards and the landing Centro link share these exact names; the previous sslip.io aliases are removed and no arbitrary domain suffix is trusted.
+- Temporary page responses are noindex/nofollow; canonical metadata stays on real domains. Production auth continues to require Secure host-only cookies and the configured BETTER_AUTH_URL origin, so admin login requires HTTPS; the workbase.sbs deployment should use HTTPS on all three hosts.
 - Coolify must register all three names on the same application and configure admin HTTPS plus BETTER_AUTH_URL separately. No remote infrastructure or secrets were changed. See docs/temporary-domains.md.

@@ -80,4 +80,4 @@ See `docs/allergens.md` for the file inventory and validation results.
 
 ## Temporary deployment
 
-The exact requested sslip.io deployment has explicit admin/Centro host aliases. See [temporary domains](temporary-domains.md) for the three Coolify hostnames and BETTER_AUTH_URL setup. Production login still requires HTTPS; Secure cookies and origin checks have not been relaxed.
+The temporary workbase.sbs deployment has explicit admin/Centro host aliases. See [temporary domains](temporary-domains.md) for the three Coolify hostnames and BETTER_AUTH_URL setup. Production login still requires HTTPS; Secure cookies and origin checks have not been relaxed.
