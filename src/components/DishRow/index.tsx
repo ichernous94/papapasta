@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { MenuItem } from '@/types/menu';
-import { centroDishPath } from '@/server/content/centro-dishes';
-import styles from './CentroDishRow.module.scss';
+import { dishPath } from '@/server/content/dishes';
+import styles from './DishRow.module.scss';
 
-type Props = { item: MenuItem; headingLevel?: 'h3' | 'h4' };
-export default function CentroDishRow({ item, headingLevel: Heading = 'h3' }: Props) {
+type Props = { restaurantId: 'papapasta' | 'centro'; item: MenuItem; headingLevel?: 'h3' | 'h4' };
+export default function DishRow({ item, restaurantId, headingLevel: Heading = 'h3' }: Props) {
   if (!item.image) return null;
-  return <Link href={centroDishPath(item)} scroll={false} prefetch={false} className={styles.row} aria-label={`Zobacz danie: ${item.name}`}>
+  return <Link href={dishPath(item)} scroll={false} prefetch={false} className={`${styles.row} ${restaurantId === 'papapasta' ? styles.light : ''}`} aria-label={`Zobacz danie: ${item.name}`}>
     <div className={styles.copy}>
       <div className={styles.heading}>
         <Heading>{item.name}{item.portion && <small> {item.portion}</small>}{item.isNew && <span className={styles.badge}>Nowość</span>}</Heading>

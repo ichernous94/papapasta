@@ -219,3 +219,13 @@ Discuss and document before implementation:
 - Migration `0002_dish_allergens` adds `public.menu_items.allergens` as non-null text[] with an empty default. Shared public types allow absent values for static content; database editor DTOs always carry an array. Server validation rejects unknown IDs and normalizes duplicates into catalog order. An omitted field preserves an existing record; an explicit [] clears it. Existing version locks, role/MFA checks, audit and cache invalidation remain in force.
 - Add/Edit Dish exposes a native checkbox group under Additional details for both restaurants. Recommendations retain separate values. Centro's modal and standalone dish cards render a gold Alergeny block with labelled circular icons below a divider; empty lists render no block and imply no allergen-free claim. Menu/recommendation rows and PapaPasta public rendering are unchanged.
 - Tests and rollout instructions are recorded in `docs/allergens.md`. The working database is not migrated automatically.
+
+
+**Confirmed shared dish cards — 2026-11-04**
+- PapaPasta and Centro use shared `DishRow`, `DishCard`, `DishOverlay`, `server/content/dishes.ts` and `dish-page.ts`. Every resolved dish carries an explicit `restaurantId`; lookup filters that restaurant before matching its stable hash. Metadata/schema origins derive from that identity.
+- Both sites expose `/menu/<name>-<12-character SHA256 ID>`. Renames redirect to the current canonical. Only published items with ready photos receive detail URLs, including independent recommendation records. Existing Centro URLs remain unchanged.
+- PapaPasta opts into a light photo-row/card theme throughout main, autumn, children, wine and recommendation sections. Centro retains its dark theme. Photos use 3:2 rows, right from 600 px and above below 600 px. Categories containing photos use one column; plain-text categories retain their configured columns and markup.
+- Shared allergen icons remain card-only; PapaPasta uses #9A6B2F labels and #c9a579 lines. Empty lists render no section. The existing admin selection and migration 0002 remain unchanged.
+- PapaPasta has its own parallel `@dish` slot with explicit empty `/home` and `/menu` routes, default fallback and intercepted dish route. Its landing `/` remains outside this layout. Direct requests render server pages with canonical/social metadata and MenuItem schema.
+- Root sitemap now uses PapaPasta public pages and its published photo dishes, including recommendations; robots references https://papapasta.pl/sitemap.xml. Centro keeps its separate sitemap.
+- No database schema, environment, R2 objects or deployment changes are part of this extension. See `docs/papapasta-photo-menu.md` for validation and file inventory.

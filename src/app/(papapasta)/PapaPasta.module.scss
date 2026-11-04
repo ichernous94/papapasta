@@ -16,3 +16,5 @@
     --button-font-size: 0.8125rem;
   }
 }
+
+.headerFallback { block-size: var(--header-height, 120px); }

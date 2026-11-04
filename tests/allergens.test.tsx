@@ -7,8 +7,8 @@ import { ALLERGENS, ALLERGEN_IDS } from '../src/config/allergens';
 import { allergensSchema, itemInputSchema } from '../src/validation/admin';
 import AllergenList from '../src/components/AllergenList';
 import AllergenPicker from '../src/components/Admin/AllergenPicker';
-import CentroDishCard from '../src/components/CentroDishCard';
-import { listCentroDishes } from '../src/server/content/centro-dishes';
+import DishCard from '../src/components/DishCard';
+import { listDishes as listRestaurantDishes } from '../src/server/content/dishes';
 import type { EditorMenu, EditorItem } from '../src/types/admin';
 
 const item:EditorItem={ id:'centro:main:test',groupId:'group',name:'Test dish',portion:'230 g',price:'55',description:['Description'],visible:true,isNew:false,imageId:null,imageAlt:'',sortOrder:0,allergens:['milk','gluten','nuts'],image:{src:'/images/centro/grilled-chicken-dish.jpg',width:1200,height:800,blurDataURL:'data:image/gif;base64,R0lGODlhAQABAAAAACw=',alt:'Dish'} };
@@ -48,11 +48,13 @@ test('Admin picker restores checked selections and submits an explicit empty lis
 });
 
 test('Modal and standalone dish cards share allergen presentation; empty cards hide it',()=>{
-  const dish=listCentroDishes([menu])[0];
+  const dish=listDishes([menu])[0];
   for(const modal of [true,false]){
-    const html=renderToStaticMarkup(<CentroDishCard dish={dish} modal={modal}/>);
+    const html=renderToStaticMarkup(<DishCard dish={dish} modal={modal}/>);
     assert.ok(html.includes('Alergeny:'));
     assert.ok(html.includes('Mleko'));
-    assert.ok(!renderToStaticMarkup(<CentroDishCard dish={{...dish,allergens:[]}} modal={modal}/>).includes('Alergeny:'));
+    assert.ok(!renderToStaticMarkup(<DishCard dish={{...dish,allergens:[]}} modal={modal}/>).includes('Alergeny:'));
   }
 });
+
+function listDishes(menus: Parameters<typeof listRestaurantDishes>[0]) { return listRestaurantDishes(menus, 'centro'); }

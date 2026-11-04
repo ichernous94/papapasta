@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import styles from './MenuTabs.module.scss';
 
 type MenuTab = { id: string; label: string; content: ReactNode };
-type MenuTabsProps = { label: string; tabs: readonly MenuTab[]; variant?: 'default' | 'centro' };
+type MenuTabsProps = { label: string; tabs: readonly MenuTab[]; variant?: 'default' | 'centro' | 'papapasta' };
 
 function revealTab(list: HTMLDivElement, index: number, focus = false) {
   const tab = list.querySelectorAll<HTMLButtonElement>('[role="tab"]')[index];
@@ -37,7 +37,7 @@ export default function MenuTabs({ label, tabs, variant = 'default' }: MenuTabsP
   };
 
   return (
-    <div className={[styles.tabs, variant === 'centro' ? styles.centro : ''].filter(Boolean).join(' ')}>
+    <div className={[styles.tabs, variant === 'default' ? '' : styles[variant]].filter(Boolean).join(' ')}>
       <div ref={listRef} className={styles.tablist} role="tablist" aria-label={label}>
         {tabs.map((tab, index) => (
           <button

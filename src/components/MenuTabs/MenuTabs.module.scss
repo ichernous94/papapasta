@@ -34,3 +34,11 @@
   button { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
   button[aria-selected='true'] { border-block-end-color: theme.$colorGoldText; }
 }
+
+.papapasta .tablist {
+  border-block-end: 1px solid #e5e5e5;
+  padding-block-end: 0;
+  button { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
+  button[aria-selected='true'] { color: #9A6B2F; border-block-end-color: #c9a579; }
+  button:hover { color: #9A6B2F; }
+}

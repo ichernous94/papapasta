@@ -28,12 +28,12 @@ async function MenuContent() {
       <ImageBanner image={steakAndSides} title={section('main').title} subtitle={section('main').subtitle} headingLevel="h1" preload />
       <Container size="text" className={styles.intro}>{papaPastaCopy.dishes.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</Container>
       <Container as="section" className={styles.menuSection} aria-label="Menu główne">
-        <MenuTabs label="Kategorie menu" tabs={mainMenu.map((category) => ({
+        <MenuTabs variant="papapasta" label="Kategorie menu" tabs={mainMenu.map((category) => ({
           id: category.id,
           label: category.label,
           content: <>
             {category.note && <p className={styles.note}>{category.note}</p>}
-            <MenuList groups={category.groups} columns={category.columns} columnBreak={category.columnBreak} />
+            <MenuList variant="papapasta" groups={category.groups} columns={category.columns} columnBreak={category.columnBreak} />
           </>,
         }))} />
         <div className={styles.actions}>
@@ -42,15 +42,15 @@ async function MenuContent() {
         </div>
       </Container>
       <ImageBanner image={autumnMenuImage} title={section('autumn').title} subtitle={section('autumn').subtitle} />
-      <Container as="section" className={styles.menuSection} aria-label="Menu jesienne"><MenuList groups={autumnMenu} /></Container>
+      <Container as="section" className={styles.menuSection} aria-label="Menu jesienne"><MenuList variant="papapasta" groups={autumnMenu} /></Container>
       <ImageBanner image={kidsMenuImage} title={section('kids').title} subtitle={section('kids').subtitle} variant="kids" />
-      <Container as="section" className={styles.menuSection} aria-label="Menu bambini"><MenuList groups={kidsMenu} /></Container>
+      <Container as="section" className={styles.menuSection} aria-label="Menu bambini"><MenuList variant="papapasta" groups={kidsMenu} /></Container>
       <ImageBanner id="kartawin" image={wineCellar} title={section('wine').title} subtitle={section('wine').subtitle} />
       <Container as="section" className={styles.menuSection} aria-label="Wino i inne alkohole">
-        <MenuTabs label="Kategorie win i piw" tabs={wineMenu.map((category) => ({
+        <MenuTabs variant="papapasta" label="Kategorie win i piw" tabs={wineMenu.map((category) => ({
           id: category.id,
           label: category.label,
-          content: <MenuList groups={category.groups} />,
+          content: <MenuList variant="papapasta" groups={category.groups} />,
         }))} />
       </Container>
       <Gallery images={galleryImages} />

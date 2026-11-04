@@ -36,3 +36,5 @@ No dependencies, database schema, real bucket contents, secrets or deployment co
 ## Using the feature
 
 Upload an image to the relevant Centro dish through Add/Edit Dish in the admin panel. The new layout and detail URL appear automatically after saving. Recommendations are separate records: upload their images independently. Removing an image restores that item's text-only presentation and removes its detail URL from the current sitemap. No new migration is needed for this feature.
+
+Shared implementation update (2026-11-04): Centro dish components and server helpers were moved to `DishRow`, `DishCard`, `DishOverlay`, `server/content/dishes.ts` and `dish-page.ts` when adding the PapaPasta light theme. See [PapaPasta photo menu](papapasta-photo-menu.md); historical verification above remains unchanged.

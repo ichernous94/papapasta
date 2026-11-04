@@ -1,15 +1,15 @@
 import { Suspense } from 'react';
-import CentroDishCard from '@/components/CentroDishCard';
-import CentroDishOverlay from '@/components/CentroDishOverlay';
-import { requireCentroDish } from '@/server/content/centro-dish-page';
-import { centroDishMetadata } from '@/server/content/centro-dishes';
+import DishCard from '@/components/DishCard';
+import DishOverlay from '@/components/DishOverlay';
+import { requireDish } from '@/server/content/dish-page';
+import { dishMetadata } from '@/server/content/dishes';
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
-  return centroDishMetadata(await requireCentroDish((await params).slug));
+  return dishMetadata(await requireDish('centro', (await params).slug));
 }
 async function Content({ params }: Props) {
-  const dish = await requireCentroDish((await params).slug);
-  return <CentroDishOverlay><CentroDishCard dish={dish} modal/></CentroDishOverlay>;
+  const dish = await requireDish('centro', (await params).slug);
+  return <DishOverlay restaurantId="centro"><DishCard dish={dish} modal/></DishOverlay>;
 }
 export default function DishModal(props: Props) {
   return <Suspense fallback={null}><Content {...props}/></Suspense>;

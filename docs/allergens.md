@@ -38,3 +38,5 @@ No dependencies, working data, R2 objects, credentials or environment configurat
 4. Open Add/Edit Dish → Additional details → Allergens, save a selection and verify the Centro card. Existing dishes start with no assigned categories until an administrator updates them. No seed run is needed.
 
 Catalog reference: https://food.ec.europa.eu/food-safety/campaign-2026/allergies_en
+
+Shared implementation update (2026-11-04): Centro dish components and server helpers were moved to `DishRow`, `DishCard`, `DishOverlay`, `server/content/dishes.ts` and `dish-page.ts` when adding the PapaPasta light theme. See [PapaPasta photo menu](papapasta-photo-menu.md); historical verification above remains unchanged.

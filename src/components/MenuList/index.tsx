@@ -1,19 +1,19 @@
-import CentroDishRow from '@/components/CentroDishRow';
+import DishRow from '@/components/DishRow';
 import DishPhoto from '@/components/DishPhoto';
 import type { MenuGroup } from '@/types/menu';
 import styles from './MenuList.module.scss';
 
-type MenuListProps = { groups: readonly MenuGroup[]; columns?: 2; columnBreak?: number; variant?: 'default' | 'centro' };
+type MenuListProps = { groups: readonly MenuGroup[]; columns?: 2; columnBreak?: number; variant?: 'default' | 'centro' | 'papapasta' };
 
 function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) {
   return groups.map((group) => (
     <div key={group.id} className={styles.group}>
       {group.title && <h3 className={styles.groupTitle}>{group.title}</h3>}
       {group.note && <p className={styles.note}>{group.note}</p>}
-      <ul className={[styles.list, variant === 'centro' && group.items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
+      <ul className={[styles.list, variant !== 'default' && group.items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
         {group.items.map((item) => {
           const Heading = group.title ? 'h4' : 'h3';
-          if (variant === 'centro' && item.image) return <li key={item.id}><CentroDishRow item={item} headingLevel={Heading}/></li>;
+          if (variant !== 'default' && item.image) return <li key={item.id}><DishRow restaurantId={variant === 'papapasta' ? 'papapasta' : 'centro'} item={item} headingLevel={Heading}/></li>;
           return (
             <li key={item.id} className={styles.item}>
               {item.image && <DishPhoto image={item.image} />}
@@ -38,7 +38,7 @@ function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) 
 }
 
 export default function MenuList({ groups, columns, columnBreak = 1, variant = 'default' }: MenuListProps) {
-  const hasPhotos = variant === 'centro' && groups.some(group => group.items.some(item => item.image));
+  const hasPhotos = variant !== 'default' && groups.some(group => group.items.some(item => item.image));
   return columns === 2 && !hasPhotos ? (
     <div className={styles.columns}>
       <div><Groups groups={groups.slice(0, columnBreak)} variant={variant} /></div>

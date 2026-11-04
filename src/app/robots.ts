@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         '/404.html',
       ],
     },
-    sitemap: 'https://chertezhi.online/sitemap.xml',
+    sitemap: 'https://papapasta.pl/sitemap.xml',
   };
 }

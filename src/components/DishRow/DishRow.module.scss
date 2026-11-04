@@ -30,8 +30,8 @@
   background: #0b2828;
   img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; transition: transform 450ms ease; }
 }
-.badge { display: inline-block; margin-inline-start: 0.5rem; font-size: 0.75em; font-weight: 400; color: theme.$colorGoldText; }
-@media (hover: hover) { .row:hover .photo img { transform: scale(1.035); } .row:hover h3, .row:hover h4 { color: theme.$colorGoldText; } }
+.badge { display: inline-block; margin-inline-start: 0.5rem; font-size: 0.75em; font-weight: 400; color: var(--dish-accent, #{theme.$colorGoldText}); }
+@media (hover: hover) { .row:hover .photo img { transform: scale(1.035); } .row:hover h3, .row:hover h4 { color: var(--dish-accent, #{theme.$colorGoldText}); } }
 @media (min-width: 600px) and (max-width: 1023px) {
   .row { grid-template-columns: minmax(0, 1fr) minmax(9rem, 28%); gap: 1.25rem; }
 }
@@ -42,3 +42,5 @@
   .price { font-size: 1.875rem; }
 }
 @media (prefers-reduced-motion: reduce) { .photo img { transition: none; } }
+
+.light { --site-text: #1e2128; --site-muted: #51545a; --site-divider: #c9c9c9; --dish-accent: #9A6B2F; --allergen-accent: #9A6B2F; --allergen-divider: #c9a579; }

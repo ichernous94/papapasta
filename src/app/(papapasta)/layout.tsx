@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,11 +7,12 @@ import styles from './PapaPasta.module.scss';
 
 export const metadata: Metadata = papaPastaMetadata;
 
-export default function PapaPastaLayout({ children }: { children: React.ReactNode }) {
+export default function PapaPastaLayout({ children, dish }: { children: React.ReactNode; dish: React.ReactNode }) {
   return (
     <div className={styles.site}>
-      <Header />
+      <Suspense fallback={<div className={styles.headerFallback} aria-hidden="true"/>}><Header /></Suspense>
       <main>{children}</main>
+      {dish}
       <Footer />
     </div>
   );

@@ -1,4 +1,4 @@
-import CentroDishRow from '@/components/CentroDishRow';
+import DishRow from '@/components/DishRow';
 import DishPhoto from '@/components/DishPhoto';
 import Container from '@/components/ui/Container';
 import Reveal from '@/components/ui/Reveal';
@@ -12,8 +12,8 @@ export default function Recommendations({ items, title = 'Z CAŁEGO SERCA', subt
       <Container className={styles.content}>
         <Reveal as="h2" id="recommendations-title">{title}</Reveal>
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-        <ul className={[styles.list, restaurantId === 'centro' && items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
-          {items.map((item) => restaurantId === 'centro' && item.image ? <li key={item.id}><CentroDishRow item={{ ...item, price: String(item.price), portion: item.weight, description: item.description ? item.description.split('\n') : [] }}/></li> : (
+        <ul className={[styles.list, restaurantId && items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
+          {items.map((item) => restaurantId && item.image ? <li key={item.id}><DishRow restaurantId={restaurantId} item={{ ...item, price: String(item.price), portion: item.weight, description: item.description ? item.description.split('\n') : [] }}/></li> : (
             <li key={item.id} className={styles.item}>
               {item.image && <DishPhoto image={item.image} />}
               <div className={styles.itemHeading}>

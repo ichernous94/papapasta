@@ -18,7 +18,7 @@ import styles from './Header.module.scss';
 
 export default function Header({ site = papaPastaSite }: { site?: RestaurantConfig }) {
   const pathname = restaurantPath(usePathname());
-  const navigationPathname = site.id === 'centro' && pathname.startsWith('/menu/') ? '/menu' : pathname;
+  const navigationPathname = pathname.startsWith('/menu/') ? '/menu' : pathname;
   const menuId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
