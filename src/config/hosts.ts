@@ -1,5 +1,5 @@
-// Explicit temporary deployment only; never trust arbitrary *.sslip.io hostnames.
-export const temporarySiteHost = 'fwos8o44go04wg8gc4cwsows.178.104.181.157.sslip.io';
+// Explicit temporary deployment only; only the exact configured hosts are trusted.
+export const temporarySiteHost = 'workbase.sbs';
 export const temporaryAdminHost = `admin.${temporarySiteHost}`;
 export const temporaryCentroHost = `centro.${temporarySiteHost}`;
 
