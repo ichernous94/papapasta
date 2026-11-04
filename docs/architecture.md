@@ -229,3 +229,11 @@ Discuss and document before implementation:
 - PapaPasta has its own parallel `@dish` slot with explicit empty `/home` and `/menu` routes, default fallback and intercepted dish route. Its landing `/` remains outside this layout. Direct requests render server pages with canonical/social metadata and MenuItem schema.
 - Root sitemap now uses PapaPasta public pages and its published photo dishes, including recommendations; robots references https://papapasta.pl/sitemap.xml. Centro keeps its separate sitemap.
 - No database schema, environment, R2 objects or deployment changes are part of this extension. See `docs/papapasta-photo-menu.md` for validation and file inventory.
+
+
+**Confirmed incremental menu loading — 2026-11-04**
+- Both menu pages now render static banner images, introduction, ordering links and galleries outside data Suspense. Each section uses shared `DatabaseMenuSection` with `MenuSkeleton`, while `MenuBanner` streams the saved title/subtitle over versioned initial heading copy. Existing main/wine tabs and section layout remain unchanged after loading.
+- `publicMenuState` deduplicates the load result per restaurant/render with React cache while retaining `publicMenus` and its existing persistent cache/tag invalidation. Recoverable read failures are converted outside the persistent cache; Next control-flow exceptions are rethrown. Public section selection explicitly filters restaurant and key.
+- Missing/empty/hidden-only sections render a Polish unavailable message; empty recommendations render their own message. Read errors render a local message and an explicit retry button using one router.refresh transition. No polling, browser API endpoint or automatic refresh loop is introduced. Static seed dishes are never served as fallback.
+- Recommendation frames and heading fallbacks render immediately on both home pages; their lists use three-row skeletons, and saved headings still replace fallback copy. Menu skeletons use four rows, optional decorative tabs, light/dark themes and 3:2 photo placeholders; photos move above text below 600 px. Reduced-motion users get static placeholders.
+- No schema, working DB, R2, auth or deployment changes. Verification and inventory are in `docs/menu-loading.md`.

@@ -1,0 +1,41 @@
+.skeleton {
+  --skeleton-fill: #dedede;
+  --skeleton-strong: #c9c9c9;
+  --skeleton-line: #d2d2d2;
+  --skeleton-accent: #c9a579;
+  min-inline-size: 0;
+  text-align: start;
+  &[data-restaurant='centro'] {
+    --skeleton-fill: #264443;
+    --skeleton-strong: #395653;
+    --skeleton-line: #536665;
+    --skeleton-accent: #d7bb91;
+  }
+}
+.tabs {
+  display: flex;
+  overflow: hidden;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding-block: 0.75rem 1.25rem;
+  margin-block-end: 1rem;
+  border-block-end: 1px solid var(--skeleton-line);
+  span { position: relative; flex: 1 0 4rem; block-size: 0.875rem; border-radius: 0.25rem; background: var(--skeleton-fill); }
+  span:first-child { background: var(--skeleton-accent); &::after { content: ''; position: absolute; inset-inline: -0.5rem; inset-block-end: -1.25rem; block-size: 2px; background: var(--skeleton-accent); } }
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 30%);
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding-block: clamp(1.25rem, 2.5vw, 2rem);
+  border-block-end: 1px dotted var(--skeleton-line);
+}
+.copy { min-inline-size: 0; }
+.heading { display: flex; justify-content: space-between; gap: 1rem; margin-block-end: 1.25rem; span { block-size: 1.4rem; inline-size: 55%; border-radius: 0.4rem; background: var(--skeleton-strong); } span:last-child { inline-size: 3rem; flex-shrink: 0; } }
+.lines { display: grid; gap: 0.65rem; span { inline-size: 80%; block-size: 0.8rem; border-radius: 0.3rem; background: var(--skeleton-fill); } span:nth-child(2) { inline-size: 85%; } span:last-child { inline-size: 60%; } }
+.photo { display: grid; place-items: center; position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: clamp(0.875rem, 1.5vw, 1.25rem); background: var(--skeleton-strong); svg { inline-size: 3rem; stroke: var(--site-surface, #fff); stroke-width: 2; opacity: 0.7; } }
+.visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (min-width: 600px) and (max-width: 1023px) { .row { grid-template-columns: minmax(0, 1fr) minmax(9rem, 28%); gap: 1.25rem; } }
+@media (max-width: 599px) { .row { grid-template-columns: minmax(0, 1fr); gap: 1rem; } .photo { grid-row: 1; } .heading { margin-block-end: 0.875rem; } }
+@media (prefers-reduced-motion: no-preference) { .photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 20%, #ffffff20 50%, transparent 80%); transform: translateX(-100%); animation: shimmer 1.8s ease-in-out infinite; } }
+@keyframes shimmer { to { transform: translateX(100%); } }
