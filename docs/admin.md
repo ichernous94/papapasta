@@ -34,7 +34,7 @@ Dish fields preserve name, portion, display-string price, description paragraphs
 
 Arrows and drag-and-drop reorder only the full selected group. Search disables reorder. Deleting a nonempty group/category is rejected until its contents have been moved or deleted. Category editing preserves note/column-count/column-break settings. The action beside the section selector edits its heading/subtitle.
 
-Saves lock menu rows, compare versions, update content/version and `public.audit_log` together, then invalidate restaurant cache tags. Cross-section transfers lock both sections in stable ID order and check both versions. Stale writes return a conflict without overwriting another editor. Public menus read PostgreSQL with no static-price fallback. Existing open public tabs do not refresh automatically.
+Saves lock menu rows, compare versions, update content/version and `public.audit_log` together, then invalidate restaurant cache tags and the affected home, menu, dish and sitemap paths. Cross-section transfers lock both sections in stable ID order and check both versions; cross-restaurant transfers invalidate both restaurants. Stale writes return a conflict without overwriting another editor. Public menus read PostgreSQL after request-time `connection()`, outside the tagged cache boundary, with no static-price fallback or build-time database requirement. Existing open public tabs do not refresh automatically. See [public menu freshness](content-refresh.md) for verification and the one-time redeploy requirement.
 
 Contacts, banners, galleries, promotions and the PNG cocktail book remain outside the editor.
 
