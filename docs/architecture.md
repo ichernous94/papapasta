@@ -252,3 +252,9 @@ Discuss and document before implementation:
 - Existing records need no migration, and no new files are stored in R2. TOTP/auth QR rendering is unchanged. Validation, decoding evidence and inventory: docs/restaurant-qr-logos.md.
 
 - QR cards use three columns at 1200 px and above, two from 768–1199 px, and one below 768 px. Container queries select 104/120 px thumbnails. Open/Download/Delete are accessible 40×40 icon actions below an ellipsized URL; long headings wrap, and all actions stay inside the card. Updated layout and PNG decoding checks are documented in docs/restaurant-qr-logos.md.
+
+
+**Confirmed production build repair — 2026-11-04**
+- Removed global Sass additionalData injection: imports belong to each entrypoint/module, including explicit variables in styles/index.scss. Legacy CookiePolicy/Cookie/GoTopBtn use the existing toRem helper and defined palette values; Cookie Policy remains available.
+- The nonfunctional Sfora shop `/products/[id]` route now returns 404 with no foreign API request or product metadata. Its obsolete layout/stylesheet and unreferenced HeaderActions/Dropdown shop components were removed. No restaurant route or administration functionality was removed.
+- Full default Turbopack production build, all 36 generated static pages, tsc --noEmit and 31 targeted tests pass. Production HTTP checks passed for both restaurant hosts, admin login, sitemap, Cookie Policy and legacy product 404. Earlier reported build/type blockers are resolved; details and deployment instructions are in docs/production-build-fix.md.

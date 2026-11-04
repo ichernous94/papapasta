@@ -1,21 +1,20 @@
-@use "sass:math";
-@import "../../../styles/helpers/variables";
-@import "../../../styles/helpers/mixins";
+@use "../../../styles/helpers/variables" as *;
+@use "../../../styles/helpers/mixins" as mixins;
 
 .cookiePolicy {
-  max-width: rem(900);
-  padding: calc(rem(15) + (25 - 15) * ((100vw - rem(320)) / (1440 - 320))) rem(15);
+  max-width: mixins.toRem(900);
+  padding: calc(mixins.toRem(15) + (25 - 15) * ((100vw - mixins.toRem(320)) / (1440 - 320))) mixins.toRem(15);
   margin: 0 auto;
   animation: pageAnimation .75s ease-in-out;
 
   &__header {
-    padding: rem(15) rem(0);
-    border-top: rem(2) solid black;
-    border-bottom: rem(2) solid black;
-    margin-bottom: rem(30);
+    padding: mixins.toRem(15) mixins.toRem(0);
+    border-top: mixins.toRem(2) solid black;
+    border-bottom: mixins.toRem(2) solid black;
+    margin-bottom: mixins.toRem(30);
 
     .title {
-      font-size: calc(rem(16) + (32 - 16) * ((100vw - rem(320)) / (1440 - 320)));
+      font-size: calc(mixins.toRem(16) + (32 - 16) * ((100vw - mixins.toRem(320)) / (1440 - 320)));
       font-weight: 500;
       line-height: 150%;
       text-transform: uppercase;
@@ -24,24 +23,24 @@
   }
 
   &__subtitle {
-    font-size: calc(rem(14) + (16 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+    font-size: calc(mixins.toRem(14) + (16 - 14) * ((100vw - mixins.toRem(320)) / (1440 - 320)));
     font-weight: 600;
     line-height: 150%;
     text-transform: uppercase;
-    margin: rem(15) 0;
+    margin: mixins.toRem(15) 0;
   }
 
   &__text {
-    font-size: calc(rem(14) + (16 - 14) * ((100vw - rem(320)) / (1440 - 320)));
+    font-size: calc(mixins.toRem(14) + (16 - 14) * ((100vw - mixins.toRem(320)) / (1440 - 320)));
     line-height: 150%;
-    margin-bottom: rem(10);
+    margin-bottom: mixins.toRem(10);
   }
 
   & a {
     transition: color $transitionMain;
 
     &:hover {
-      color: $colorGreen;
+      color: $colorGold;
     }
   }
 }

@@ -1,20 +1,19 @@
-@use "sass:math";
-@import "../../../styles/helpers/variables";
-@import "../../../styles/helpers/mixins";
+@use "../../../styles/helpers/variables" as *;
+@use "../../../styles/helpers/mixins" as mixins;
 
 .goTopBtn {
   position: fixed;
   z-index: 999;
-  right: rem(15);
-  bottom: rem(15);
+  right: mixins.toRem(15);
+  bottom: mixins.toRem(15);
   display: flex;
   justify-content: center;
   align-items: center;
-  width: calc(rem(30) + (40 - 30) * ((100vw - rem(320)) / (1440 - 320)));
-  height: calc(rem(30) + (40 - 30) * ((100vw - rem(320)) / (1440 - 320)));
-  color: $colorWhite;
+  width: calc(mixins.toRem(30) + (40 - 30) * ((100vw - mixins.toRem(320)) / (1440 - 320)));
+  height: calc(mixins.toRem(30) + (40 - 30) * ((100vw - mixins.toRem(320)) / (1440 - 320)));
+  color: $colorBgWhite;
   background-color: $colorGrey;
-  box-shadow: $colorShadowLight;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   border-radius: 50%;
   opacity: 0;
   visibility: hidden;
@@ -23,7 +22,7 @@
   will-change: background-color, opacity, visibility, transform;
 
   &:hover {
-    background-color: $colorGreyHover;
+    background-color: #62645f;
   }
 }
 
