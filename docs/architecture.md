@@ -237,3 +237,10 @@ Discuss and document before implementation:
 - Missing/empty/hidden-only sections render a Polish unavailable message; empty recommendations render their own message. Read errors render a local message and an explicit retry button using one router.refresh transition. No polling, browser API endpoint or automatic refresh loop is introduced. Static seed dishes are never served as fallback.
 - Recommendation frames and heading fallbacks render immediately on both home pages; their lists use three-row skeletons, and saved headings still replace fallback copy. Menu skeletons use four rows, optional decorative tabs, light/dark themes and 3:2 photo placeholders; photos move above text below 600 px. Reduced-motion users get static placeholders.
 - No schema, working DB, R2, auth or deployment changes. Verification and inventory are in `docs/menu-loading.md`.
+
+
+**Confirmed Centro promotional popup — 2026-11-04**
+- Centro's persistent layout mounts `PromotionalPopup`, opening the existing native Modal on hydration for direct visits to any Centro page. A component-local useState keeps dismissal through internal navigation/Back/Forward; a fresh document or reload shows the promotion again. PapaPasta, landing and admin do not mount it. No storage/cookie or menu-data dependency is introduced.
+- The supplied vertical promotional-image.jpg is shown whole, with a gold frame and blurred dark backdrop, without added visual copy or CTA. Normal viewports fit the image within 16 px margins and 680 px maximum width; short viewports allow internal scrolling with a sticky close control. A hidden transcript supplies the poster's text alternative.
+- Existing close/Escape/backdrop, scroll-lock and reduced-motion behavior is reused. Modal accepts an optional keyboard callback used only by this single-control popup to retain Tab/Shift+Tab on its close button; other consumers' behavior remains unchanged.
+- No schema, working DB, R2, environment or deployment changes. See `docs/centro-promotional-popup.md` for tests and changed files.

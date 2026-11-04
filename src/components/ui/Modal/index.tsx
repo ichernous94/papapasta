@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties, type KeyboardEventHandler, type ReactNode } from 'react';
 import { IoCloseOutline } from 'react-icons/io5';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
 import useExitPresence from '@/hooks/useExitPresence';
@@ -15,9 +15,10 @@ type ModalProps = {
   className?: string;
   animationDuration?: number;
   closeLabel?: string;
+  onKeyDown?: KeyboardEventHandler<HTMLDialogElement>;
 };
 
-export default function Modal({ open, onClose, labelledBy, children, className, animationDuration = 280, closeLabel = 'Zamknij okno' }: ModalProps) {
+export default function Modal({ open, onClose, labelledBy, children, className, animationDuration = 280, closeLabel = 'Zamknij okno', onKeyDown }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const reducedMotion = useReducedMotion();
   const present = useExitPresence(open, reducedMotion ? 0 : animationDuration);
@@ -47,6 +48,7 @@ export default function Modal({ open, onClose, labelledBy, children, className, 
       data-state={open ? 'open' : 'closing'}
       style={{ '--modal-duration': `${animationDuration}ms` } as CSSProperties}
       onCancel={(event) => { event.preventDefault(); onClose(); }}
+      onKeyDown={onKeyDown}
       onClick={(event) => {
         if (event.target !== event.currentTarget) return;
         const rect = event.currentTarget.getBoundingClientRect();

@@ -1,0 +1,32 @@
+.dialog {
+  --modal-width: min(680px, calc((100svh - 36px) * 2079 / 2954));
+  --modal-padding: 0;
+  --modal-surface: #00191b;
+  --modal-color: #fff;
+  --modal-backdrop: #001311b8;
+  border: 2px solid #c9a579;
+  border-radius: clamp(1rem, 2.5vw, 1.75rem);
+  box-shadow: 0 20px 80px #0008;
+  scrollbar-width: thin;
+  scrollbar-color: #c9a579 #00191b;
+  &::backdrop { backdrop-filter: blur(7px); }
+  > button {
+    position: sticky;
+    float: inline-end;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.5rem;
+    margin-inline-end: 0.5rem;
+    margin-block-end: -44px;
+    inline-size: 44px;
+    block-size: 44px;
+    border-radius: 50%;
+    background: #00191be6;
+    color: #fff;
+    font-size: 2rem;
+    &:hover { background: #00191b; }
+    &:focus-visible { outline-offset: -4px; }
+  }
+}
+.poster { display: block; inline-size: 100%; block-size: auto; }
+.transcript { position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-height: 499px) { .dialog { --modal-width: 480px; } }
