@@ -4,10 +4,10 @@ import { and, eq, sql } from 'drizzle-orm';
 import { ZodError } from 'zod';
 import { requireEditor } from '@/server/auth/guards';
 import { getDb } from '@/server/db';
-import { mediaAssets, items } from '@/server/db/schema';
+import { mediaAssets, items, menus } from '@/server/db/schema';
 import { prepareUpload } from '@/server/media/upload';
 import { saveItem, moveItem, saveStructure, changeContent, ContentError } from './write';
-import { itemInputSchema } from '@/validation/admin';
+import { itemInputSchema, structureInputSchema } from '@/validation/admin';
 import { readMenus } from './read';
 import { invalidateRestaurantContent } from './invalidation';
 const message = (error: unknown) => error instanceof ContentError ? error.message : error instanceof ZodError ? 'Check the form fields' : 'Could not save changes. Try again.';
@@ -40,7 +40,7 @@ export async function saveItemAction(raw: unknown, form: FormData) {
     }
     catch (error) {
         if (uploadId)
-            await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql `not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`));
+            await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql `not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${uploadId})`));
         unstable_rethrow(error);
         return { error: message(error) };
     }
@@ -57,14 +57,24 @@ export async function moveItemAction(raw: unknown) {
         return { error: message(error) };
     }
 }
-export async function saveStructureAction(raw: unknown) {
+export async function saveStructureAction(raw: unknown, form?: FormData) {
     const { user } = await requireEditor();
+    let uploadId: string | undefined;
     try {
-        const restaurant = await saveStructure(getDb(), user.id, raw);
+        const input = structureInputSchema.parse(raw);
+        const file = form?.get('image');
+        if (file instanceof File && file.size) {
+            if (input.kind !== 'menu') return { error: 'Only menu sections have banners' };
+            try { uploadId = await prepareUpload(file, user.id); }
+            catch (error) { return { error: error instanceof Error ? error.message : 'Upload failed' }; }
+        }
+        await requireEditor();
+        const restaurant = await saveStructure(getDb(), user.id, input, uploadId);
         invalidateRestaurantContent([restaurant]);
         return { menus: await readMenus(getDb()) };
     }
     catch (error) {
+        if (uploadId) await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${uploadId})`));
         unstable_rethrow(error);
         return { error: message(error) };
     }

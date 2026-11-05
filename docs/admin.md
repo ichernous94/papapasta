@@ -36,7 +36,7 @@ Arrows and drag-and-drop reorder only the full selected group. Search disables r
 
 Saves lock menu rows, compare versions, update content/version and `public.audit_log` together, then invalidate restaurant cache tags and the affected home, menu, dish and sitemap paths. Cross-section transfers lock both sections in stable ID order and check both versions; cross-restaurant transfers invalidate both restaurants. Stale writes return a conflict without overwriting another editor. Public menus read PostgreSQL after request-time `connection()`, outside the tagged cache boundary, with no static-price fallback or build-time database requirement. Existing open public tabs do not refresh automatically. See [public menu freshness](content-refresh.md) for verification and the one-time redeploy requirement.
 
-Contacts, banners, galleries, promotions and the PNG cocktail book remain outside the editor.
+Menu-section banners can be uploaded, replaced or reset in Edit menu section. Additional sections can be permanently deleted with their contents after a counted confirmation; main and recommendations remain protected. Contacts, galleries, promotional posters and the PNG cocktail book remain outside the editor. See [mobile menu and sections](mobile-menu-sections.md).
 
 ## Cloudflare R2
 
@@ -46,7 +46,7 @@ Uploads accept static JPEG/PNG/WebP, at most 5 MB and 25 megapixels. Sharp valid
 
 The previous image remains until upload and database attachment succeed. Failure preserves form details. Replaced/deleted images are marked orphan only when no item references them. Without R2, text editing remains available and upload controls explain unavailability.
 
-`pnpm media:cleanup` reports unreferenced pending/orphan objects older than one day. `pnpm media:cleanup --apply` deletes only such application objects from R2 and PostgreSQL. Scheduling is not configured automatically.
+`pnpm media:cleanup` reports pending/orphan objects not referenced by dishes or menu banners older than one day. `pnpm media:cleanup --apply` deletes only such application objects from R2 and PostgreSQL. Scheduling is not configured automatically.
 
 ## QR Codes
 
@@ -78,6 +78,6 @@ In Add/Edit Dish, expand Additional details and select all applicable Allergens.
 
 See `docs/allergens.md` for the file inventory and validation results.
 
-## Temporary deployment
+## Section banner migration
 
-The temporary workbase.sbs deployment has explicit admin/Centro host aliases. See [temporary domains](temporary-domains.md) for the three Coolify hostnames and BETTER_AUTH_URL setup. Production login still requires HTTPS; Secure cookies and origin checks have not been relaxed.
+After a backup, apply `0003_menu_banners` with `pnpm db:migrate` before starting this version. The nullable banner link preserves existing section data and default images. Deletion is available only through an explicit admin action; the migration deletes no content.

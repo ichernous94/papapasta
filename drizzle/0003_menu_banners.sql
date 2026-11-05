@@ -1,0 +1,2 @@
+ALTER TABLE "menus" ADD COLUMN "banner_image_id" uuid;--> statement-breakpoint
+ALTER TABLE "menus" ADD CONSTRAINT "menus_banner_image_id_media_assets_id_fk" FOREIGN KEY ("banner_image_id") REFERENCES "public"."media_assets"("id") ON DELETE no action ON UPDATE no action;

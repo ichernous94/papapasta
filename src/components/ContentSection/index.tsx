@@ -1,4 +1,5 @@
-import Image, { type StaticImageData } from 'next/image';
+import type { StaticImageData } from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import type { ReactNode } from 'react';
 import Reveal from '@/components/ui/Reveal';
 import styles from './ContentSection.module.scss';

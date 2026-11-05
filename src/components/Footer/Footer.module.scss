@@ -2,7 +2,7 @@
 @use '../../styles/helpers/mixins' as mixins;
 
 .footer {
-  background-color: var(--site-surface, #{theme.$colorBgWhite});
+  background-color: var(--site-section-surface, var(--site-surface, #{theme.$colorBgWhite}));
   color: var(--site-text, #{theme.$colorFont});
   font-size: clamp(mixins.toRem(15), 1.1vw, mixins.toRem(16));
   line-height: 1.65;

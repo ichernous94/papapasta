@@ -1,3 +1,4 @@
+import MenuPrice from '@/components/MenuPrice';
 import DishRow from '@/components/DishRow';
 import DishPhoto from '@/components/DishPhoto';
 import type { MenuGroup } from '@/types/menu';
@@ -24,7 +25,7 @@ function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) 
                 </Heading>
                 {item.price && <>
                   <span className={styles.leader} aria-hidden="true" />
-                  <span className={styles.price}>{item.price}</span>
+                  <span className={styles.price}><MenuPrice value={item.price}/></span>
                 </>}
               </div>
               {item.description?.map((line, index) => <p key={index} className={styles.description}>{line}</p>)}
@@ -40,9 +41,9 @@ function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) 
 export default function MenuList({ groups, columns, columnBreak = 1, variant = 'default' }: MenuListProps) {
   const hasPhotos = variant !== 'default' && groups.some(group => group.items.some(item => item.image));
   return columns === 2 && !hasPhotos ? (
-    <div className={styles.columns}>
+    <div className={`${styles.columns} ${variant === 'default' ? '' : `${styles.restaurant} ${styles[variant!]}`}`}>
       <div><Groups groups={groups.slice(0, columnBreak)} variant={variant} /></div>
       <div><Groups groups={groups.slice(columnBreak)} variant={variant} /></div>
     </div>
-  ) : <div><Groups groups={groups} variant={variant} /></div>;
+  ) : <div className={variant === 'default' ? undefined : `${styles.restaurant} ${styles[variant!]}`}><Groups groups={groups} variant={variant} /></div>;
 }

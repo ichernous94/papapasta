@@ -1,0 +1,6 @@
+.photo { transition: filter 350ms ease; }
+.animation { --photo-load-blur: blur(5px); filter: var(--photo-load-blur); }
+@media (prefers-reduced-motion: reduce) {
+  .photo { transition: none; }
+  .animation { --photo-load-blur: blur(0px); filter: none; }
+}

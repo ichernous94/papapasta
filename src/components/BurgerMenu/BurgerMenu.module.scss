@@ -14,8 +14,11 @@
   overscroll-behavior: contain;
   background-color: var(--site-surface, #{theme.$colorBgWhite});
   box-shadow: 0 8px 16px rgb(0 0 0 / 8%);
-  animation: reveal 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  &[data-state='closing'] { animation: dismiss 280ms ease both; pointer-events: none; }
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--menu-duration, 350ms) ease-in-out, transform var(--menu-duration, 350ms) ease-in-out;
+  &[data-state='closing'] { opacity: 0; transform: translateY(-0.5rem); pointer-events: none; }
+  @starting-style { opacity: 0; transform: translateY(-0.5rem); }
 
   li { border-block-start: 1px solid var(--site-divider, #e4e4e1); }
   a {
@@ -34,12 +37,6 @@
   a[aria-current='page'] { color: theme.$colorGoldText; }
 }
 
-@keyframes reveal {
-  from { opacity: 0; transform: translateY(-1rem); clip-path: inset(0 0 100%); }
-  to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
-}
-@keyframes dismiss { to { opacity: 0; transform: translateY(-1rem); clip-path: inset(0 0 100%); } }
-
 @media (prefers-reduced-motion: reduce) {
-  .menu, .menu[data-state='closing'] { animation: none; a { transition: none; } }
+  .menu, .menu[data-state='closing'] { transition: none; a { transition: none; } }
 }

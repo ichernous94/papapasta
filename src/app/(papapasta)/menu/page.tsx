@@ -1,3 +1,4 @@
+import OptionalMenuSection from '@/components/OptionalMenuSection';
 import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
 import MenuBanner from '@/components/MenuBanner';
@@ -27,14 +28,20 @@ export default function MenuPage() {
           <Button href={papaPasta.orderUrl} variant="dark">ZAMÓW Z DOSTAWĄ NA PYSZNE.PL</Button>
         </div>
       </Container>
-      <MenuBanner restaurantId="papapasta" menuKey="autumn" image={autumnMenuImage} />
+      <OptionalMenuSection restaurantId="papapasta" menuKey="autumn">
+<MenuBanner restaurantId="papapasta" menuKey="autumn" image={autumnMenuImage} />
       <Container as="section" className={styles.menuSection} aria-label="Menu jesienne"><DatabaseMenuSection restaurantId="papapasta" menuKey="autumn"/></Container>
-      <MenuBanner restaurantId="papapasta" menuKey="kids" image={kidsMenuImage} variant="kids" />
+</OptionalMenuSection>
+      <OptionalMenuSection restaurantId="papapasta" menuKey="kids">
+<MenuBanner restaurantId="papapasta" menuKey="kids" image={kidsMenuImage} variant="kids" />
       <Container as="section" className={styles.menuSection} aria-label="Menu bambini"><DatabaseMenuSection restaurantId="papapasta" menuKey="kids"/></Container>
-      <MenuBanner restaurantId="papapasta" menuKey="wine" id="kartawin" image={wineCellar} />
+</OptionalMenuSection>
+      <OptionalMenuSection restaurantId="papapasta" menuKey="wine">
+<MenuBanner restaurantId="papapasta" menuKey="wine" id="kartawin" image={wineCellar} />
       <Container as="section" className={styles.menuSection} aria-label="Wino i inne alkohole">
         <DatabaseMenuSection restaurantId="papapasta" menuKey="wine" tabs label="Kategorie win i piw"/>
       </Container>
+</OptionalMenuSection>
       <Gallery images={galleryImages} />
     </>
   );

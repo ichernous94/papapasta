@@ -1,3 +1,4 @@
+import OptionalMenuSection from '@/components/OptionalMenuSection';
 import MenuBanner from '@/components/MenuBanner';
 import DatabaseMenuSection from '@/components/DatabaseMenuSection';
 import Container from '@/components/ui/Container';
@@ -14,12 +15,18 @@ export default function CentroMenuPage() {
     <Container as="section" className={styles.section} aria-label="Menu główne Centro">
       <DatabaseMenuSection restaurantId="centro" menuKey="main" tabs noteClassName={styles.note}/>
     </Container>
-    <MenuBanner restaurantId="centro" menuKey="breakfast" image={images.breakfast} />
+    <OptionalMenuSection restaurantId="centro" menuKey="breakfast">
+<MenuBanner restaurantId="centro" menuKey="breakfast" image={images.breakfast} />
     <Container as="section" className={styles.section} aria-label="Menu śniadań"><DatabaseMenuSection restaurantId="centro" menuKey="breakfast" columns={2}/></Container>
-    <MenuBanner restaurantId="centro" menuKey="autumn" image={images.autumn} />
+</OptionalMenuSection>
+    <OptionalMenuSection restaurantId="centro" menuKey="autumn">
+<MenuBanner restaurantId="centro" menuKey="autumn" image={images.autumn} />
     <Container as="section" className={styles.section} aria-label="Jesienne smaki"><DatabaseMenuSection restaurantId="centro" menuKey="autumn"/></Container>
-    <MenuBanner restaurantId="centro" menuKey="kids" image={images.kids} variant="kids" />
+</OptionalMenuSection>
+    <OptionalMenuSection restaurantId="centro" menuKey="kids">
+<MenuBanner restaurantId="centro" menuKey="kids" image={images.kids} variant="kids" />
     <Container as="section" className={styles.section} aria-label="Menu bambini"><DatabaseMenuSection restaurantId="centro" menuKey="kids"/></Container>
+</OptionalMenuSection>
     <Gallery name="Papa Pasta Centro" images={centroGallery} />
   </>;
 }

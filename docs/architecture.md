@@ -28,7 +28,7 @@
 - The restaurant-selection page lives at `src/app/(landing)/page.tsx`, outside the existing `(main)` layout. Its public URL remains `/` and it exports the full PapaPasta metadata with its own canonical and Open Graph URL.
 - The landing page has its own `main` and uses `src/components/SectionHome/` with colocated SCSS. It does not include the legacy Header, Footer, Cookie or GoTopBtn.
 - Use the supplied images by their agreed filenames: `papapasta-pizza-wino-steki.jpg` for the PapaPasta panel and `papapasta-centro.jpg` for Centro, even though their interior photographs do not match those names. Do not rename the assets.
-- The two panels are side by side from 1024 CSS px and stacked below that width. Center the content in both layouts, preserve safe padding, and allow panels to grow when text needs more space.
+- The selection is fixed to a stable 100svh viewport, with equal stacked panels below 1024 CSS px and columns above; landscape below 500 px height also uses columns. Safe padding and compact spacing keep both links visible. Panels clip overflow without internal scrolling; selection-only viewport locking restores ordinary page scrolling on navigation. Browser-managed zoom remains enabled.
 - Statically import both JPEGs and use `next/image` blur placeholders with responsive sizes. Preserve clear SVG logos and darken only the background photographs.
 - The PapaPasta landing link opens the internal `/home` route. Centro opens `https://centro.papapasta.pl/` in the same tab, where Proxy selects the Centro branch. During local development, the Centro selection button uses `centro.localhost` with the current protocol and port; production keeps the canonical domain.
 - Shared `src/components/ui/Button/` supports typed anchor and native button modes. Use Next Link for internal destinations, native anchors for external destinations, visible keyboard focus, and a light fill with dark text on hover.
@@ -59,7 +59,7 @@
 - Administration and content APIs are implemented below; the broader PapaPasta sitemap/robots migration remains a future stage; Centro has separate hostname routing and metadata routes. Autumn content is static and does not expire automatically.
 
 **Confirmed motion and navigation refinements**
-- Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 36px above over 1200ms once; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
+- Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 1rem above over 1200ms; keyed banners run once per document, including Suspense replacement and cached-route return; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
 - Header navigation explicitly scrolls to the document top after the target route commits and the exiting menu releases its scroll lock. Re-selecting the current page also goes to the top. Wine hash links retain their section-anchor behavior.
 - Scroll locking changes only the root viewport overflow, preserving body overflow so a second scroll container cannot detach the sticky Header. Overlay focus changes use preventScroll. Keep locks and focus containment until exit animations finish, including rapid reopen and concurrent overlays.
 - Burger navigation is viewport-positioned immediately below the measured Header, with a sliding/fading entrance and exit, independent internal scrolling and a lightly dimmed backdrop. Header has a visible bottom shadow.
@@ -264,7 +264,23 @@ Discuss and document before implementation:
 - Full default Turbopack production build, all 36 generated static pages, tsc --noEmit and 31 targeted tests pass. Production HTTP checks passed for both restaurant hosts, admin login, sitemap, Cookie Policy and legacy product 404. Earlier reported build/type blockers are resolved; details and deployment instructions are in docs/production-build-fix.md.
 
 
-**Confirmed exact temporary deployment aliases — 2026-11-04**
-- The explicitly requested workbase.sbs host and its admin./centro. subdomains are supported via shared config/hosts.ts. Routing, auth host guards and the landing Centro link share these exact names; the previous sslip.io aliases are removed and no arbitrary domain suffix is trusted.
-- Temporary page responses are noindex/nofollow; canonical metadata stays on real domains. Production auth continues to require Secure host-only cookies and the configured BETTER_AUTH_URL origin, so admin login requires HTTPS; the workbase.sbs deployment should use HTTPS on all three hosts.
-- Coolify must register all three names on the same application and configure admin HTTPS plus BETTER_AUTH_URL separately. No remote infrastructure or secrets were changed. See docs/temporary-domains.md.
+**Confirmed mobile menu and editable sections — 2026-11-05**
+- Below 600 px, themed menu rows retain photos on the right, place prices below names and show a selected-category heading with dotted separators. Desktop/tablet and dish URLs remain unchanged.
+- Additional menu sections can be deleted transactionally with their contents; main and recommendations are protected. Optional public sections await existence before rendering banners. Banner media uses the existing R2 path and nullable menus.banner_image_id (0003); orphan detection and cleanup consider both dish and banner references.
+- Request-time public reads await connection() outside the tagged cache; content mutations invalidate restaurant-specific page paths as well as tags. Centro recommendation data is retained while its home block is omitted. Promo-only fade and a minimum document height preserve other dialog behavior and sticky navigation. See [mobile-menu-sections.md](mobile-menu-sections.md).
+
+
+**Confirmed compact header and fixed selection — 2026-11-05**
+- Below 768 px, Centro uses a 4.5rem left logo and right burger; PapaPasta centers a logo reduced by 15% with symmetric side columns. Telephone strips and tablet/desktop layouts remain intact.
+- Burger panel/backdrop transitions and exit presence share a 350 ms duration; reversing transitions preserves intermediate values. Reduced motion bypasses animation and closing delay.
+- Restaurant selection stays within 100svh with no ordinary page scrolling; panels switch to columns on low landscape screens; the later strict-scroll revision removes internal panel scrolling. No global scroll policy is changed. Validation and affected files: [mobile-header-selection.md](mobile-header-selection.md).
+
+
+**Confirmed strict selection lock and Centro gradient — 2026-11-05**
+- The selection has no internal or document scrolling. Pre-hydration CSS and route-only gesture guards enforce it; an active marker is cleared for retained hidden Next.js routes so other pages continue scrolling. Back/Forward reactivation was verified.
+- html/body use the shared radial-gradient token with #142119 fallback; Centro uses the same gradient with #f3ede0 text and transparent main sections. PapaPasta, legacy public pages and Admin retain light surfaces. See [selection-lock-gradient.md](selection-lock-gradient.md).
+
+
+**Confirmed photo loading and one-time banner titles — 2026-11-05**
+- PhotoImage preserves Next Image props/ref/placeholder and server/no-JS readability while applying a client-only 5px loading blur, removed on load/error over 350 ms. Cached loads, source changes and reduced motion are handled. Functional logos/icons/QR are excluded.
+- A root client Reveal provider holds per-document banner reservations; started keys survive fallback replacement and hidden Activity cleanup, while unstarted reservations are releasable for Strict Mode replay. Menu keys include restaurant and menu identity. No storage, global server state or cache-policy changes are introduced. Validation: [photo-loading-reveal.md](photo-loading-reveal.md).

@@ -16,6 +16,16 @@ async function lockMenu(tx: Transaction, menuId: string, version: number) {
         throw new ContentError('This menu was already changed by another editor. Copy your changes and refresh the page.');
     return menu;
 }
+async function orphanUnused(tx: Transaction, imageId: string) {
+    // Image rows are locked by all attach/detach paths, including section banners.
+    await tx.select({ id: mediaAssets.id }).from(mediaAssets).where(eq(mediaAssets.id, imageId)).for('update');
+    await tx.update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, imageId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${imageId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${imageId})`));
+}
+async function attachUpload(tx: Transaction, actorId: string, uploadId: string) {
+    const [asset] = await tx.select().from(mediaAssets).where(eq(mediaAssets.id, uploadId)).for('update');
+    if (!asset || asset.status !== 'pending' || asset.createdBy !== actorId) throw new ContentError('Image upload is unavailable');
+    await tx.update(mediaAssets).set({ status: 'ready' }).where(eq(mediaAssets.id, uploadId));
+}
 async function groupBelongs(tx: Transaction, groupId: string, menuId: string) {
     const [row] = await tx.select({ id: groups.id }).from(groups).innerJoin(categories, eq(groups.categoryId, categories.id)).where(and(eq(groups.id, groupId), eq(categories.menuId, menuId)));
     if (!row)
@@ -38,12 +48,7 @@ export async function saveItem(db: Database, actorId: string, raw: unknown, uplo
             throw new ContentError('Dish not found');
         if (old)
             await groupBelongs(tx, old.groupId, input.sourceMenuId ?? input.menuId);
-        if (uploadId) {
-            const [asset] = await tx.select().from(mediaAssets).where(eq(mediaAssets.id, uploadId)).for('update');
-            if (!asset || asset.status !== 'pending' || asset.createdBy !== actorId)
-                throw new ContentError('Image upload is unavailable');
-            await tx.update(mediaAssets).set({ status: 'ready' }).where(eq(mediaAssets.id, uploadId));
-        }
+        if (uploadId) await attachUpload(tx, actorId, uploadId);
         const id = old?.id ?? randomUUID();
         const imageId = uploadId ?? (input.removeImage ? null : old?.imageId ?? null);
         const values = { allergens: input.allergens ?? old?.allergens ?? [], groupId: input.groupId, name: input.name, portion: input.portion, price: input.price, description: input.description.split(/\r?\n/).filter(line => line.trim()), isNew: input.isNew, visible: input.visible, imageAlt: input.imageAlt, imageId };
@@ -58,7 +63,7 @@ export async function saveItem(db: Database, actorId: string, raw: unknown, uplo
             await tx.insert(items).values({ id, ...values, sortOrder: Number(last.order) + 1 });
         }
         if (old?.imageId && old.imageId !== imageId) {
-            await tx.update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, old.imageId), sql `not exists (select 1 from ${items} where ${items.imageId} = ${old.imageId})`));
+            await orphanUnused(tx, old.imageId);
         }
         await finish(tx, actorId, menu.id, old ? 'item.update' : 'item.create', id, { visible: input.visible, imageId, allergens: values.allergens });
         if (old && input.sourceMenuId && input.sourceMenuId !== menu.id) await finish(tx, actorId, input.sourceMenuId, 'item.transfer', id);
@@ -86,22 +91,27 @@ export async function moveItem(db: Database, actorId: string, raw: unknown) {
         return menu.restaurantId;
     });
 }
-export async function saveStructure(db: Database, actorId: string, raw: unknown) {
+export async function saveStructure(db: Database, actorId: string, raw: unknown, uploadId?: string) {
     const input = structureInputSchema.parse(raw);
     return db.transaction(async (tx) => {
         const menu = await lockMenu(tx, input.menuId, input.version);
         if (input.kind === 'menu') {
             if (input.id !== menu.id || !input.title)
                 throw new ContentError('Invalid menu section title');
-            await tx.update(menus).set({ title: input.title, subtitle: input.note }).where(eq(menus.id, menu.id));
+            if (uploadId) await attachUpload(tx, actorId, uploadId);
+            const bannerImageId = uploadId ?? (input.removeBanner ? null : menu.bannerImageId);
+            await tx.update(menus).set({ title: input.title, subtitle: input.note, bannerImageId }).where(eq(menus.id, menu.id));
+            if (menu.bannerImageId && menu.bannerImageId !== bannerImageId) await orphanUnused(tx, menu.bannerImageId);
         }
         else if (input.kind === 'category') {
+            if (uploadId || input.removeBanner) throw new ContentError('Only menu sections have banners');
             if (['main', 'wine'].includes(menu.key) && !input.title) throw new ContentError('The category name cannot be empty');
             const result = await tx.update(categories).set({ label: input.title, note: input.note, ...(input.columns !== undefined ? { columns: input.columns } : {}), ...(input.columnBreak !== undefined ? { columnBreak: input.columnBreak } : {}) }).where(and(eq(categories.id, input.id), eq(categories.menuId, menu.id))).returning({ id: categories.id });
             if (!result.length)
                 throw new ContentError('Category not found');
         }
         else {
+            if (uploadId || input.removeBanner) throw new ContentError('Only menu sections have banners');
             await groupBelongs(tx, input.id, menu.id);
             await tx.update(groups).set({ title: input.title, note: input.note, afterNote: input.afterNote }).where(eq(groups.id, input.id));
         }
@@ -111,6 +121,7 @@ export async function saveStructure(db: Database, actorId: string, raw: unknown)
 }
 
 export const contentOperationSchema = z.discriminatedUnion('action', [
+    z.object({ action: z.literal('deleteMenu'), menuId: z.string(), version: z.number().int().positive() }).strict(),
     z.object({ action: z.literal('deleteItem'), menuId: z.string(), version: z.number().int().positive(), id: z.string() }),
     z.object({ action: z.literal('reorder'), menuId: z.string(), version: z.number().int().positive(), groupId: z.string(), ids: z.array(z.string()).min(1) }),
     z.object({ action: z.literal('createCategory'), menuId: z.string(), version: z.number().int().positive(), title: z.string().trim().min(1).max(200), note: z.string().max(6000), columns: z.number().int().min(1).max(2), columnBreak: z.number().int().min(1) }),
@@ -123,13 +134,24 @@ export async function changeContent(db: Database, actorId: string, raw: unknown)
     const input = contentOperationSchema.parse(raw);
     return db.transaction(async tx => {
         const menu = await lockMenu(tx, input.menuId, input.version);
+        if (input.action === 'deleteMenu') {
+            if (['main', 'recommendations'].includes(menu.key)) throw new ContentError('This menu section cannot be deleted.');
+            const photos = await tx.select({ imageId: items.imageId }).from(items).innerJoin(groups, eq(items.groupId, groups.id)).innerJoin(categories, eq(groups.categoryId, categories.id)).where(eq(categories.menuId, menu.id));
+            const imageIds = [...new Set([...photos.map(p => p.imageId), menu.bannerImageId].filter((id): id is string => !!id))].sort();
+            // Lock affected media in a stable order before detaching references.
+            for (const imageId of imageIds) await tx.select({ id: mediaAssets.id }).from(mediaAssets).where(eq(mediaAssets.id, imageId)).for('update');
+            await tx.delete(menus).where(eq(menus.id, menu.id));
+            for (const imageId of imageIds) await orphanUnused(tx, imageId);
+            await tx.insert(auditLog).values({ actorId, action: 'menu.delete', targetId: menu.id, details: { restaurantId: menu.restaurantId, title: menu.title } });
+            return menu.restaurantId;
+        }
         let target = 'id' in input ? input.id : randomUUID();
         if (input.action === 'deleteItem') {
             const item = await tx.query.items.findFirst({ where: eq(items.id, input.id) });
             if (!item) throw new ContentError('Dish not found.');
             await groupBelongs(tx, item.groupId, menu.id);
             await tx.delete(items).where(eq(items.id, item.id));
-            if (item.imageId) await tx.update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, item.imageId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${item.imageId})`));
+            if (item.imageId) await orphanUnused(tx, item.imageId);
         } else if (input.action === 'reorder') {
             await groupBelongs(tx, input.groupId, menu.id);
             const siblings = await tx.select({ id: items.id }).from(items).where(eq(items.groupId, input.groupId));

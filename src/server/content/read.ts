@@ -7,12 +7,13 @@ export async function readMenus(db: ReturnType<typeof createDatabase>['db'], res
     const rows = await db.query.menus.findMany({
         where: restaurantId ? eq(menus.restaurantId, restaurantId) : undefined,
         orderBy: (m, { asc }) => [asc(m.sortOrder)],
-        with: { categories: { orderBy: (c, { asc }) => [asc(c.sortOrder)], with: { groups: { orderBy: (g, { asc }) => [asc(g.sortOrder)], with: { items: {
+        with: { bannerImage: true, categories: { orderBy: (c, { asc }) => [asc(c.sortOrder)], with: { groups: { orderBy: (g, { asc }) => [asc(g.sortOrder)], with: { items: {
                                 where: (i) => onlyVisible ? eq(i.visible, true) : undefined,
                                 orderBy: (i, { asc }) => [asc(i.sortOrder), asc(i.id)], with: { image: true },
                             } } } } } },
     });
-    return rows.map(m => ({ id: m.id, restaurantId: m.restaurantId, key: m.key, title: m.title, subtitle: m.subtitle, version: m.version,
+    return rows.map(m => ({ id: m.id, restaurantId: m.restaurantId, key: m.key, title: m.title, subtitle: m.subtitle, version: m.version, bannerImageId: m.bannerImageId,
+        bannerImage: m.bannerImage?.status === 'ready' && publicImageURL(m.bannerImage.objectKey) ? { src: publicImageURL(m.bannerImage.objectKey)!, width: m.bannerImage.width, height: m.bannerImage.height, blurDataURL: m.bannerImage.blurDataURL, alt: m.title } : undefined,
         categories: m.categories.map(c => ({ id: c.id, label: c.label, note: c.note, columns: c.columns === 2 ? 2 as const : undefined, columnBreak: c.columnBreak,
             groups: c.groups.map(g => ({ id: g.id, title: g.title, note: g.note, afterNote: g.afterNote, items: g.items.map(i => {
                     const url = i.image?.status === 'ready' ? publicImageURL(i.image.objectKey) : null;

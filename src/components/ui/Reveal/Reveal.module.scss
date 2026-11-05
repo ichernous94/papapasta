@@ -1,8 +1,8 @@
 // Content stays readable in server HTML and when JS/IntersectionObserver is unavailable.
 .reveal {
   min-inline-size: 0;
-  --reveal-offset: -2.25rem;
-  &[data-direction='up'] { --reveal-offset: 2.25rem; }
+  --reveal-offset: -1rem;
+  &[data-direction='up'] { --reveal-offset: 1rem; }
   &[data-effect='scale'] { overflow: hidden; }
 }
 @media (prefers-reduced-motion: no-preference) {

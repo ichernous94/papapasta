@@ -1,6 +1,6 @@
 import { and, eq, lt, ne } from 'drizzle-orm';
 import { database } from './environment';
-import { mediaAssets, items } from '../src/server/db/schema';
+import { mediaAssets, items, menus } from '../src/server/db/schema';
 import { deleteObject, MEDIA_PREFIX } from '../src/server/media/storage';
 async function main() {
     const { db, pool } = database();
@@ -13,7 +13,8 @@ async function main() {
                 if (!row || row.status === 'ready' || !row.objectKey.startsWith(MEDIA_PREFIX))
                     return;
                 const [referenced] = await tx.select({ id: items.id }).from(items).where(eq(items.imageId, row.id)).limit(1);
-                if (referenced)
+                const [banner] = await tx.select({ id: menus.id }).from(menus).where(eq(menus.bannerImageId, row.id)).limit(1);
+                if (referenced || banner)
                     return;
                 if (process.argv.includes('--apply')) {
                     await deleteObject(row.objectKey);

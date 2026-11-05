@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, type CSSProperties } from 'react';
 import { IoCloseOutline, IoMenuOutline } from 'react-icons/io5';
 import Container from '@/components/ui/Container';
 import BurgerMenu from '@/components/BurgerMenu';
@@ -16,6 +16,8 @@ import useReducedMotion from '@/hooks/useReducedMotion';
 import useBurgerMenuStore from '@/store/useBurgerMenuStore';
 import styles from './Header.module.scss';
 
+const MENU_DURATION = 350;
+
 export default function Header({ site = papaPastaSite }: { site?: RestaurantConfig }) {
   const pathname = restaurantPath(usePathname());
   const navigationPathname = pathname.startsWith('/menu/') ? '/menu' : pathname;
@@ -27,7 +29,8 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
   const toggleMenu = useBurgerMenuStore((state) => state.toggleBurgerMenu);
 
   const reducedMotion = useReducedMotion();
-  const menuPresent = useExitPresence(isOpen, reducedMotion ? 0 : 280);
+  const animatedPresence = useExitPresence(isOpen, reducedMotion ? 0 : MENU_DURATION);
+  const menuPresent = reducedMotion ? isOpen : animatedPresence;
   const navigationTarget = useRef<string | null>(null);
   useBodyScrollLock(menuPresent);
 
@@ -124,6 +127,7 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
       ref={headerRef}
       className={styles.header}
       data-site={site.id}
+      style={{ '--menu-duration': `${MENU_DURATION}ms` } as CSSProperties}
       role={menuPresent ? 'dialog' : undefined}
       aria-modal={menuPresent ? true : undefined}
       aria-label={menuPresent ? 'Nawigacja restauracji' : undefined}

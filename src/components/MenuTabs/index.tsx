@@ -66,7 +66,7 @@ export default function MenuTabs({ label, tabs, variant = 'default' }: MenuTabsP
       </div>
       {tabs.map((tab, index) => (
         <div key={tab.id} id={`${groupId}-panel-${tab.id}`} role="tabpanel" aria-labelledby={`${groupId}-tab-${tab.id}`} hidden={index !== active} tabIndex={0} className={styles.panel}>
-          <h2 className={styles.visuallyHidden}>{tab.label}</h2>
+          <h2 className={variant === 'default' ? styles.visuallyHidden : styles.categoryTitle}>{tab.label}</h2>
           {tab.content}
         </div>
       ))}

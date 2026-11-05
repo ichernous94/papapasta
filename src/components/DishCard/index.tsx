@@ -1,5 +1,5 @@
 import AllergenList from '@/components/AllergenList';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import type { Dish } from '@/server/content/dishes';
 import styles from './DishCard.module.scss';
 export default function DishCard({ dish, modal = false }: { dish: Dish; modal?: boolean }) {

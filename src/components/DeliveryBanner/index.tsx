@@ -1,3 +1,4 @@
+import PhotoImage from '@/components/ui/PhotoImage';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { papaPasta, papaPastaCopy } from '@/config/papapasta';
@@ -7,7 +8,7 @@ import styles from './DeliveryBanner.module.scss';
 export default function DeliveryBanner() {
   return (
     <section className={styles.banner} aria-label="Zamów z dostawą">
-      <Image src={background} alt="" fill placeholder="blur" sizes="(min-width: 1920px) 1920px, 100vw" className={styles.background} />
+      <PhotoImage src={background} alt="" fill placeholder="blur" sizes="(min-width: 1920px) 1920px, 100vw" className={styles.background} />
       <div className={styles.content}>
         <Image src="/icons/logo_papapasta.svg" alt="Papa Pasta Pizza Wino Steki" width={319} height={72} className={styles.logo} />
         <p>{papaPastaCopy.delivery}</p>

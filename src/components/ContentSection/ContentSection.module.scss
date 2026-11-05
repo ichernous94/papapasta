@@ -4,7 +4,7 @@
 .section {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  background-color: var(--site-surface, #{theme.$colorBgWhite});
+  background-color: var(--site-section-surface, var(--site-surface, #{theme.$colorBgWhite}));
   color: var(--site-text, #{theme.$colorFont});
   scroll-margin-block-start: var(--restaurant-header-height, 96px);
 }

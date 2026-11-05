@@ -1,6 +1,7 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
+import photoStyles from '@/components/ui/PhotoImage/PhotoImage.module.scss';
 import { useEffect, useId, useRef, useState, type PointerEvent } from 'react';
 import type { PageFlip } from 'page-flip';
 import { useInView } from 'react-intersection-observer';
@@ -82,11 +83,16 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
           node.className = styles.page;
           const image = document.createElement('img');
           image.alt = item.title;
+          image.className = `${photoStyles.photo} ${photoStyles.animation}`;
+          image.onload = image.onerror = () => image.classList.remove(photoStyles.animation);
           image.width = 1020; image.height = 1430;
           image.decoding = 'async';
           image.draggable = false;
           image.dataset.src = item.src;
-          if (Math.abs(index - currentRef.current) <= 2) image.src = item.src;
+          if (Math.abs(index - currentRef.current) <= 2) {
+            image.src = item.src;
+            if (image.complete && image.naturalWidth > 0) image.classList.remove(photoStyles.animation);
+          }
           imageElements.push(image);
           node.append(image);
           return node;

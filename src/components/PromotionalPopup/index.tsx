@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import Modal from '@/components/ui/Modal';
 import promotionalImage from '../../../public/images/promotional/promotional-image.jpg';
 import styles from './PromotionalPopup.module.scss';
@@ -20,7 +20,7 @@ export default function PromotionalPopup() {
   const titleId = useId();
 
   return <Modal open={open} onClose={() => setOpen(false)} labelledBy={titleId}
-    closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
+    animationDuration={350} closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
     onKeyDown={event => {
       // The poster has only one interactive control; keep both Tab directions on it.
       if (event.key === 'Tab') {

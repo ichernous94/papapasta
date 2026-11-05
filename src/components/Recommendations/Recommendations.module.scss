@@ -3,7 +3,7 @@
 
 .section {
   padding-block: clamp(2rem, 5vw, 5rem);
-  background-color: var(--site-surface, #fff);
+  background-color: var(--site-section-surface, var(--site-surface, #fff));
   color: var(--site-text, #{theme.$colorFont});
 }
 
