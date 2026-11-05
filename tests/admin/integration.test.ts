@@ -62,6 +62,7 @@ test('PostgreSQL: auth, mandatory MFA, roles, rate limits, revocation and conten
             const legacyItem = await db.query.items.findFirst({ where:eq(schema.items.id,'legacy-item') });
             assert.deepEqual(legacyItem!.allergens,[]);
             assert.equal(legacyItem!.price,'29/36');
+            assert.equal((await db.query.menus.findFirst({ where:eq(schema.menus.id,'legacy-menu') }))!.bannerImageId,null);
             await db.delete(schema.menus).where(eq(schema.menus.id,'legacy-menu'));
             await db.delete(schema.user).where(eq(schema.user.id,'legacy-admin'));
             await db.delete(schema.restaurants).where(eq(schema.restaurants.id,'legacy-restaurant'));
@@ -264,8 +265,52 @@ test('Fresh database installs all migrations and keeps the Drizzle snapshot alig
         assert.ok(tables.rows.some(row=>row.tablename==='qr_codes'));
         assert.equal(tables.rows.length,14);
         const {generateDrizzleJson,generateMigration}=await import('drizzle-kit/api');
-        const snapshot=JSON.parse(await readFile('drizzle/meta/0002_snapshot.json','utf8'));
+        const snapshot=JSON.parse(await readFile('drizzle/meta/0003_snapshot.json','utf8'));
         const current=generateDrizzleJson(schema,snapshot.id,['public']);
         assert.deepEqual(await generateMigration(snapshot,current),[]);
     } finally { if(fresh) await fresh.pool.end(); if(created) await source.pool.query(`DROP DATABASE "${name}" WITH (FORCE)`); await source.pool.end(); }
+});
+
+test('Sections: banner lifecycle, shared photos, protected deletion and optimistic conflicts', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!,4);
+    const restaurantId = randomUUID();
+    const actor = 'section-test';
+    const mainId = randomUUID(), extraId = randomUUID(), recId = randomUUID();
+    const photo = randomUUID(), replacement = randomUUID(), wrong = randomUUID();
+    const categoryId = randomUUID(), groupId = randomUUID(), itemId = randomUUID();
+    const input = (version:number, removeBanner=false) => ({ menuId:extraId, id:extraId, version, kind:'menu', title:'Seasonal', note:'Subtitle', afterNote:'', removeBanner });
+    try {
+        await db.insert(schema.restaurants).values({ id:restaurantId, name:'Test sections' });
+        await db.insert(schema.menus).values([{id:mainId,restaurantId,key:'main',title:'Main'},{id:extraId,restaurantId,key:'autumn',title:'Seasonal'},{id:recId,restaurantId,key:'recommendations',title:'Recommendations'}]);
+        for (const id of [photo,replacement,wrong]) await db.insert(schema.mediaAssets).values({ id,objectKey:`papapasta/menu-images/${id}.webp`,width:1200,height:600,mimeType:'image/webp',byteSize:100,blurDataURL:'data:image/webp;base64,AA==',createdBy:id===wrong?'someone-else':actor });
+        await assert.rejects(saveStructure(db,actor,input(1),wrong),/unavailable/);
+        await saveStructure(db,actor,input(1),photo);
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'ready');
+        await db.insert(schema.categories).values({id:categoryId,menuId:mainId,slug:'test',label:'Shared'});
+        await db.insert(schema.groups).values({id:groupId,categoryId});
+        await db.insert(schema.items).values({id:itemId,groupId,name:'Shared image',imageId:photo});
+        await saveStructure(db,actor,input(2),replacement);
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'ready');
+        await assert.rejects(saveStructure(db,actor,input(2,true)),/already changed/);
+        assert.equal((await db.query.menus.findFirst({where:eq(schema.menus.id,extraId)}))!.bannerImageId,replacement);
+        await saveStructure(db,actor,input(3,true));
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,replacement)}))!.status,'orphan');
+        const dto=(await readMenus(db,restaurantId)).find(m=>m.id===extraId)!;
+        assert.equal(dto.bannerImageId,null);
+        for(const id of [mainId,recId]) await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:id,version:1}),/cannot be deleted/);
+        // A banner reference must keep an image alive when its last dish is removed.
+        await db.update(schema.menus).set({bannerImageId:photo}).where(eq(schema.menus.id,extraId));
+        await changeContent(db,actor,{action:'deleteItem',menuId:mainId,version:1,id:itemId});
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'ready');
+        // Deleting a populated section cascades its entire hierarchy and releases its banner.
+        await db.insert(schema.categories).values({id:'delete-'+categoryId,menuId:extraId,slug:'test',label:'Delete'});
+        await db.insert(schema.groups).values({id:'delete-'+groupId,categoryId:'delete-'+categoryId});
+        await db.insert(schema.items).values({id:'delete-'+itemId,groupId:'delete-'+groupId,name:'Delete me'});
+        await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:extraId,version:3}),/already changed/);
+        await changeContent(db,actor,{action:'deleteMenu',menuId:extraId,version:4});
+        assert.equal(await db.query.items.findFirst({where:eq(schema.items.id,'delete-'+itemId)}),undefined);
+        assert.equal(await db.query.categories.findFirst({where:eq(schema.categories.id,'delete-'+categoryId)}),undefined);
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'orphan');
+        assert.equal((await db.query.auditLog.findFirst({where:eq(schema.auditLog.targetId,extraId),orderBy:(a,{desc})=>[desc(a.createdAt)]}))!.action,'menu.delete');
+    } finally { await pool.end(); }
 });

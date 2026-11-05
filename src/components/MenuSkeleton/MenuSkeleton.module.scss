@@ -36,6 +36,11 @@
 .photo { display: grid; place-items: center; position: relative; overflow: hidden; aspect-ratio: 3 / 2; border-radius: clamp(0.875rem, 1.5vw, 1.25rem); background: var(--skeleton-strong); svg { inline-size: 3rem; stroke: var(--site-surface, #fff); stroke-width: 2; opacity: 0.7; } }
 .visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (min-width: 600px) and (max-width: 1023px) { .row { grid-template-columns: minmax(0, 1fr) minmax(9rem, 28%); gap: 1.25rem; } }
-@media (max-width: 599px) { .row { grid-template-columns: minmax(0, 1fr); gap: 1rem; } .photo { grid-row: 1; } .heading { margin-block-end: 0.875rem; } }
+@media (max-width: 599px) { .row { grid-template-columns: minmax(0, 1fr) minmax(0, 42%); gap: 0.875rem; } .heading { flex-direction: column; align-items: start; gap: 0.5rem; margin-block-end: 0.875rem; } }
 @media (prefers-reduced-motion: no-preference) { .photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 20%, #ffffff20 50%, transparent 80%); transform: translateX(-100%); animation: shimmer 1.8s ease-in-out infinite; } }
 @keyframes shimmer { to { transform: translateX(100%); } }
+
+.category { display: none; }
+@media (max-width: 599px) {
+  .category { display: block; padding-block: 0.5rem 1.25rem; border-block-end: 1px dotted var(--skeleton-line); span { display: block; inline-size: 50%; block-size: 2rem; border-radius: 0.3rem; background: var(--skeleton-accent); opacity: 0.6; } }
+}

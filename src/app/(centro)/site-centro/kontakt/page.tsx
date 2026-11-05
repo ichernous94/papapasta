@@ -19,6 +19,7 @@ export default function CentroContactPage() {
       </div>
     </Container>
     <iframe className={styles.map} src={centroMapsEmbedUrl} title="Mapa — Papa Pasta Centro, Jurowiecka 11/1, Białystok" width="600" height="450" loading="lazy" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+    <Container><a href="https://www.google.com/maps/search/?api=1&query=Papa+Pasta+Centro+Jurowiecka+11+Bia%C5%82ystok" target="_blank" rel="noopener noreferrer">Otwórz mapę Google</a></Container>
     <Gallery name="Papa Pasta Centro" images={centroGallery} />
   </>;
 }

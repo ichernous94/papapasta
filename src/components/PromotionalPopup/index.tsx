@@ -20,7 +20,7 @@ export default function PromotionalPopup() {
   const titleId = useId();
 
   return <Modal open={open} onClose={() => setOpen(false)} labelledBy={titleId}
-    closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
+    animationDuration={350} closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
     onKeyDown={event => {
       // The poster has only one interactive control; keep both Tab directions on it.
       if (event.key === 'Tab') {

@@ -16,6 +16,7 @@ export const itemInputSchema = z.object({
 export const structureInputSchema = z.object({
     menuId: z.string().min(1), version: z.number().int().positive(), id: z.string().min(1),
     columns: z.number().int().min(1).max(2).optional(), columnBreak: z.number().int().min(1).optional(),
+    removeBanner: z.boolean().optional(),
     kind: z.enum(['menu', 'category', 'group']), title: z.string().trim().max(200), note: z.string().max(6000), afterNote: z.string().max(6000),
 }).strict();
 export type ItemInput = z.infer<typeof itemInputSchema>;

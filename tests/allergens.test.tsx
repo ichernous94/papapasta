@@ -12,7 +12,7 @@ import { listDishes as listRestaurantDishes } from '../src/server/content/dishes
 import type { EditorMenu, EditorItem } from '../src/types/admin';
 
 const item:EditorItem={ id:'centro:main:test',groupId:'group',name:'Test dish',portion:'230 g',price:'55',description:['Description'],visible:true,isNew:false,imageId:null,imageAlt:'',sortOrder:0,allergens:['milk','gluten','nuts'],image:{src:'/images/centro/grilled-chicken-dish.jpg',width:1200,height:800,blurDataURL:'data:image/gif;base64,R0lGODlhAQABAAAAACw=',alt:'Dish'} };
-const menu:EditorMenu={ id:'centro:main',restaurantId:'centro',key:'main',title:'Menu',subtitle:'',version:1,categories:[{id:'category',label:'Przystawki',groups:[{id:'group',title:'',note:'',afterNote:'',items:[item]}]}] };
+const menu:EditorMenu={ id:'centro:main',restaurantId:'centro',key:'main',title:'Menu',subtitle:'',version:1,bannerImageId:null,categories:[{id:'category',label:'Przystawki',groups:[{id:'group',title:'',note:'',afterNote:'',items:[item]}]}] };
 const input={menuId:menu.id,version:1,groupId:'group',name:'Dish',portion:'',price:'55',description:'',isNew:false,visible:true,imageAlt:'',removeImage:false};
 
 test('Allergen validation distinguishes peanuts/tree nuts and normalizes duplicates',()=>{

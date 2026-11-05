@@ -26,7 +26,7 @@ export const centro: RestaurantConfig = {
   ],
 };
 
-export const centroMapsEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2393.4749336173!2d23.1612644!3d53.137570499999995!2m3!1f0!2f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ffc1a2debf773%3A0x1fb698122c02e759!2sJurowiecka%2011%2Fu1%2C%2015-001%20Bia%C5%82ystok!5e0!3m2!1sru!2spl!4v1793236067135!5m2!1sru!2spl';
+export const centroMapsEmbedUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2393.4749336173!2d23.1612644!3d53.137570499999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ffc1a2debf773%3A0x1fb698122c02e759!2sJurowiecka%2011%2Fu1%2C%2015-001%20Bia%C5%82ystok!5e0!3m2!1sru!2spl!4v1793833461481!5m2!1sru!2spl';
 
 export const centroCopy = {
   about: 'Papa Pasta Centro to wyjątkowy adres na kulinarnej mapie Białegostoku, gdzie możesz poczuć klimat nocnej Italii bez opuszczania miasta. Tworzyliśmy to miejsce z myślą o ludziach, którzy kochają życie, dobre jedzenie i inspirujące spotkania przy doskonałych koktajlach. Nasze motto „Vivi Bene, Carpe Diem” towarzyszy nam każdego wieczoru, zapraszając Cię do celebrowania chwili i poznania oryginalnej włoskiej kuchni w zupełnie nowej odsłonie.',

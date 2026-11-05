@@ -1,14 +1,19 @@
 import 'server-only';
+import { connection } from 'next/server';
 import { cache } from 'react';
 import { cacheTag, cacheLife } from 'next/cache';
 import { getDb } from '@/server/db';
 import { readMenus } from './read';
 import { loadMenuState } from './menu-state';
-export async function publicMenus(restaurantId: 'papapasta' | 'centro') {
+async function cachedPublicMenus(restaurantId: 'papapasta' | 'centro') {
     'use cache';
     cacheTag(`menu:${restaurantId}`);
     cacheLife({ stale: 0, revalidate: 3600, expire: 86400 });
     return readMenus(getDb(), restaurantId, true);
+}
+export async function publicMenus(restaurantId: 'papapasta' | 'centro') {
+    await connection();
+    return cachedPublicMenus(restaurantId);
 }
 export async function publicMenu(restaurantId: 'papapasta' | 'centro', key: string) {
     const menu = (await publicMenus(restaurantId)).find(m => m.key === key);

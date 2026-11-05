@@ -7,6 +7,7 @@ export default function MenuSkeleton({ restaurantId, showTabs = true, rows = 4 }
     <span className={styles.visuallyHidden}>Ładowanie menu…</span>
     <div aria-hidden="true">
       {showTabs && <div className={styles.tabs}>{Array.from({ length: 8 }, (_, index) => <span key={index}/>)}</div>}
+      {showTabs && <div className={styles.category}><span/></div>}
       {Array.from({ length: rows }, (_, index) => <div className={styles.row} key={index}>
         <div className={styles.copy}>
           <div className={styles.heading}><span/><span/></div>

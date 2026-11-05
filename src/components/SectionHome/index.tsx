@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
+import SelectionScrollLock from './SelectionScrollLock';
 import CentroLink from './CentroLink';
 import papaPastaImage from '../../../public/images/shared/papapasta-pizza-wino-steki.jpg';
 import centroImage from '../../../public/images/shared/papapasta-centro.jpg';
@@ -33,6 +34,7 @@ const restaurants = [
 export default function SectionHome() {
   return (
     <section className={styles.selection} aria-labelledby="restaurant-selection-title">
+      <SelectionScrollLock/>
       <h1 id="restaurant-selection-title" className={styles.visuallyHidden}>
         Wybierz restaurację
       </h1>

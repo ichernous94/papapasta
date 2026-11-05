@@ -1,6 +1,6 @@
 import type { AllergenId } from '@/config/allergens';
 import { relations } from 'drizzle-orm';
-import { pgTable, text, integer, boolean, timestamp, uuid, jsonb, uniqueIndex, index } from 'drizzle-orm/pg-core';
+import { type AnyPgColumn, pgTable, text, integer, boolean, timestamp, uuid, jsonb, uniqueIndex, index } from 'drizzle-orm/pg-core';
 const createdAt = () => timestamp('created_at', { withTimezone: true }).notNull().defaultNow();
 export const restaurants = pgTable('restaurants', {
     id: text('id').primaryKey(), name: text('name').notNull(),
@@ -11,6 +11,7 @@ export const menus = pgTable('menus', {
     key: text('key').notNull(), title: text('title').notNull(), subtitle: text('subtitle').notNull().default(''),
     version: integer('version').notNull().default(1), sortOrder: integer('sort_order').notNull().default(0),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    bannerImageId: uuid('banner_image_id').references((): AnyPgColumn => mediaAssets.id),
 }, table => [uniqueIndex('menu_restaurant_key').on(table.restaurantId, table.key)]);
 export const categories = pgTable('menu_categories', {
     id: text('id').primaryKey(), menuId: text('menu_id').notNull().references(() => menus.id, { onDelete: 'cascade' }),
@@ -43,7 +44,7 @@ export const auditLog = pgTable('audit_log', {
     targetId: text('target_id').notNull(), details: jsonb('details').$type<Record<string, unknown>>().notNull().default({}),
     createdAt: createdAt(),
 }, table => [index('audit_created').on(table.createdAt)]);
-export const menusRelations = relations(menus, ({ many }) => ({ categories: many(categories) }));
+export const menusRelations = relations(menus, ({ one, many }) => ({ categories: many(categories), bannerImage: one(mediaAssets, { fields: [menus.bannerImageId], references: [mediaAssets.id] }) }));
 export const categoriesRelations = relations(categories, ({ one, many }) => ({ menu: one(menus, { fields: [categories.menuId], references: [menus.id] }), groups: many(groups) }));
 export const groupsRelations = relations(groups, ({ one, many }) => ({ category: one(categories, { fields: [groups.categoryId], references: [categories.id] }), items: many(items) }));
 export const itemsRelations = relations(items, ({ one }) => ({ group: one(groups, { fields: [items.groupId], references: [groups.id] }), image: one(mediaAssets, { fields: [items.imageId], references: [mediaAssets.id] }) }));

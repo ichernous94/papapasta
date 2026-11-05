@@ -36,7 +36,7 @@ Arrows and drag-and-drop reorder only the full selected group. Search disables r
 
 Saves lock menu rows, compare versions, update content/version and `public.audit_log` together, then invalidate restaurant cache tags. Cross-section transfers lock both sections in stable ID order and check both versions. Stale writes return a conflict without overwriting another editor. Public menus read PostgreSQL with no static-price fallback. Existing open public tabs do not refresh automatically.
 
-Contacts, banners, galleries, promotions and the PNG cocktail book remain outside the editor.
+Menu-section banners can be uploaded, replaced or reset in Edit menu section. Additional sections can be permanently deleted with their contents after a counted confirmation; main and recommendations remain protected. Contacts, galleries, promotional posters and the PNG cocktail book remain outside the editor. See [mobile menu and sections](mobile-menu-sections.md).
 
 ## Cloudflare R2
 
@@ -46,7 +46,7 @@ Uploads accept static JPEG/PNG/WebP, at most 5 MB and 25 megapixels. Sharp valid
 
 The previous image remains until upload and database attachment succeed. Failure preserves form details. Replaced/deleted images are marked orphan only when no item references them. Without R2, text editing remains available and upload controls explain unavailability.
 
-`pnpm media:cleanup` reports unreferenced pending/orphan objects older than one day. `pnpm media:cleanup --apply` deletes only such application objects from R2 and PostgreSQL. Scheduling is not configured automatically.
+`pnpm media:cleanup` reports pending/orphan objects not referenced by dishes or menu banners older than one day. `pnpm media:cleanup --apply` deletes only such application objects from R2 and PostgreSQL. Scheduling is not configured automatically.
 
 ## QR Codes
 
@@ -77,3 +77,7 @@ Apply `0002_dish_allergens` with `pnpm db:migrate` after backing up the working 
 In Add/Edit Dish, expand Additional details and select all applicable Allergens. Unchecking every option clears the selection. The field is available for both restaurants. Centro displays chosen categories under Alergeny in the photo dish modal and standalone dish page; list rows are unchanged. An empty selection hides the entire public block. Recommendations have independent selections.
 
 See `docs/allergens.md` for the file inventory and validation results.
+
+## Section banner migration
+
+After a backup, apply `0003_menu_banners` with `pnpm db:migrate` before starting this version. The nullable banner link preserves existing section data and default images. Deletion is available only through an explicit admin action; the migration deletes no content.

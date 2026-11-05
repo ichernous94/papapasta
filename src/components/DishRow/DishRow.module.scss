@@ -36,10 +36,10 @@
   .row { grid-template-columns: minmax(0, 1fr) minmax(9rem, 28%); gap: 1.25rem; }
 }
 @media (max-width: 599px) {
-  .row { grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
-  .photo { grid-row: 1; aspect-ratio: 3 / 2; }
-  .heading { gap: 0.875rem; h3, h4 { font-size: 1.125rem; } }
-  .price { font-size: 1.875rem; }
+  .row { grid-template-columns: minmax(0, 1fr) minmax(0, 42%); gap: 0.875rem; align-items: start; }
+  .photo { aspect-ratio: 3 / 2; }
+  .heading { flex-direction: column; gap: 0.375rem; h3, h4 { font-size: 1.125rem; } }
+  .price { max-inline-size: 100%; font: 700 1.125rem/1.4 var(--font-lato), sans-serif; color: var(--dish-accent, #d7bb91); text-align: start; }
 }
 @media (prefers-reduced-motion: reduce) { .photo img { transition: none; } }
 

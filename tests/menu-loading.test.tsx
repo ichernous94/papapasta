@@ -12,7 +12,7 @@ import { seedMenus } from '../src/server/content/seed-data';
 import type { EditorMenu, EditorItem } from '../src/types/admin';
 
 const item: EditorItem = { id:'item', groupId:'group', name:'Published dish', portion:'', price:'55', description:[], isNew:false, visible:true, imageId:null, imageAlt:'', sortOrder:0, allergens:[] };
-const menu: EditorMenu = { id:'papa:main', restaurantId:'papapasta', key:'main', title:'Edited title', subtitle:'Edited subtitle', version:1, categories:[{ id:'cat', label:'Category', groups:[{ id:'group', title:'', note:'', afterNote:'', items:[item] }] }] };
+const menu: EditorMenu = { id:'papa:main', restaurantId:'papapasta', key:'main', title:'Edited title', subtitle:'Edited subtitle', version:1, bannerImageId:null, categories:[{ id:'cat', label:'Category', groups:[{ id:'group', title:'', note:'', afterNote:'', items:[item] }] }] };
 
 test('Skeleton has one accessible loading message, decorative rows and explicit themes', () => {
   for (const restaurantId of ['papapasta','centro'] as const) {

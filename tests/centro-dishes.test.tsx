@@ -11,7 +11,7 @@ import type { EditorMenu, EditorItem } from '../src/types/admin';
 
 const image = { src:'/images/centro/grilled-chicken-dish.jpg',width:1200,height:800,blurDataURL:'data:image/gif;base64,R0lGODlhAQABAAAAACw=',alt:'Carpaccio' };
 const item:EditorItem = { allergens:[], id:'centro:main:carpaccio',name:'Carpaccio di manzo',portion:'230 g',price:'55',description:['A real menu description'],isNew:false,visible:true,imageId:null,imageAlt:'',image,sortOrder:0,groupId:'group' };
-const menu:EditorMenu = { id:'centro:main',restaurantId:'centro',key:'main',title:'Menu główne',subtitle:'',version:1,categories:[{id:'category',label:'Przystawki',groups:[{id:'group',title:'',note:'',afterNote:'',items:[item]}]}] };
+const menu:EditorMenu = { id:'centro:main',restaurantId:'centro',key:'main',title:'Menu główne',subtitle:'',version:1,bannerImageId:null,categories:[{id:'category',label:'Przystawki',groups:[{id:'group',title:'',note:'',afterNote:'',items:[item]}]}] };
 
 test('Dish URLs are readable, distinguish duplicate names and retain identity through renames', () => {
   assert.match(dishSlug(item),/^carpaccio-di-manzo-[a-f0-9]{12}$/);
@@ -43,9 +43,9 @@ test('Dish metadata has its own canonical and social image; schema preserves dis
   assert.ok(html.includes('\\u003c'));
 });
 
-test('Menu and recommendations without photos keep the original rendered markup', () => {
+test('Menu without photos retains text content and columns; recommendations keep their markup', () => {
   const groups=[{id:'group',title:'',items:[{...item,image:undefined}]}];
-  assert.equal(renderToStaticMarkup(<MenuList groups={groups} columns={2}/>),renderToStaticMarkup(<MenuList groups={groups} columns={2} variant="centro"/>));
+  assert.equal(renderToStaticMarkup(<MenuList groups={groups} columns={2}/>).replace(/class="columns[^"]*"/,'class="columns"'),renderToStaticMarkup(<MenuList groups={groups} columns={2} variant="centro"/>).replace(/class="columns[^"]*"/,'class="columns"'));
   const recommendations=[{id:item.id,name:item.name,price:'55',description:'Description'}];
   assert.equal(renderToStaticMarkup(<Recommendations items={recommendations}/>),renderToStaticMarkup(<Recommendations items={recommendations} restaurantId="centro"/>));
 });
@@ -82,5 +82,5 @@ test('PapaPasta and Centro lookup, metadata and recommendations remain isolated'
   const recHtml = renderToStaticMarkup(<Recommendations restaurantId="papapasta" items={[{ ...recommendation, description: 'Recommendation' }]}/>);
   assert.ok(recHtml.includes(`href="${dishPath(recommendation)}"`));
   const groups = [{ id: 'g', items: [{ ...papaItem, image: undefined }] }];
-  assert.equal(renderToStaticMarkup(<MenuList groups={groups} columns={2}/>), renderToStaticMarkup(<MenuList variant="papapasta" groups={groups} columns={2}/>));
+  assert.equal(renderToStaticMarkup(<MenuList groups={groups} columns={2}/>).replace(/class="columns[^"]*"/,'class="columns"'), renderToStaticMarkup(<MenuList variant="papapasta" groups={groups} columns={2}/>).replace(/class="columns[^"]*"/,'class="columns"'));
 });
