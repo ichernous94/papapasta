@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import useReducedMotion from '@/hooks/useReducedMotion';
 import Image from '@/components/ui/PhotoImage';
 import Modal from '@/components/ui/Modal';
 import promotionalImage from '../../../public/images/promotional/promotional-image.jpg';
@@ -18,9 +19,10 @@ export default function PromotionalPopup() {
   // Centro's persistent layout owns this state. A new document shows the offer again.
   const [open, setOpen] = useState(true);
   const titleId = useId();
+  const reducedMotion = useReducedMotion();
 
   return <Modal open={open} onClose={() => setOpen(false)} labelledBy={titleId}
-    animationDuration={350} closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
+    animationDuration={open ? 600 : reducedMotion ? 0 : 450} closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
     onKeyDown={event => {
       // The poster has only one interactive control; keep both Tab directions on it.
       if (event.key === 'Tab') {

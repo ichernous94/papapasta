@@ -1,5 +1,7 @@
 # Sticky menu categories and Centro dish gradient — 2026-11-05
 
+Later revision: [category-switching.md](category-switching.md) adds intentional page return and panel fading on category selection; clipping and sticky boundaries remain.
+
 ## Behavior
 
 Both restaurant MenuTabs now contain an outer sticky surface and a separate horizontal tablist. The surface uses `--restaurant-header-height` for its top offset; its containing block is the corresponding MenuTabs, so it stops sticking as that menu ends. Each subsequent menu has its own independent bar. Z-index 20 keeps it below Header/navigation overlays (50). Centro uses the shared opaque radial gradient with a dark-green fallback; PapaPasta retains its existing light surface.

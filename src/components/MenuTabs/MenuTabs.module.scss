@@ -60,3 +60,10 @@
   .categoryTitle { position: static; inline-size: auto; block-size: auto; overflow: visible; clip-path: none; font-size: 1.75rem; line-height: 1.35; font-weight: 700; color: #d7bb91; padding-block-end: 1.25rem; border-block-end: 1px dotted #c9a579; margin-block-end: 0; }
   .papapasta .categoryTitle { color: #9a6b2f; }
 }
+
+// Progressive enhancement: keep the opaque surface until a valid clip has been computed.
+.centro[data-clip-ready='true'] {
+  > .sticky { background: transparent; }
+  > .panel:not([hidden]) { clip-path: inset(var(--menu-panel-clip-top, 0px) 0 0); }
+  > .panel:focus-visible { outline-offset: -2px; }
+}

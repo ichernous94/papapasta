@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import usePanelClip from './usePanelClip';
+import useCategoryTransition from './useCategoryTransition';
 import styles from './MenuTabs.module.scss';
 
 type MenuTab = { id: string; label: string; content: ReactNode };
@@ -20,6 +22,10 @@ function revealTab(list: HTMLDivElement, index: number, focus = false) {
 export default function MenuTabs({ label, tabs, variant = 'default' }: MenuTabsProps) {
   const groupId = useId();
   const [active, setActive] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const transition = useCategoryTransition(rootRef, stickyRef, variant !== 'default');
+  usePanelClip(rootRef, stickyRef, variant === 'centro', tabs[active]?.id);
   const listRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const list = listRef.current;
@@ -31,14 +37,14 @@ export default function MenuTabs({ label, tabs, variant = 'default' }: MenuTabsP
     return () => observer.disconnect();
   }, [active]);
   const select = (index: number, focus = false) => {
-    setActive(index);
+    if (index !== active) { transition(index); setActive(index); }
     const list = listRef.current;
     if (list) revealTab(list, index, focus);
   };
 
   return (
-    <div className={[styles.tabs, variant === 'default' ? '' : styles[variant]].filter(Boolean).join(' ')}>
-      <div className={styles.sticky}>
+    <div ref={rootRef} className={[styles.tabs, variant === 'default' ? '' : styles[variant]].filter(Boolean).join(' ')}>
+      <div ref={stickyRef} className={styles.sticky}>
         <div ref={listRef} className={styles.tablist} role="tablist" aria-label={label}>
           {tabs.map((tab, index) => (
             <button
