@@ -2,6 +2,7 @@ import 'server-only';
 import { connection } from 'next/server';
 import { cache } from 'react';
 import { cacheTag, cacheLife } from 'next/cache';
+import { connection } from 'next/server';
 import { getDb } from '@/server/db';
 import { readMenus } from './read';
 import { loadMenuState } from './menu-state';
@@ -12,6 +13,8 @@ async function cachedPublicMenus(restaurantId: 'papapasta' | 'centro') {
     return readMenus(getDb(), restaurantId, true);
 }
 export async function publicMenus(restaurantId: 'papapasta' | 'centro') {
+    // Keep database content out of the build/static shell, but retain tagged runtime caching.
+    // This must stay outside the cached scope: connection() inside "use cache" is invalid.
     await connection();
     return cachedPublicMenus(restaurantId);
 }

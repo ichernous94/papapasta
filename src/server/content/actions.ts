@@ -1,5 +1,4 @@
 'use server';
-import { invalidateRestaurantContent } from './invalidation';
 import { unstable_rethrow } from 'next/navigation';
 import { and, eq, sql } from 'drizzle-orm';
 import { ZodError } from 'zod';
@@ -10,6 +9,7 @@ import { prepareUpload } from '@/server/media/upload';
 import { saveItem, moveItem, saveStructure, changeContent, ContentError } from './write';
 import { itemInputSchema, structureInputSchema } from '@/validation/admin';
 import { readMenus } from './read';
+import { invalidateRestaurantContent } from './invalidation';
 const message = (error: unknown) => error instanceof ContentError ? error.message : error instanceof ZodError ? 'Check the form fields' : 'Could not save changes. Try again.';
 export async function saveItemAction(raw: unknown, form: FormData) {
     const { user } = await requireEditor();
@@ -30,11 +30,12 @@ export async function saveItemAction(raw: unknown, form: FormData) {
         // A photo may take time to upload; recheck revocation before committing content.
         await requireEditor();
         const restaurant = await saveItem(getDb(), user.id, parsed.data, uploadId);
-        invalidateRestaurantContent([restaurant]);
+        const affectedRestaurants = [restaurant];
         if (parsed.data.sourceMenuId && parsed.data.sourceMenuId !== parsed.data.menuId) {
             const source = await getDb().query.menus.findFirst({ where: (m, { eq }) => eq(m.id, parsed.data.sourceMenuId!) });
-            if (source && source.restaurantId !== restaurant) invalidateRestaurantContent([source.restaurantId]);
+            if (source) affectedRestaurants.push(source.restaurantId);
         }
+        invalidateRestaurantContent(affectedRestaurants);
         return { menus: await readMenus(getDb()) };
     }
     catch (error) {

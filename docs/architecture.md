@@ -1,5 +1,9 @@
 # PapaPasta — Architecture Notes
 
+**Confirmed public content freshness — 2026-11-04**
+- `publicMenus()` awaits request-time `connection()` outside its tagged `use cache` function. Static shells and skeletons build without reading PostgreSQL; cache tags, cache lifetime and React request deduplication remain unchanged.
+- Successful content actions share post-transaction invalidation of restaurant tags, home/menu/sitemap and standalone/intercepted dish paths. Centro uses internal rewrite destinations; transfers invalidate both restaurants. No browser polling or automatic reload is introduced. Validation and deployment notes: [content-refresh.md](content-refresh.md).
+
 > Status: working document. Only decisions explicitly marked **Confirmed** are treated as established. Review against the actual repository after initial scaffolding.
 
 ## 1. Product scope
