@@ -1,3 +1,4 @@
+import AdditionalMenuSections from '@/components/AdditionalMenuSections';
 import OptionalMenuSection from '@/components/OptionalMenuSection';
 import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
@@ -42,6 +43,7 @@ export default function MenuPage() {
         <DatabaseMenuSection restaurantId="papapasta" menuKey="wine" tabs label="Kategorie win i piw"/>
       </Container>
 </OptionalMenuSection>
+      <AdditionalMenuSections restaurantId="papapasta" className={styles.menuSection} noteClassName={styles.note}/>
       <Gallery images={galleryImages} />
     </>
   );

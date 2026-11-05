@@ -299,3 +299,12 @@ Discuss and document before implementation:
 **Confirmed category return with immediate visibility — 2026-11-05**
 - User category changes on both restaurant menus now smoothly return to the current MenuTabs origin below Header when scrolled past it, with the newly selected dishes visible throughout the return, without opacity hiding or a 250 ms fade. Selection/ARIA updates immediately; a temporary minimum height prevents short-category collapse. Existing active-tab clicks and initial/data/cache renders do not start transitions.
 - Native scrolling is monitored only while active, with a 1.5 s wait bound. New selection, manual input, reduced motion and cached Activity cleanup cancel/complete it and remove all guards/listeners. Centro observes root size to keep clipping correct. URL/history stays unchanged. The custom external-map row below Centro's map is removed; embed/gallery remain. See [category-switching.md](category-switching.md).
+
+**Confirmed menu section creation — 2026-11-05**
+- Both restaurants support Add Section with name, subtitle and optional banner through existing media processing. UUID-based keys are generated server-side; restaurant-row locking serializes append order. Admin/MFA is checked again after upload, creation is audited, and shared content invalidation publishes changes.
+- New sections appear automatically after the existing special sections on each restaurant's menu page, using themed category tabs and a restaurant-specific default photograph. Creation selects the new section and Categories; categories/groups/dishes use existing controls. Built-in layouts, anchors and recommendations stay independent. No schema migration is required. See [menu-section-creation.md](menu-section-creation.md).
+
+
+**Confirmed smooth Header navigation — 2026-11-05**
+- Logo and internal Header links on both restaurants preserve their destinations and request native smooth scrolling to the page top. Selecting the current destination also returns smoothly. Mobile navigation waits until its exit presence ends and the viewport scroll lock is released; reduced motion uses instant scrolling.
+- Navigation is still explicitly triggered by links, leaving ordinary Back/Forward restoration, category tabs, wine anchors and external destinations unchanged. Browser-native scrolling controls duration. See [header-smooth-scroll.md](header-smooth-scroll.md).

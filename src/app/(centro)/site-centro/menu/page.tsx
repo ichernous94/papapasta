@@ -1,3 +1,4 @@
+import AdditionalMenuSections from '@/components/AdditionalMenuSections';
 import OptionalMenuSection from '@/components/OptionalMenuSection';
 import MenuBanner from '@/components/MenuBanner';
 import DatabaseMenuSection from '@/components/DatabaseMenuSection';
@@ -27,6 +28,7 @@ export default function CentroMenuPage() {
 <MenuBanner restaurantId="centro" menuKey="kids" image={images.kids} variant="kids" />
     <Container as="section" className={styles.section} aria-label="Menu bambini"><DatabaseMenuSection restaurantId="centro" menuKey="kids"/></Container>
 </OptionalMenuSection>
+    <AdditionalMenuSections restaurantId="centro" className={styles.section} noteClassName={styles.note}/>
     <Gallery name="Papa Pasta Centro" images={centroGallery} />
   </>;
 }

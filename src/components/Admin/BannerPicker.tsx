@@ -5,7 +5,7 @@ import { FiUploadCloud } from 'react-icons/fi';
 import type { EditorMenu } from '@/types/admin';
 import styles from './Admin.module.scss';
 
-export default function BannerPicker({ menu, available, pending, onChange }: { menu: EditorMenu; available: boolean; pending: boolean; onChange: (file: File | null, remove: boolean) => void }) {
+export default function BannerPicker({ menu, available, pending, onChange }: { menu: Pick<EditorMenu, 'bannerImage'>; available: boolean; pending: boolean; onChange: (file: File | null, remove: boolean) => void }) {
   const [preview, setPreview] = useState('');
   const [removed, setRemoved] = useState(false);
   const [error, setError] = useState('');
