@@ -24,7 +24,7 @@
 - The restaurant-selection page lives at `src/app/(landing)/page.tsx`, outside the existing `(main)` layout. Its public URL remains `/` and it exports the full PapaPasta metadata with its own canonical and Open Graph URL.
 - The landing page has its own `main` and uses `src/components/SectionHome/` with colocated SCSS. It does not include the legacy Header, Footer, Cookie or GoTopBtn.
 - Use the supplied images by their agreed filenames: `papapasta-pizza-wino-steki.jpg` for the PapaPasta panel and `papapasta-centro.jpg` for Centro, even though their interior photographs do not match those names. Do not rename the assets.
-- The selection is fixed to a stable 100svh viewport, with equal stacked panels below 1024 CSS px and columns above; landscape below 500 px height also uses columns. Safe padding and compact spacing keep both links visible. Enlarged text may scroll inside a panel; selection-only viewport locking restores ordinary page scrolling on navigation.
+- The selection is fixed to a stable 100svh viewport, with equal stacked panels below 1024 CSS px and columns above; landscape below 500 px height also uses columns. Safe padding and compact spacing keep both links visible. Panels clip overflow without internal scrolling; selection-only viewport locking restores ordinary page scrolling on navigation. Browser-managed zoom remains enabled.
 - Statically import both JPEGs and use `next/image` blur placeholders with responsive sizes. Preserve clear SVG logos and darken only the background photographs.
 - The PapaPasta landing link opens the internal `/home` route. Centro opens `https://centro.papapasta.pl/` in the same tab, where Proxy selects the Centro branch. During local development, the Centro selection button uses `centro.localhost` with the current protocol and port; production keeps the canonical domain.
 - Shared `src/components/ui/Button/` supports typed anchor and native button modes. Use Next Link for internal destinations, native anchors for external destinations, visible keyboard focus, and a light fill with dark text on hover.
@@ -55,7 +55,7 @@
 - Administration and content APIs are implemented below; the broader PapaPasta sitemap/robots migration remains a future stage; Centro has separate hostname routing and metadata routes. Autumn content is static and does not expire automatically.
 
 **Confirmed motion and navigation refinements**
-- Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 36px above over 1200ms once; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
+- Reveal is a small client component using the installed react-intersection-observer. Section/page headings enter from 1rem above over 1200ms; keyed banners run once per document, including Suspense replacement and cached-route return; content/gallery photographs fade and scale from 1.05 to 1 over 1200ms inside clipped containers, with a short stagger. Image scale is independent of the hover transform. Server HTML remains visible without JS. Respect prefers-reduced-motion and preserve blur placeholders.
 - Header navigation explicitly scrolls to the document top after the target route commits and the exiting menu releases its scroll lock. Re-selecting the current page also goes to the top. Wine hash links retain their section-anchor behavior.
 - Scroll locking changes only the root viewport overflow, preserving body overflow so a second scroll container cannot detach the sticky Header. Overlay focus changes use preventScroll. Keep locks and focus containment until exit animations finish, including rapid reopen and concurrent overlays.
 - Burger navigation is viewport-positioned immediately below the measured Header, with a sliding/fading entrance and exit, independent internal scrolling and a lightly dimmed backdrop. Header has a visible bottom shadow.
@@ -269,4 +269,14 @@ Discuss and document before implementation:
 **Confirmed compact header and fixed selection — 2026-11-05**
 - Below 768 px, Centro uses a 4.5rem left logo and right burger; PapaPasta centers a logo reduced by 15% with symmetric side columns. Telephone strips and tablet/desktop layouts remain intact.
 - Burger panel/backdrop transitions and exit presence share a 350 ms duration; reversing transitions preserves intermediate values. Reduced motion bypasses animation and closing delay.
-- Restaurant selection stays within 100svh with no ordinary page scrolling; panels allow enlarged-content access and switch to columns on low landscape screens. No global scroll policy is changed. Validation and affected files: [mobile-header-selection.md](mobile-header-selection.md).
+- Restaurant selection stays within 100svh with no ordinary page scrolling; panels switch to columns on low landscape screens; the later strict-scroll revision removes internal panel scrolling. No global scroll policy is changed. Validation and affected files: [mobile-header-selection.md](mobile-header-selection.md).
+
+
+**Confirmed strict selection lock and Centro gradient — 2026-11-05**
+- The selection has no internal or document scrolling. Pre-hydration CSS and route-only gesture guards enforce it; an active marker is cleared for retained hidden Next.js routes so other pages continue scrolling. Back/Forward reactivation was verified.
+- html/body use the shared radial-gradient token with #142119 fallback; Centro uses the same gradient with #f3ede0 text and transparent main sections. PapaPasta, legacy public pages and Admin retain light surfaces. See [selection-lock-gradient.md](selection-lock-gradient.md).
+
+
+**Confirmed photo loading and one-time banner titles — 2026-11-05**
+- PhotoImage preserves Next Image props/ref/placeholder and server/no-JS readability while applying a client-only 5px loading blur, removed on load/error over 350 ms. Cached loads, source changes and reduced motion are handled. Functional logos/icons/QR are excluded.
+- A root client Reveal provider holds per-document banner reservations; started keys survive fallback replacement and hidden Activity cleanup, while unstarted reservations are releasable for Strict Mode replay. Menu keys include restaurant and menu identity. No storage, global server state or cache-policy changes are introduced. Validation: [photo-loading-reveal.md](photo-loading-reveal.md).

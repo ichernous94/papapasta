@@ -3,7 +3,7 @@ import BannerPicker from './BannerPicker';
 import AllergenPicker from './AllergenPicker';
 import { IoRestaurantOutline } from 'react-icons/io5';
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import { FiPlus, FiEdit2, FiTrash2, FiArrowUp, FiArrowDown, FiMoreVertical, FiUploadCloud } from 'react-icons/fi';
 import { saveItemAction, moveItemAction, saveStructureAction, changeContentAction } from '@/server/content/actions';
 import type { EditorMenu, EditorItem } from '@/types/admin';

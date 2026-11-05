@@ -1,5 +1,6 @@
 .site {
   min-block-size: 100svh;
+  background: #fdfdfd;
   // A full-content containing block keeps the sticky header attached through the footer.
   // Do not add overflow or a transform here: the menu backdrop is viewport-positioned.
 }

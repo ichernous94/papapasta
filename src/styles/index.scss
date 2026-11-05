@@ -8,3 +8,15 @@
   margin: 0 auto;
   padding: $containerPadding;
 }
+
+:root {
+  --page-background-color: #142119;
+  --page-background-gradient: radial-gradient(ellipse at 10% 15%, #405542 0%, #2b3b2e 42%, #142119 100%);
+}
+html, body {
+  background-color: var(--page-background-color);
+  background-image: var(--page-background-gradient);
+}
+
+// Preserve the light surface of legacy PapaPasta pages, including the cookie policy.
+.wrapper { background-color: $colorBgWhite; }

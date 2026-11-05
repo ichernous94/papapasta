@@ -1,6 +1,7 @@
 'use client';
 
-import Image, { type StaticImageData } from 'next/image';
+import type { StaticImageData } from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import { useId, useRef, useState } from 'react';
 import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { Swiper, SwiperSlide } from 'swiper/react';

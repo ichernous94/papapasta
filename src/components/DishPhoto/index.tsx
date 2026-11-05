@@ -1,6 +1,6 @@
 'use client';
 import { useId, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import Modal from '@/components/ui/Modal';
 import type { DishImage } from '@/types/menu';
 import styles from './DishPhoto.module.scss';

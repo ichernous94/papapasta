@@ -24,8 +24,8 @@
   align-items: center;
   min-inline-size: 0;
   min-block-size: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: clip;
+  overscroll-behavior: none;
   padding-block: clamp(1.5rem, 4vh, 3rem);
   padding-inline-start: max(clamp(1rem, 3vw, 1.5rem), env(safe-area-inset-left, 0px));
   padding-inline-end: max(clamp(1rem, 3vw, 1.5rem), env(safe-area-inset-right, 0px));
@@ -160,4 +160,16 @@
   .centroLogo { inline-size: min(45%, 8rem); }
   .content { gap: 0.75rem; }
   .address { font-size: 1rem; }
+}
+
+// Route-scoped CSS locks the document before hydration; other pages keep normal scrolling.
+:global(html):has(.selection[data-selection-active='true']) { overflow: hidden; overscroll-behavior: none; }
+:global(body):has(.selection[data-selection-active='true']) {
+  position: fixed;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100vh;
+  block-size: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
 }

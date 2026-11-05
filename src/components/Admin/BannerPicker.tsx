@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import { FiUploadCloud } from 'react-icons/fi';
 import type { EditorMenu } from '@/types/admin';
 import styles from './Admin.module.scss';

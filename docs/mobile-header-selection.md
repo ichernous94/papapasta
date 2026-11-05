@@ -1,5 +1,7 @@
 # Compact header and fixed restaurant selection — 2026-11-05
 
+Later update: [selection-lock-gradient.md](selection-lock-gradient.md) supersedes local selection-panel scrolling with a strict scroll lock.
+
 ## Behavior
 
 Below 768 CSS px, both headers keep their existing telephone strip. Centro places its 4.5rem logo on the left and the burger on the right. PapaPasta uses equal 3rem side columns to keep its logo geometrically centered; its former `min(70vw, 17rem)` width is reduced by 15% to `min(59.5vw, 14.45rem)`. The burger remains 48×48 px. Layouts at 768 px and above are unchanged.

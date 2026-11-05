@@ -1,5 +1,6 @@
 import { allura, lato, notoSans, openSans, roboto } from '@/config/fonts';
 import '@/styles/index.scss';
+import RevealProvider from '@/components/ui/Reveal/Provider';
 
 // REACT QUERY PROVIDER
 import ReactQueryProvider from '@/services/ReactQueryProvider';
@@ -14,10 +15,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${lato.variable} ${openSans.variable} ${roboto.variable} ${notoSans.variable} ${allura.variable}`}
       >
-        <ReactQueryProvider>
+        <RevealProvider><ReactQueryProvider>
           <ToastContainer />
           <div className="siteWrapper">{children}</div>
-        </ReactQueryProvider>
+        </ReactQueryProvider></RevealProvider>
       </body>
     </html>
   );

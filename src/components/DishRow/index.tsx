@@ -1,5 +1,5 @@
 import MenuPrice from '@/components/MenuPrice';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import Link from 'next/link';
 import type { MenuItem } from '@/types/menu';
 import { dishPath } from '@/server/content/dishes';

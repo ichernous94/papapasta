@@ -1,7 +1,8 @@
 @use '../../../styles/helpers/variables' as theme;
 .site {
-  --site-surface: #00191b;
-  --site-text: #f7f7f5;
+  --site-surface: #142119;
+  --site-section-surface: transparent;
+  --site-text: #f3ede0;
   --site-muted: #c4cfce;
   --site-divider: #536665;
   --site-accent: #{theme.$colorGold};
@@ -10,7 +11,8 @@
   --site-social-color: #{theme.$colorGold};
   --site-social-bg: #{theme.$colorGold};
   min-block-size: 100svh;
-  background: var(--site-surface);
+  background-color: var(--page-background-color, #142119);
+  background-image: var(--page-background-gradient);
   color: var(--site-text);
   line-height: 1.65;
   > main { min-inline-size: 0; }
@@ -22,4 +24,4 @@
   }
 }
 
-.headerFallback { block-size: var(--restaurant-header-height, 120px); background: #00191b; }
+.headerFallback { block-size: var(--restaurant-header-height, 120px); background: var(--site-surface, #142119); }

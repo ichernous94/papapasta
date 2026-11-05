@@ -1,3 +1,4 @@
+import PhotoImage from '@/components/ui/PhotoImage';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import SelectionScrollLock from './SelectionScrollLock';
@@ -33,7 +34,7 @@ const restaurants = [
 
 export default function SectionHome() {
   return (
-    <section className={styles.selection} aria-labelledby="restaurant-selection-title">
+    <section data-restaurant-selection data-selection-active="true" className={styles.selection} aria-labelledby="restaurant-selection-title">
       <SelectionScrollLock/>
       <h1 id="restaurant-selection-title" className={styles.visuallyHidden}>
         Wybierz restaurację
@@ -46,7 +47,7 @@ export default function SectionHome() {
           className={styles.panel}
           aria-labelledby={`${restaurant.id}-title`}
         >
-          <Image
+          <PhotoImage
             className={styles.backgroundImage}
             src={restaurant.image}
             alt=""

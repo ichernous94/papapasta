@@ -9,9 +9,9 @@ type Props = Omit<ComponentProps<typeof ImageBanner>, 'title' | 'subtitle' | 'co
 async function ResolvedBanner({ restaurantId, menuKey, ...props }: Props) {
   const fallback = (menuHeadings[restaurantId] as Record<string, { title: string; subtitle: string }>)[menuKey];
   const menu = findMenuSection(await publicMenuState(restaurantId), restaurantId, menuKey);
-  return <ImageBanner {...props} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
+  return <ImageBanner {...props} restaurantId={restaurantId} revealKey={`menu:${menuKey}`} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
 }
 export default function MenuBanner(props: Props) {
   const fallback = (menuHeadings[props.restaurantId] as Record<string, { title: string; subtitle: string }>)[props.menuKey];
-  return <Suspense fallback={<ImageBanner {...props} {...fallback}/>}><ResolvedBanner {...props}/></Suspense>;
+  return <Suspense fallback={<ImageBanner {...props} {...fallback} revealKey={`menu:${props.menuKey}`}/>}><ResolvedBanner {...props}/></Suspense>;
 }

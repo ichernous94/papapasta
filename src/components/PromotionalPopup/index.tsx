@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import Modal from '@/components/ui/Modal';
 import promotionalImage from '../../../public/images/promotional/promotional-image.jpg';
 import styles from './PromotionalPopup.module.scss';

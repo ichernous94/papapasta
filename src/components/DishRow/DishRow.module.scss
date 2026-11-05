@@ -28,7 +28,7 @@
   border-radius: clamp(0.875rem, 1.5vw, 1.25rem);
   overflow: hidden;
   background: #0b2828;
-  img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; transition: transform 450ms ease; }
+  img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; transition: transform 450ms ease, filter 350ms ease; }
 }
 .badge { display: inline-block; margin-inline-start: 0.5rem; font-size: 0.75em; font-weight: 400; color: var(--dish-accent, #{theme.$colorGoldText}); }
 @media (hover: hover) { .row:hover .photo img { transform: scale(1.035); } .row:hover h3, .row:hover h4 { color: var(--dish-accent, #{theme.$colorGoldText}); } }

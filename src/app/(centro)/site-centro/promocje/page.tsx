@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from '@/components/ui/PhotoImage';
 import Link from 'next/link';
 import ImageBanner from '@/components/ImageBanner';
 import Container from '@/components/ui/Container';
@@ -11,7 +11,7 @@ import styles from '@/components/CentroPages/CentroPages.module.scss';
 export const metadata = centroPageMetadata('/promocje', 'Papa Pasta Centro - Okazje i promocje', 'Poznaj promocje Papa Pasta Centro: zestawy obiadowe, specjalne propozycje i sezonowe smaki przy Jurowieckiej 11 w Białymstoku.');
 export default function PromotionsPage() {
   return <>
-    <ImageBanner image={images.landscape} title="OKAZJE I PROMOCJE" subtitle="specjalne propozycje w lokalu" headingLevel="h1" preload />
+    <ImageBanner restaurantId="centro" image={images.landscape} title="OKAZJE I PROMOCJE" subtitle="specjalne propozycje w lokalu" headingLevel="h1" preload />
     <Container size="text" className={styles.intro}><p>{centroCopy.promotions}</p></Container>
     <Container className={[styles.section, styles.cards].join(' ')}>
       <article><Link href="/zestawy-obiadowe/" className={styles.card}>

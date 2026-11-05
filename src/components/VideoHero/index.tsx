@@ -1,4 +1,5 @@
 'use client';
+import PhotoImage from '@/components/ui/PhotoImage';
 
 import Image, { type StaticImageData } from 'next/image';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -71,7 +72,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
 
   return (
     <section className={styles.hero} aria-labelledby={titleId}>
-      <Image
+      <PhotoImage
         className={styles.poster}
         src={poster}
         alt=""
