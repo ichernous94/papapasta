@@ -31,9 +31,26 @@
 .transcript { position: absolute; inline-size: 1px; block-size: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-height: 499px) { .dialog { --modal-width: 480px; } }
 
-.dialog[open] { animation: promoReveal 350ms ease-out both; }
-.dialog[open][data-state='closing'] { animation: promoDismiss 350ms ease-in both; }
+// Only the promotional dialog overrides Modal's keyframes; transitions can reverse mid-opening.
+.dialog[open] {
+  animation: none;
+  opacity: 1;
+  transition: opacity var(--modal-duration, 600ms) ease-in-out;
+  &::backdrop {
+    animation: none;
+    opacity: 1;
+    transition: opacity var(--modal-duration, 600ms) ease-in-out;
+  }
+}
+.dialog[open][data-state='closing'] {
+  animation: none;
+  opacity: 0;
+  &::backdrop { animation: none; opacity: 0; }
+}
+@starting-style {
+  .dialog[open], .dialog[open]::backdrop { opacity: 0; }
+}
 .poster { aspect-ratio: 2079 / 2954; }
-@keyframes promoReveal { from { opacity: 0; } to { opacity: 1; } }
-@keyframes promoDismiss { to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .dialog[open], .dialog[open][data-state='closing'] { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open], .dialog[open]::backdrop { transition: none; }
+}

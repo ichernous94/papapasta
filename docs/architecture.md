@@ -284,3 +284,18 @@ Discuss and document before implementation:
 **Confirmed photo loading and one-time banner titles — 2026-11-05**
 - PhotoImage preserves Next Image props/ref/placeholder and server/no-JS readability while applying a client-only 5px loading blur, removed on load/error over 350 ms. Cached loads, source changes and reduced motion are handled. Functional logos/icons/QR are excluded.
 - A root client Reveal provider holds per-document banner reservations; started keys survive fallback replacement and hidden Activity cleanup, while unstarted reservations are releasable for Strict Mode replay. Menu keys include restaurant and menu identity. No storage, global server state or cache-policy changes are introduced. Validation: [photo-loading-reveal.md](photo-loading-reveal.md).
+
+
+**Confirmed sticky categories and Centro card surface — 2026-11-05**
+- Each MenuTabs owns a sticky outer surface below the measured Header and a horizontally scrollable inner list with vertical overflow hidden. Sticky scope ends with that MenuTabs; vertical gestures continue scrolling the document. Existing selection and URL behavior remain unchanged.
+- Centro modal and standalone dish surfaces use the shared radial gradient; PapaPasta's white card styling stays intact. See [sticky-categories-dish-gradient.md](sticky-categories-dish-gradient.md) for fixture/browser coverage and physical Safari limitations.
+
+
+**Confirmed transparent Centro tabs and promo timings — 2026-11-05**
+- Centro preserves the approved radial palette. After initial geometry measurement, its sticky category bar is transparent and the active panel is clipped below its lower edge. One scheduled animation frame handles scroll/resize updates; Header height and content changes are observed. Cached Activity cleanup, focus visibility and opaque no-JS fallback are supported. PapaPasta retains its opaque bar without clipping.
+- PromotionalPopup alone uses opacity transitions of 600 ms open / 450 ms close; exit presence and backdrop share the duration, partial opening can reverse without a jump, and reduced motion has no close delay. No storage, menu data or cache-policy changes. See [transparent-categories-promo.md](transparent-categories-promo.md).
+
+
+**Confirmed category return with immediate visibility — 2026-11-05**
+- User category changes on both restaurant menus now smoothly return to the current MenuTabs origin below Header when scrolled past it, with the newly selected dishes visible throughout the return, without opacity hiding or a 250 ms fade. Selection/ARIA updates immediately; a temporary minimum height prevents short-category collapse. Existing active-tab clicks and initial/data/cache renders do not start transitions.
+- Native scrolling is monitored only while active, with a 1.5 s wait bound. New selection, manual input, reduced motion and cached Activity cleanup cancel/complete it and remove all guards/listeners. Centro observes root size to keep clipping correct. URL/history stays unchanged. The custom external-map row below Centro's map is removed; embed/gallery remain. See [category-switching.md](category-switching.md).

@@ -1,14 +1,26 @@
 @use '../../styles/helpers/variables' as theme;
 
 .tabs { min-inline-size: 0; }
+.sticky {
+  position: sticky;
+  inset-block-start: var(--restaurant-header-height, 96px);
+  z-index: 20;
+  background-color: var(--site-surface, #fdfdfd);
+  margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
+}
+.papapasta .sticky { background-color: #fdfdfd; }
+.centro .sticky {
+  background-color: var(--page-background-color, #142119);
+  background-image: var(--page-background-gradient);
+}
 .tablist {
   display: flex;
   gap: clamp(0.25rem, 1vw, 1rem);
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   border-block-end: 2px solid var(--site-divider, #{theme.$colorFont});
   padding: 0.25rem 0.25rem 0.75rem;
-  margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
   scrollbar-width: thin;
   button {
     flex: 1 0 auto;
@@ -47,4 +59,11 @@
 @media (max-width: 599px) {
   .categoryTitle { position: static; inline-size: auto; block-size: auto; overflow: visible; clip-path: none; font-size: 1.75rem; line-height: 1.35; font-weight: 700; color: #d7bb91; padding-block-end: 1.25rem; border-block-end: 1px dotted #c9a579; margin-block-end: 0; }
   .papapasta .categoryTitle { color: #9a6b2f; }
+}
+
+// Progressive enhancement: keep the opaque surface until a valid clip has been computed.
+.centro[data-clip-ready='true'] {
+  > .sticky { background: transparent; }
+  > .panel:not([hidden]) { clip-path: inset(var(--menu-panel-clip-top, 0px) 0 0); }
+  > .panel:focus-visible { outline-offset: -2px; }
 }
