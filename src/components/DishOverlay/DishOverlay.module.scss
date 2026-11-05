@@ -1,8 +1,8 @@
 .dialog {
   --modal-width: 1000px;
   --modal-padding: clamp(1.25rem, 3vw, 2.5rem);
-  --modal-surface: #00191b;
-  --modal-color: #f7f7f5;
+  --modal-surface: #142119;
+  --modal-color: #f3ede0;
   --modal-backdrop: #001311b8;
   border: 2px solid #b6a68b;
   border-radius: clamp(1.25rem, 2.5vw, 2rem);
@@ -13,3 +13,5 @@
 @media (max-width: 599px) { .dialog { --modal-padding: 2.75rem 1.25rem 1.5rem; border-radius: 1.5rem; } }
 
 .light { --modal-surface: #fff; --modal-color: #1e2128; --modal-backdrop: #29251f80; border-color: #c9a579; box-shadow: 0 20px 80px #0003; }
+
+.dialog:not(.light) { background-color: var(--page-background-color, #142119); background-image: var(--page-background-gradient); }
