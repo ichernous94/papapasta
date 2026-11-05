@@ -13,7 +13,7 @@ import { createAuth } from '../../src/server/auth/config';
 import * as schema from '../../src/server/db/schema';
 import { seedContent } from '../../src/server/content/seed';
 import { readMenus } from '../../src/server/content/read';
-import { saveItem, moveItem, saveStructure, changeContent } from '../../src/server/content/write';
+import { saveItem, moveItem, saveStructure, changeContent, createMenu } from '../../src/server/content/write';
 function totp(uri: string) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     let bits = '';
@@ -312,5 +312,38 @@ test('Sections: banner lifecycle, shared photos, protected deletion and optimist
         assert.equal(await db.query.categories.findFirst({where:eq(schema.categories.id,'delete-'+categoryId)}),undefined);
         assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'orphan');
         assert.equal((await db.query.auditLog.findFirst({where:eq(schema.auditLog.targetId,extraId),orderBy:(a,{desc})=>[desc(a.createdAt)]}))!.action,'menu.delete');
+    } finally { await pool.end(); }
+});
+
+test('New sections: independent IDs, serialized order, upload ownership, audit and CRUD', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!, 4);
+    const actor = 'section-create-test';
+    const photo = randomUUID();
+    const input = { restaurantId: 'centro', title: 'Menu letnie', subtitle: 'Estate' };
+    try {
+        await db.insert(schema.mediaAssets).values({ id: photo, objectKey: `test/${photo}.webp`, width: 1200, height: 600, mimeType: 'image/webp', byteSize: 100, blurDataURL: '', createdBy: actor });
+        const before = await readMenus(db, 'centro');
+        await assert.rejects(createMenu(db, 'other-editor', input, photo), /unavailable/);
+        assert.equal((await readMenus(db, 'centro')).length, before.length);
+        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'pending');
+        const [first, second] = await Promise.all([createMenu(db, actor, input, photo), createMenu(db, actor, input)]);
+        assert.notEqual(first.menuId, second.menuId);
+        const rows = await db.query.menus.findMany({ where: eq(schema.menus.restaurantId, 'centro'), orderBy: (m, { asc }) => [asc(m.sortOrder)] });
+        const created = rows.filter(m => [first.menuId, second.menuId].includes(m.id));
+        assert.equal(created.length, 2);
+        assert.equal(new Set(created.map(m => m.sortOrder)).size, 2);
+        assert.ok(created.every(m => m.key.startsWith('section-') && m.version === 1));
+        assert.ok(rows.slice(-2).every(m => [first.menuId, second.menuId].includes(m.id)));
+        const section = (await readMenus(db, 'centro')).find(m => m.id === first.menuId)!;
+        assert.equal(section.bannerImageId, photo);
+        assert.deepEqual(section.categories, []);
+        assert.ok(!(await readMenus(db, 'papapasta')).some(m => m.id === first.menuId));
+        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'ready');
+        assert.equal((await db.query.auditLog.findFirst({ where: eq(schema.auditLog.targetId, first.menuId) }))!.action, 'menu.create');
+        await changeContent(db, actor, { action: 'createCategory', menuId: first.menuId, version: 1, title: 'Starters', note: '', columns: 1, columnBreak: 1 });
+        await assert.rejects(saveStructure(db, actor, { menuId: first.menuId, id: first.menuId, version: 1, kind: 'menu', title: 'Stale', note: '', afterNote: '' }), /already changed/);
+        await changeContent(db, actor, { action: 'deleteMenu', menuId: first.menuId, version: 2 });
+        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'orphan');
+        await changeContent(db, actor, { action: 'deleteMenu', menuId: second.menuId, version: 1 });
     } finally { await pool.end(); }
 });

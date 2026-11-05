@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { and, eq, sql } from 'drizzle-orm';
 import type { createDatabase } from '@/server/db/connection';
-import { menus, categories, groups, items, mediaAssets, auditLog } from '@/server/db/schema';
-import { itemInputSchema, structureInputSchema } from '@/validation/admin';
+import { menus, categories, groups, items, mediaAssets, auditLog, restaurants } from '@/server/db/schema';
+import { itemInputSchema, structureInputSchema, createMenuSchema } from '@/validation/admin';
 import { z } from 'zod';
 type Database = ReturnType<typeof createDatabase>['db'];
 type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
@@ -180,5 +180,21 @@ export async function changeContent(db: Database, actorId: string, raw: unknown)
         }
         await finish(tx, actorId, menu.id, input.action, target);
         return menu.restaurantId;
+    });
+}
+
+export async function createMenu(db: Database, actorId: string, raw: unknown, uploadId?: string) {
+    const input = createMenuSchema.parse(raw);
+    return db.transaction(async tx => {
+        // Serialize creation per restaurant so simultaneous sections receive distinct positions.
+        const [restaurant] = await tx.select().from(restaurants).where(eq(restaurants.id, input.restaurantId)).for('update');
+        if (!restaurant) throw new ContentError('Restaurant not found.');
+        const [last] = await tx.select({ order: sql<number>`coalesce(max(${menus.sortOrder}), -1)` }).from(menus).where(eq(menus.restaurantId, input.restaurantId));
+        const key = `section-${randomUUID()}`;
+        const id = `${input.restaurantId}:${key}`;
+        if (uploadId) await attachUpload(tx, actorId, uploadId);
+        await tx.insert(menus).values({ id, key, ...input, sortOrder: Number(last.order) + 1, bannerImageId: uploadId ?? null });
+        await tx.insert(auditLog).values({ actorId, action: 'menu.create', targetId: id, details: { restaurantId: input.restaurantId, title: input.title } });
+        return { restaurantId: input.restaurantId, menuId: id };
     });
 }

@@ -21,3 +21,12 @@ export function publishedCategories(menu: EditorMenu) {
 export function hasPublishedItems(menu: EditorMenu) {
   return menu.categories.some(category => category.groups.some(group => group.items.some(item => item.visible)));
 }
+
+// Existing special sections retain their own layouts/anchors; all other sections render dynamically.
+const builtInSections = {
+  papapasta: new Set(['main', 'recommendations', 'autumn', 'kids', 'wine']),
+  centro: new Set(['main', 'recommendations', 'breakfast', 'autumn', 'kids']),
+};
+export function additionalMenuSections(state: MenuLoadState, restaurantId: RestaurantId) {
+  return state.status === 'ready' ? state.menus.filter(menu => menu.restaurantId === restaurantId && !builtInSections[restaurantId].has(menu.key)) : [];
+}

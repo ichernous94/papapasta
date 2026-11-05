@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { itemInputSchema, createUserSchema, qrInputSchema } from '../../src/validation/admin';
+import { itemInputSchema, createUserSchema, qrInputSchema, createMenuSchema } from '../../src/validation/admin';
 import { processDishImage } from '../../src/server/media/image-processing';
 import { seedMenus } from '../../src/server/content/seed-data';
 import { isAdminHost } from '../../src/server/auth/origin';
@@ -89,4 +89,12 @@ test('QR links permit only absolute HTTP(S) URLs and known restaurants', () => {
     for (const url of ['https://papapasta.pl/menu','http://centro.localhost:3000/menu']) assert.ok(qrInputSchema.safeParse({...base,url}).success);
     for (const url of ['javascript:alert(1)','data:text/html,test','/menu','ftp://example.test/menu','invalid']) assert.equal(qrInputSchema.safeParse({...base,url}).success,false);
     assert.equal(qrInputSchema.safeParse({...base,url:'https://example.test',restaurantId:'other'}).success,false);
+});
+
+test('Section creation validates names, isolates restaurant IDs and rejects internal fields', () => {
+    const input = { restaurantId: 'centro', title: '  Menu letnie  ', subtitle: '  Estate  ' };
+    assert.deepEqual(createMenuSchema.parse(input), { restaurantId: 'centro', title: 'Menu letnie', subtitle: 'Estate' });
+    for (const raw of [{ ...input, title: ' ' }, { ...input, title: 'a'.repeat(201) }, { ...input, restaurantId: 'other' }, { ...input, key: 'main' }, { ...input, bannerImageId: 'unowned-image' }]) {
+        assert.equal(createMenuSchema.safeParse(raw).success, false);
+    }
 });

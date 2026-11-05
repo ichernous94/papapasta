@@ -39,15 +39,15 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
     closeMenu();
     if (pathname === href && !menuPresent) {
       navigationTarget.current = null;
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, left: 0, behavior: reducedMotion ? 'instant' : 'smooth' });
     }
   };
 
   useEffect(() => {
     if (menuPresent || navigationTarget.current !== pathname) return;
     navigationTarget.current = null;
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [pathname, menuPresent]);
+    window.scrollTo({ top: 0, left: 0, behavior: reducedMotion ? 'instant' : 'smooth' });
+  }, [pathname, menuPresent, reducedMotion]);
 
   useEffect(() => { closeMenu(); }, [pathname, closeMenu]);
 
