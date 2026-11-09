@@ -1,21 +1,3 @@
-.site {
-  min-block-size: 100svh;
-  background: #fdfdfd;
-  // A full-content containing block keeps the sticky header attached through the footer.
-  // Do not add overflow or a transform here: the menu backdrop is viewport-positioned.
-}
-
-.site > main { min-inline-size: 0; }
-
-.site :global([id]) {
-  scroll-margin-block-start: calc(var(--restaurant-header-height, 96px) + 1rem);
-}
-
-@media (max-width: 767px) {
-  .site {
-    --button-padding: 0.5625rem 1.125rem;
-    --button-font-size: 0.8125rem;
-  }
-}
-
-.headerFallback { block-size: var(--header-height, 120px); }
+@use '../../styles/helpers/restaurant-theme' as theme;
+.site { @include theme.dark; }
+.headerFallback { block-size: var(--restaurant-header-height, 120px); background: var(--site-surface, #142119); }

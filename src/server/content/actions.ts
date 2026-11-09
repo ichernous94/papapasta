@@ -1,12 +1,11 @@
 'use server';
 import { unstable_rethrow } from 'next/navigation';
-import { and, eq, sql } from 'drizzle-orm';
 import { ZodError } from 'zod';
 import { requireEditor } from '@/server/auth/guards';
 import { getDb } from '@/server/db';
-import { mediaAssets, items, menus } from '@/server/db/schema';
+import { orphanUnused } from '@/server/media/references';
 import { prepareUpload } from '@/server/media/upload';
-import { saveItem, moveItem, saveStructure, changeContent, createMenu, ContentError } from './write';
+import { saveItem, moveItem, moveCategory, saveStructure, changeContent, createMenu, ContentError } from './write';
 import { itemInputSchema, structureInputSchema, createMenuSchema } from '@/validation/admin';
 import { readMenus } from './read';
 import { invalidateRestaurantContent } from './invalidation';
@@ -40,7 +39,7 @@ export async function saveItemAction(raw: unknown, form: FormData) {
     }
     catch (error) {
         if (uploadId)
-            await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql `not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${uploadId})`));
+            await getDb().transaction(tx => orphanUnused(tx, uploadId!));
         unstable_rethrow(error);
         return { error: message(error) };
     }
@@ -74,7 +73,7 @@ export async function saveStructureAction(raw: unknown, form?: FormData) {
         return { menus: await readMenus(getDb()) };
     }
     catch (error) {
-        if (uploadId) await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${uploadId})`));
+        if (uploadId) await getDb().transaction(tx => orphanUnused(tx, uploadId!));
         unstable_rethrow(error);
         return { error: message(error) };
     }
@@ -104,8 +103,17 @@ export async function createMenuAction(raw: unknown, form: FormData) {
         invalidateRestaurantContent([created.restaurantId]);
         return { menus: await readMenus(getDb()), menuId: created.menuId };
     } catch (error) {
-        if (uploadId) await getDb().update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, uploadId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${uploadId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${uploadId})`));
+        if (uploadId) await getDb().transaction(tx => orphanUnused(tx, uploadId!));
         unstable_rethrow(error);
         return { error: message(error) };
     }
+}
+
+export async function moveCategoryAction(raw: unknown) {
+    const { user } = await requireEditor();
+    try {
+        const restaurant = await moveCategory(getDb(), user.id, raw);
+        invalidateRestaurantContent([restaurant]);
+        return { menus: await readMenus(getDb()) };
+    } catch (error) { unstable_rethrow(error); return { error: message(error) }; }
 }

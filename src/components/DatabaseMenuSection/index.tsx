@@ -1,3 +1,4 @@
+import { menuText } from '@/utils/menuText';
 import { Suspense } from 'react';
 import MenuList from '@/components/MenuList';
 import MenuTabs from '@/components/MenuTabs';
@@ -17,7 +18,7 @@ async function Content({ restaurantId, menuKey, tabs = false, label = 'Kategorie
   const categories = publishedCategories(menu);
   return tabs ? <MenuTabs variant={restaurantId} label={label} tabs={categories.map(category => ({
     id: category.id, label: category.label, content: <>
-      {category.note && <p className={noteClassName}>{category.note}</p>}
+      {category.note && <p className={noteClassName}>{menuText(category.note)}</p>}
       {category.groups.some(group => group.items.length) ? <MenuList variant={restaurantId} groups={category.groups} columns={category.columns} columnBreak={category.columnBreak}/> : <MenuState/>}
     </>,
   }))}/> : <MenuList variant={restaurantId} groups={categories.flatMap(category => category.groups)} columns={columns}/>;

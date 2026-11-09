@@ -1,3 +1,4 @@
+import type { ArticleBlock } from '@/types/content';
 import type { AllergenId } from '@/config/allergens';
 import { relations } from 'drizzle-orm';
 import { type AnyPgColumn, pgTable, text, integer, boolean, timestamp, uuid, jsonb, uniqueIndex, index } from 'drizzle-orm/pg-core';
@@ -35,6 +36,7 @@ export const items = pgTable('menu_items', {
     id: text('id').primaryKey(), groupId: text('group_id').notNull().references(() => groups.id, { onDelete: 'cascade' }),
     name: text('name').notNull(), portion: text('portion').notNull().default(''), price: text('price').notNull().default(''),
     allergens: text('allergens').array().$type<AllergenId[]>().notNull().default([]),
+    meatless: boolean('meatless').notNull().default(false), recommended: boolean('recommended').notNull().default(false), spicy: boolean('spicy').notNull().default(false),
     description: text('description').array().notNull().default([]), isNew: boolean('is_new').notNull().default(false),
     visible: boolean('visible').notNull().default(true), sortOrder: integer('sort_order').notNull().default(0),
     imageId: uuid('image_id').references(() => mediaAssets.id), imageAlt: text('image_alt').notNull().default(''),
@@ -57,3 +59,23 @@ export const qrCodes = pgTable('qr_codes', {
     createdBy: text('created_by').notNull(), createdAt: createdAt(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const promotions = pgTable('promotions', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    restaurantId: text('restaurant_id').notNull().references(() => restaurants.id),
+    slug: text('slug').notNull().unique(), title: text('title').notNull(),
+    date: text('date').notNull(), body: jsonb('body').$type<ArticleBlock[]>().notNull().default([]),
+    published: boolean('published').notNull().default(false), version: integer('version').notNull().default(1),
+    imageId: uuid('image_id').references(() => mediaAssets.id), staticImage: text('static_image'), imageAlt: text('image_alt').notNull().default(''),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+export const restaurantGalleries = pgTable('restaurant_galleries', {
+    restaurantId: text('restaurant_id').primaryKey().references(() => restaurants.id),
+    version: integer('version').notNull().default(1),
+});
+export const galleryEntries = pgTable('gallery_entries', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    restaurantId: text('restaurant_id').notNull().references(() => restaurantGalleries.restaurantId, { onDelete: 'cascade' }),
+    imageId: uuid('image_id').references(() => mediaAssets.id), staticImage: text('static_image'),
+    alt: text('alt').notNull().default(''), visible: boolean('visible').notNull().default(true), sortOrder: integer('sort_order').notNull().default(0),
+}, table => [index('gallery_restaurant').on(table.restaurantId)]);

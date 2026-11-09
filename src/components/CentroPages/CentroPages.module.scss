@@ -19,3 +19,5 @@
 @media (max-width: 1023px) { .contacts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .contactBlock { &:nth-child(3) { border-inline-start: 0; } &:nth-child(n+3) { border-block-start: 1px solid theme.$colorGold; } } }
 @media (max-width: 767px) { .contacts, .cards { grid-template-columns: minmax(0, 1fr); } .contactBlock { border-inline-start: 0; &:not(:first-child) { border-block-start: 1px solid theme.$colorGold; } } }
 @media (prefers-reduced-motion: reduce) { .card, .card img, .contact a { transition: none; } }
+
+.article { h3 { font-size: 1.25rem; margin-block: 1.5rem 0.75rem; } p, li { white-space: pre-line; } > a { display: inline-block; margin-block-end: 1rem; color: #d7bb91; } }

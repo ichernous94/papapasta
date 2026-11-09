@@ -4,9 +4,9 @@ import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
 import MenuBanner from '@/components/MenuBanner';
 import DatabaseMenuSection from '@/components/DatabaseMenuSection';
-import Gallery from '@/components/Gallery';
+import RestaurantGallery from '@/components/RestaurantGallery';
 import Button from '@/components/ui/Button';
-import { galleryImages, steakAndSides, autumnMenuImage, kidsMenuImage, wineCellar } from '@/config/papapasta-images';
+import { steakAndSides, autumnMenuImage, kidsMenuImage, wineCellar } from '@/config/papapasta-images';
 import { papaPasta, papaPastaCopy } from '@/config/papapasta';
 import { papaPastaPageMetadata } from '@/config/metadata';
 import styles from '@/components/PapaPastaPages/PageContent.module.scss';
@@ -44,7 +44,7 @@ export default function MenuPage() {
       </Container>
 </OptionalMenuSection>
       <AdditionalMenuSections restaurantId="papapasta" className={styles.menuSection} noteClassName={styles.note}/>
-      <Gallery images={galleryImages} />
+      <RestaurantGallery restaurantId="papapasta"/>
     </>
   );
 }

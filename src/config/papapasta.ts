@@ -123,3 +123,10 @@ export const papaPastaSite: RestaurantConfig = {
   phoneLabel: 'ZAMÓW Z DOSTAWĄ',
   showTripadvisor: true,
 };
+
+// The legacy shared pages retain the light-surface defaults above.
+export const papaPastaDarkSite: RestaurantConfig = {
+  ...papaPastaSite,
+  logo: { ...papaPastaSite.logo, src: '/icons/logo_light.svg' },
+  footerLogo: { ...papaPastaSite.footerLogo, src: '/icons/logo_papapasta.svg' },
+};

@@ -5,7 +5,7 @@
   --skeleton-accent: #c9a579;
   min-inline-size: 0;
   text-align: start;
-  &[data-restaurant='centro'] {
+  &[data-restaurant='centro'], &[data-restaurant='papapasta'] {
     --skeleton-fill: #264443;
     --skeleton-strong: #395653;
     --skeleton-line: #536665;

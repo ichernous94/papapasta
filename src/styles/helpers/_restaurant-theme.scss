@@ -1,0 +1,26 @@
+@use 'variables' as theme;
+@mixin dark {
+  --modal-surface: #142119;
+  --modal-color: #f3ede0;
+  --site-surface: #142119;
+  --site-section-surface: transparent;
+  --site-text: #f3ede0;
+  --site-muted: #c4cfce;
+  --site-divider: #536665;
+  --site-accent: #{theme.$colorGold};
+  --site-copyright-bg: #{theme.$colorGold};
+  --site-copyright-text: #00191b;
+  --site-social-color: #{theme.$colorGold};
+  --site-social-bg: #{theme.$colorGold};
+  --dish-accent: #d7bb91;
+  --allergen-accent: #d7bb91;
+  --allergen-divider: #c9a579;
+  min-block-size: 100svh;
+  background-color: var(--page-background-color, #142119);
+  background-image: var(--page-background-gradient);
+  color: var(--site-text);
+  line-height: 1.65;
+  > main { min-inline-size: 0; }
+  :global([id]) { scroll-margin-block-start: calc(var(--restaurant-header-height, 112px) + 1rem); }
+  @media (max-width: 767px) { --button-padding: 0.5625rem 1.125rem; --button-font-size: 0.8125rem; }
+}

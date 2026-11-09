@@ -1,0 +1,11 @@
+@use '../../styles/helpers/variables' as theme;
+.contact { padding-block: clamp(2rem, 5vw, 4rem); text-align: center; h1 { font-size: clamp(1.625rem, 2.6vw, 2.125rem); } }
+.subtitle { margin-block-start: 0.5rem; color: theme.$colorGoldText; font: 400 3rem/1.4 var(--font-allura), cursive; }
+.details { display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem 4rem; margin-block: 2rem 3rem; section { min-inline-size: 0; overflow-wrap: anywhere; } h2 { font-size: 1.125rem; margin-block-end: 0.75rem; } }
+.location { max-inline-size: 60rem; padding-block: 0 clamp(3rem, 5vw, 5rem); text-align: center; > div:first-child { justify-content: center; } }
+.find { display: flex; align-items: center; gap: clamp(1rem, 4vw, 2.5rem); margin-block: 2rem; font-size: clamp(1.6rem, 4.5vw, 2.75rem); font-weight: 400; letter-spacing: 0.05em; line-height: 1.3; &::before, &::after { display: block !important; content: ''; flex: 1; block-size: 1px; background: linear-gradient(90deg, transparent, theme.$colorGold); } &::after { background: linear-gradient(90deg, theme.$colorGold, transparent); } span { flex: 0 1 auto; } }
+.map { display: block; inline-size: 100%; block-size: clamp(7rem, 34.6vw, 21rem); border: 0; border-radius: 1rem; background: #c4cfce; }
+.address { display: flex; align-items: start; justify-content: center; gap: 1rem; margin-block: 1.25rem 2rem; font-style: normal; text-align: start; line-height: 1.5; svg { flex: 0 0 auto; margin-block-start: 0.4rem; color: theme.$colorGold; font-size: 1.8rem; } strong { display: block; font-size: clamp(1.2rem, 3vw, 2rem); } span { display: block; font-size: clamp(1rem, 2.5vw, 1.5rem); } }
+.mapsButton { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; inline-size: min(100%, 32rem); min-block-size: 3rem; padding: 0.875rem 1.25rem; border-radius: 3rem; background: linear-gradient(115deg, #d8b98e, #c9a579); color: #142119; font-size: clamp(0.875rem, 2.5vw, 1.25rem); font-weight: 700; svg { font-size: 1.5em; flex-shrink: 0; } }
+.contact a:focus-visible, .mapsButton:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+@media (max-width: 399px) { .find { gap: 0.75rem; letter-spacing: 0.02em; } }

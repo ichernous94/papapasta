@@ -1,3 +1,5 @@
+import DishBadges from '@/components/DishBadges';
+import { menuText } from '@/utils/menuText';
 import MenuPrice from '@/components/MenuPrice';
 import Image from '@/components/ui/PhotoImage';
 import Link from 'next/link';
@@ -11,10 +13,10 @@ export default function DishRow({ item, restaurantId, headingLevel: Heading = 'h
   return <Link href={dishPath(item)} scroll={false} prefetch={false} className={`${styles.row} ${restaurantId === 'papapasta' ? styles.light : ''}`} aria-label={`Zobacz danie: ${item.name}`}>
     <div className={styles.copy}>
       <div className={styles.heading}>
-        <Heading>{item.name}{item.portion && <small> {item.portion}</small>}{item.isNew && <span className={styles.badge}>Nowość</span>}</Heading>
+        <Heading>{item.name}{item.portion && <small> {item.portion}</small>}<DishBadges item={item}/>{item.isNew && <span className={styles.badge}>Nowość</span>}</Heading>
         {item.price && <span className={styles.price}><MenuPrice value={item.price}/></span>}
       </div>
-      {item.description?.map((line, index) => <p key={index} className={styles.description}>{line}</p>)}
+      {item.description?.map((line, index) => <p key={index} className={styles.description}>{menuText(line)}</p>)}
     </div>
     <div className={styles.photo}>
       <Image src={item.image.src} alt={item.image.alt} width={item.image.width} height={item.image.height}

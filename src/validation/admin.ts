@@ -11,6 +11,7 @@ export const itemInputSchema = z.object({
     menuId: z.string().min(1), version: z.number().int().positive(), sourceMenuId: z.string().optional(), sourceVersion: z.number().int().positive().optional(), id: z.string().optional(), groupId: z.string().min(1),
     name: z.string().trim().min(1, 'Enter a name').max(200), portion: z.string().trim().max(100), price: z.string().trim().max(100),
     allergens: allergensSchema.optional(),
+    meatless: z.boolean().optional(), recommended: z.boolean().optional(), spicy: z.boolean().optional(),
     description: z.string().max(6000), isNew: z.boolean(), visible: z.boolean(), imageAlt: z.string().trim().max(300), removeImage: z.boolean(),
 }).strict();
 export const structureInputSchema = z.object({

@@ -43,4 +43,4 @@
 }
 @media (prefers-reduced-motion: reduce) { .photo img { transition: none; } }
 
-.light { --site-text: #1e2128; --site-muted: #51545a; --site-divider: #c9c9c9; --dish-accent: #9A6B2F; --allergen-accent: #9A6B2F; --allergen-divider: #c9a579; }
+.light { color: inherit; }

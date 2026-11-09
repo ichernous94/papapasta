@@ -1,5 +1,6 @@
 import type { createDatabase } from '@/server/db/connection';
 import { restaurants, menus, categories, groups, items } from '@/server/db/schema';
+import { seedSiteContent } from './site-seed';
 import { seedMenus } from './seed-data';
 export async function seedContent(db: ReturnType<typeof createDatabase>['db']) {
     await db.transaction(async (tx) => {
@@ -20,4 +21,5 @@ export async function seedContent(db: ReturnType<typeof createDatabase>['db']) {
             }
         }
     });
+    await seedSiteContent(db);
 }

@@ -6,8 +6,9 @@ import { itemInputSchema, structureInputSchema, createMenuSchema } from '@/valid
 import { z } from 'zod';
 type Database = ReturnType<typeof createDatabase>['db'];
 type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
-export class ContentError extends Error {
-}
+export { ContentError } from './errors';
+import { ContentError } from './errors';
+import { orphanUnused, attachUpload } from '@/server/media/references';
 async function lockMenu(tx: Transaction, menuId: string, version: number) {
     const [menu] = await tx.select().from(menus).where(eq(menus.id, menuId)).for('update');
     if (!menu)
@@ -15,16 +16,6 @@ async function lockMenu(tx: Transaction, menuId: string, version: number) {
     if (menu.version !== version)
         throw new ContentError('This menu was already changed by another editor. Copy your changes and refresh the page.');
     return menu;
-}
-async function orphanUnused(tx: Transaction, imageId: string) {
-    // Image rows are locked by all attach/detach paths, including section banners.
-    await tx.select({ id: mediaAssets.id }).from(mediaAssets).where(eq(mediaAssets.id, imageId)).for('update');
-    await tx.update(mediaAssets).set({ status: 'orphan' }).where(and(eq(mediaAssets.id, imageId), sql`not exists (select 1 from ${items} where ${items.imageId} = ${imageId})`, sql`not exists (select 1 from ${menus} where ${menus.bannerImageId} = ${imageId})`));
-}
-async function attachUpload(tx: Transaction, actorId: string, uploadId: string) {
-    const [asset] = await tx.select().from(mediaAssets).where(eq(mediaAssets.id, uploadId)).for('update');
-    if (!asset || asset.status !== 'pending' || asset.createdBy !== actorId) throw new ContentError('Image upload is unavailable');
-    await tx.update(mediaAssets).set({ status: 'ready' }).where(eq(mediaAssets.id, uploadId));
 }
 async function groupBelongs(tx: Transaction, groupId: string, menuId: string) {
     const [row] = await tx.select({ id: groups.id }).from(groups).innerJoin(categories, eq(groups.categoryId, categories.id)).where(and(eq(groups.id, groupId), eq(categories.menuId, menuId)));
@@ -51,7 +42,7 @@ export async function saveItem(db: Database, actorId: string, raw: unknown, uplo
         if (uploadId) await attachUpload(tx, actorId, uploadId);
         const id = old?.id ?? randomUUID();
         const imageId = uploadId ?? (input.removeImage ? null : old?.imageId ?? null);
-        const values = { allergens: input.allergens ?? old?.allergens ?? [], groupId: input.groupId, name: input.name, portion: input.portion, price: input.price, description: input.description.split(/\r?\n/).filter(line => line.trim()), isNew: input.isNew, visible: input.visible, imageAlt: input.imageAlt, imageId };
+        const values = { meatless: input.meatless ?? old?.meatless ?? false, recommended: input.recommended ?? old?.recommended ?? false, spicy: input.spicy ?? old?.spicy ?? false, allergens: input.allergens ?? old?.allergens ?? [], groupId: input.groupId, name: input.name, portion: input.portion, price: input.price, description: input.description.split(/\r?\n/).filter(line => line.trim()), isNew: input.isNew, visible: input.visible, imageAlt: input.imageAlt, imageId };
         if (old && old.groupId !== input.groupId) {
             const [last] = await tx.select({ order: sql<number>`coalesce(max(${items.sortOrder}), -1)` }).from(items).where(eq(items.groupId, input.groupId));
             await tx.update(items).set({ sortOrder: Number(last.order) + 1 }).where(eq(items.id, id));
@@ -65,7 +56,7 @@ export async function saveItem(db: Database, actorId: string, raw: unknown, uplo
         if (old?.imageId && old.imageId !== imageId) {
             await orphanUnused(tx, old.imageId);
         }
-        await finish(tx, actorId, menu.id, old ? 'item.update' : 'item.create', id, { visible: input.visible, imageId, allergens: values.allergens });
+        await finish(tx, actorId, menu.id, old ? 'item.update' : 'item.create', id, { visible: input.visible, imageId, allergens: values.allergens, meatless: values.meatless, recommended: values.recommended, spicy: values.spicy });
         if (old && input.sourceMenuId && input.sourceMenuId !== menu.id) await finish(tx, actorId, input.sourceMenuId, 'item.transfer', id);
         return menu.restaurantId;
     });
@@ -196,5 +187,21 @@ export async function createMenu(db: Database, actorId: string, raw: unknown, up
         await tx.insert(menus).values({ id, key, ...input, sortOrder: Number(last.order) + 1, bannerImageId: uploadId ?? null });
         await tx.insert(auditLog).values({ actorId, action: 'menu.create', targetId: id, details: { restaurantId: input.restaurantId, title: input.title } });
         return { restaurantId: input.restaurantId, menuId: id };
+    });
+}
+
+export async function moveCategory(db: Database, actorId: string, raw: unknown) {
+    const input = reorderSchema.parse(raw);
+    return db.transaction(async tx => {
+        const menu = await lockMenu(tx, input.menuId, input.version);
+        const siblings = await tx.select().from(categories).where(eq(categories.menuId, menu.id)).orderBy(categories.sortOrder, categories.id);
+        const index = siblings.findIndex(c => c.id === input.id);
+        if (index < 0) throw new ContentError('Category does not belong to this menu');
+        const target = index + (input.direction === 'up' ? -1 : 1);
+        if (target < 0 || target >= siblings.length) return menu.restaurantId;
+        [siblings[index], siblings[target]] = [siblings[target], siblings[index]];
+        for (const [order, sibling] of siblings.entries()) await tx.update(categories).set({ sortOrder: order }).where(eq(categories.id, sibling.id));
+        await finish(tx, actorId, menu.id, 'category.reorder', input.id, { direction: input.direction });
+        return menu.restaurantId;
     });
 }

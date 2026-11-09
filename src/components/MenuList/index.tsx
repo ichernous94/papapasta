@@ -1,3 +1,5 @@
+import DishBadges from '@/components/DishBadges';
+import { menuText } from '@/utils/menuText';
 import MenuPrice from '@/components/MenuPrice';
 import DishRow from '@/components/DishRow';
 import DishPhoto from '@/components/DishPhoto';
@@ -10,7 +12,7 @@ function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) 
   return groups.map((group) => (
     <div key={group.id} className={styles.group}>
       {group.title && <h3 className={styles.groupTitle}>{group.title}</h3>}
-      {group.note && <p className={styles.note}>{group.note}</p>}
+      {group.note && <p className={styles.note}>{menuText(group.note)}</p>}
       <ul className={[styles.list, variant !== 'default' && group.items.some(item => item.image) ? styles.photoList : ''].filter(Boolean).join(' ')}>
         {group.items.map((item) => {
           const Heading = group.title ? 'h4' : 'h3';
@@ -21,19 +23,19 @@ function Groups({ groups, variant }: Pick<MenuListProps, 'groups' | 'variant'>) 
               <div className={styles.heading}>
                 <Heading>
                   {item.name}{item.portion && <small> {item.portion}</small>}
-                  {item.isNew && <span className={styles.badge}>Nowość</span>}
+                  <DishBadges item={item}/>{item.isNew && <span className={styles.badge}>Nowość</span>}
                 </Heading>
                 {item.price && <>
                   <span className={styles.leader} aria-hidden="true" />
                   <span className={styles.price}><MenuPrice value={item.price}/></span>
                 </>}
               </div>
-              {item.description?.map((line, index) => <p key={index} className={styles.description}>{line}</p>)}
+              {item.description?.map((line, index) => <p key={index} className={styles.description}>{menuText(line)}</p>)}
             </li>
           );
         })}
       </ul>
-      {group.afterNote && <p className={styles.afterNote}>{group.afterNote}</p>}
+      {group.afterNote && <p className={styles.afterNote}>{menuText(group.afterNote)}</p>}
     </div>
   ));
 }

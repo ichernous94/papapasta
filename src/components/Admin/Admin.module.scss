@@ -91,3 +91,5 @@
 @container (min-width:330px) { .qrBody { grid-template-columns:120px minmax(0,1fr); } .qrBody .qr { width:120px; > svg { width:120px; } } }
 
 .qrPreview > svg { width:200px; }
+
+.contentBlock { margin-block: 1rem; padding: 1rem; border: 1px solid #d9dde4; border-radius: 0.5rem; textarea { min-block-size: 7rem; } }

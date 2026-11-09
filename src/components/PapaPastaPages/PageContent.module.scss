@@ -12,7 +12,7 @@
   min-inline-size: 0;
 }
 .intro + .menuSection { padding-block-start: 0; }
-.note { margin-block-end: 1.5rem; color: #62656b; font-size: 0.9375rem; line-height: 1.65; }
+.note { margin-block-end: 1.5rem; color: var(--site-muted, #c4cfce); font-size: 0.9375rem; line-height: 1.65; }
 .actions {
   display: flex;
   flex-wrap: wrap;

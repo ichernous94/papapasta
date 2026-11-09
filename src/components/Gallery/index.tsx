@@ -14,12 +14,15 @@ import useReducedMotion from '@/hooks/useReducedMotion';
 import 'swiper/css';
 import styles from './Gallery.module.scss';
 
-export type GalleryImage = { id: string; image: StaticImageData; alt: string };
+export type GalleryImage = { id: string; image: StaticImageData | import('@/types/menu').DishImage; alt: string };
 type GalleryProps = { images: readonly GalleryImage[]; variant?: 'strip' | 'grid'; name?: string };
 
 export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta' }: GalleryProps) {
   const titleId = useId();
-  const GridWrapper = variant === 'grid' ? Container : 'div';
+  const stripRef = useRef<SwiperInstance | null>(null);
+  const [edges, setEdges] = useState({ first: true, last: images.length <= 2 });
+  const stripId = useId();
+  const syncEdges = (swiper: SwiperInstance) => setEdges(old => old.first === swiper.isBeginning && old.last === swiper.isEnd ? old : { first: swiper.isBeginning, last: swiper.isEnd });
   const sizes = variant === 'grid'
     ? '(min-width: 1170px) 375px, (min-width: 1024px) calc((100vw - 46px) / 3), (min-width: 768px) calc((100vw - 38px) / 2), calc(100vw - 30px)'
     : '(min-width: 1920px) 480px, (min-width: 1024px) 25vw, 50vw';
@@ -31,21 +34,32 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
 
   return (
     <section className={[styles.gallery, variant === 'grid' && styles.contained].filter(Boolean).join(' ')} aria-label={"Galeria restauracji " + name}>
-      <GridWrapper className={styles.grid}>
-        {images.map((item, index) => (
-          <Reveal key={item.id} direction="up" delay={(index % 4) * 60}>
-            <button
-              type="button"
-              className={styles.thumbnail}
-              onClick={() => { setActiveIndex(index); setCurrentIndex(index); setOpen(true); }}
-              aria-label={'Powiększ: ' + item.alt}
-              aria-haspopup="dialog"
-            >
-              <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes={sizes} />
+      {variant === 'grid' ? <Container className={styles.grid}>
+        {images.map((item, index) => <Reveal key={item.id} direction="up" delay={(index % 4) * 60}>
+          <button type="button" className={styles.thumbnail} onClick={() => { setActiveIndex(index); setCurrentIndex(index); setOpen(true); }} aria-label={'Powiększ: ' + item.alt} aria-haspopup="dialog">
+            <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes={sizes}/>
+          </button>
+        </Reveal>)}
+      </Container> : <>
+        <Swiper id={stripId} key={images.map(i => i.id).join(',')} className={styles.strip} modules={[A11y]} slidesPerView={2} breakpoints={{ 1024: { slidesPerView: 4 } }} watchOverflow speed={reducedMotion ? 0 : 450}
+          a11y={{ containerMessage: 'Galeria restauracji ' + name, slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
+          onSwiper={swiper => { stripRef.current = swiper; syncEdges(swiper); }}
+          onSlideChange={syncEdges}
+          onUpdate={syncEdges}
+          onLock={syncEdges}
+          onUnlock={syncEdges}
+          onResize={swiper => requestAnimationFrame(() => { if (!swiper.destroyed) syncEdges(swiper); })}>
+          {images.map((item, index) => <SwiperSlide key={item.id}>
+            <button type="button" className={styles.thumbnail} onClick={() => { setActiveIndex(index); setCurrentIndex(index); setOpen(true); }} aria-label={'Powiększ: ' + item.alt} aria-haspopup="dialog">
+              <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes={sizes}/>
             </button>
-          </Reveal>
-        ))}
-      </GridWrapper>
+          </SwiperSlide>)}
+        </Swiper>
+        {images.length > 2 && <div className={styles.stripControls}>
+          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Poprzednie zdjęcia" disabled={edges.first} onClick={() => stripRef.current?.slidePrev()}><IoChevronBackOutline aria-hidden="true"/></button>
+          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Następne zdjęcia" disabled={edges.last} onClick={() => stripRef.current?.slideNext()}><IoChevronForwardOutline aria-hidden="true"/></button>
+        </div>}
+      </>}
       <Modal
         open={open}
         onClose={() => setOpen(false)}
@@ -59,7 +73,7 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           modules={[Keyboard, A11y]}
           initialSlide={activeIndex}
           slidesPerView={1}
-          loop
+          loop={images.length > 1}
           speed={reducedMotion ? 0 : 450}
           keyboard={{ enabled: true, onlyInViewport: false }}
           a11y={{ containerMessage: 'Zdjęcia restauracji ' + name, slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
@@ -76,11 +90,11 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           ))}
         </Swiper>
         <div className={styles.controls}>
-          <button type="button" className={styles.control} aria-label="Poprzednie zdjęcie" onClick={() => swiperRef.current?.slidePrev()}>
+          <button type="button" className={styles.control} aria-label="Poprzednie zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slidePrev()}>
             <IoChevronBackOutline aria-hidden="true" />
           </button>
           <p aria-live="polite" aria-atomic="true">{currentIndex + 1} / {images.length}</p>
-          <button type="button" className={styles.control} aria-label="Następne zdjęcie" onClick={() => swiperRef.current?.slideNext()}>
+          <button type="button" className={styles.control} aria-label="Następne zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slideNext()}>
             <IoChevronForwardOutline aria-hidden="true" />
           </button>
         </div>

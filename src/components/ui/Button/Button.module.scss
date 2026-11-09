@@ -45,13 +45,13 @@
 }
 
 .dark {
-  border-color: theme.$colorFont;
-  color: theme.$colorFont;
+  border-color: var(--site-text, #{theme.$colorFont});
+  color: var(--site-text, #{theme.$colorFont});
 
   @media (hover: hover) and (pointer: fine) {
     &:not(:disabled):hover {
-      background-color: theme.$colorFont;
-      color: #fff;
+      background-color: var(--site-text, #{theme.$colorFont});
+      color: var(--site-surface, #fff);
     }
   }
 }

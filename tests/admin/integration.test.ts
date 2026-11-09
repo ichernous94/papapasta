@@ -61,6 +61,9 @@ test('PostgreSQL: auth, mandatory MFA, roles, rate limits, revocation and conten
             assert.equal((await pool.query("select count(*)::int as count from information_schema.tables where table_schema in ('auth','content')")).rows[0].count,0);
             const legacyItem = await db.query.items.findFirst({ where:eq(schema.items.id,'legacy-item') });
             assert.deepEqual(legacyItem!.allergens,[]);
+            assert.equal(legacyItem!.meatless,false);
+            assert.equal(legacyItem!.recommended,false);
+            assert.equal(legacyItem!.spicy,false);
             assert.equal(legacyItem!.price,'29/36');
             assert.equal((await db.query.menus.findFirst({ where:eq(schema.menus.id,'legacy-menu') }))!.bannerImageId,null);
             await db.delete(schema.menus).where(eq(schema.menus.id,'legacy-menu'));
@@ -263,9 +266,9 @@ test('Fresh database installs all migrations and keeps the Drizzle snapshot alig
         assert.equal((await readMenus(fresh.db)).length,10);
         const tables = await fresh.pool.query("select tablename from pg_tables where schemaname='public'");
         assert.ok(tables.rows.some(row=>row.tablename==='qr_codes'));
-        assert.equal(tables.rows.length,14);
+        assert.equal(tables.rows.length,17);
         const {generateDrizzleJson,generateMigration}=await import('drizzle-kit/api');
-        const snapshot=JSON.parse(await readFile('drizzle/meta/0003_snapshot.json','utf8'));
+        const snapshot=JSON.parse(await readFile('drizzle/meta/0004_snapshot.json','utf8'));
         const current=generateDrizzleJson(schema,snapshot.id,['public']);
         assert.deepEqual(await generateMigration(snapshot,current),[]);
     } finally { if(fresh) await fresh.pool.end(); if(created) await source.pool.query(`DROP DATABASE "${name}" WITH (FORCE)`); await source.pool.end(); }
@@ -345,5 +348,85 @@ test('New sections: independent IDs, serialized order, upload ownership, audit a
         await changeContent(db, actor, { action: 'deleteMenu', menuId: first.menuId, version: 2 });
         assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'orphan');
         await changeContent(db, actor, { action: 'deleteMenu', menuId: second.menuId, version: 1 });
+    } finally { await pool.end(); }
+});
+
+test('Content: category order, independent badges, promotions, galleries, conflicts and shared media', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+    const { moveCategory } = await import('../../src/server/content/write');
+    const { savePromotion, deletePromotion, saveGalleryEntry, changeGallery } = await import('../../src/server/content/site-write');
+    const { readPromotions, readGallery } = await import('../../src/server/content/site-read');
+    const { unreferencedMedia } = await import('../../src/server/media/references');
+    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!, 4);
+    const actor='content-test';
+    try {
+        const getMenu=async(id:string)=>(await readMenus(db)).find(m=>m.id===id)!;
+        const main=await getMenu('papapasta:main');
+        const initial=main.categories.map(c=>c.id);
+        await moveCategory(db,actor,{menuId:main.id,version:main.version,id:initial[0],direction:'down'});
+        const reordered=await getMenu(main.id);
+        assert.deepEqual(reordered.categories.map(c=>c.id),[initial[1],initial[0],...initial.slice(2)]);
+        await assert.rejects(moveCategory(db,actor,{menuId:main.id,version:main.version,id:initial[0],direction:'down'}),/already changed/);
+        await assert.rejects(moveCategory(db,actor,{menuId:main.id,version:reordered.version,id:'foreign-category',direction:'up'}),/does not belong/);
+        const item=reordered.categories[0].groups[0].items[0];
+        const input={menuId:main.id,version:reordered.version,id:item.id,groupId:item.groupId,name:item.name,portion:item.portion,price:item.price,description:item.description.join('\n'),visible:true,isNew:item.isNew,imageAlt:item.imageAlt,removeImage:false};
+        await saveItem(db,actor,{...input,meatless:true,recommended:true,spicy:true,allergens:['milk']});
+        let saved=(await getMenu(main.id)).categories[0].groups[0].items[0];
+        assert.equal(saved.meatless,true);assert.equal(saved.spicy,true);assert.deepEqual(saved.allergens,['milk']);
+        await saveItem(db,actor,{...input,version:(await getMenu(main.id)).version,recommended:false});
+        saved=(await getMenu(main.id)).categories[0].groups[0].items[0];
+        assert.equal(saved.meatless,true);assert.equal(saved.recommended,false);assert.equal(saved.spicy,true);assert.deepEqual(saved.allergens,['milk']);
+        await assert.rejects(saveItem(db,actor,{...input,version:(await getMenu(main.id)).version,spicy:'yes'}));
+
+        let gallery=await readGallery(db,'papapasta');
+        const first=gallery.images[0];const second=gallery.images[1];
+        await changeGallery(db,actor,{restaurantId:'papapasta',version:gallery.version,id:first.id,action:'down'});
+        await assert.rejects(changeGallery(db,actor,{restaurantId:'papapasta',version:gallery.version,id:first.id,action:'up'}),/already changed/);
+        gallery=await readGallery(db,'papapasta');assert.equal(gallery.images[0].id,second.id);
+        const centroGallery=await readGallery(db,'centro');
+        await assert.rejects(changeGallery(db,actor,{restaurantId:'papapasta',version:gallery.version,id:centroGallery.images[0].id,action:'delete'}),/does not belong/);
+        await saveGalleryEntry(db,actor,{restaurantId:'papapasta',version:gallery.version,id:first.id,alt:'Edited description',visible:false});
+        assert.ok(!(await readGallery(db,'papapasta',true)).images.some(i=>i.id===first.id));
+        assert.equal((await readGallery(db,'centro')).version,centroGallery.version);
+
+        const draft={title:'New promotion',date:'2026-11-09',body:[],published:false,imageAlt:'Lunch',removeImage:false};
+        const id=await savePromotion(db,actor,draft);
+        let promotion=(await readPromotions(db)).find(p=>p.id===id)!;
+        assert.ok(!(await readPromotions(db,true)).some(p=>p.id===id));
+        await assert.rejects(savePromotion(db,actor,{...draft,id,version:1,published:true,body:[{type:'paragraph',text:'Lunch'}]}),/need an image/);
+        const media=randomUUID();const wrong=randomUUID();
+        for(const imageId of [media,wrong]) await db.insert(schema.mediaAssets).values({id:imageId,objectKey:`papapasta/menu-images/${imageId}.webp`,width:1200,height:800,mimeType:'image/webp',byteSize:100,blurDataURL:'',createdBy:imageId===wrong?'someone-else':actor});
+        const published={...draft,id,version:1,published:true,body:[{type:'list',text:'Soup\nPasta'}]};
+        await assert.rejects(savePromotion(db,actor,published,wrong),/unavailable/);
+        await savePromotion(db,actor,published,media);
+        assert.ok((await readPromotions(db,true)).some(p=>p.id===id));
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,media)}))!.status,'ready');
+        promotion=(await readPromotions(db)).find(p=>p.id===id)!;
+        const originalSlug=promotion.slug;
+        await savePromotion(db,actor,{...published,version:promotion.version,title:'Renamed promotion',published:false});
+        promotion=(await readPromotions(db)).find(p=>p.id===id)!;
+        assert.equal(promotion.slug,originalSlug);assert.equal(promotion.published,false);
+        await assert.rejects(savePromotion(db,actor,{...published,version:1}),/already changed/);
+        await assert.rejects(deletePromotion(db,actor,{id,version:1}),/already changed/);
+        // A photo shared with the gallery must survive deleting its promotion.
+        const shared=randomUUID();
+        await db.insert(schema.galleryEntries).values({id:shared,restaurantId:'centro',imageId:media,alt:'Shared'});
+        assert.equal((await db.select().from(schema.mediaAssets).where(unreferencedMedia(media))).some(m=>m.id===media),false);
+        await deletePromotion(db,actor,{id,version:promotion.version});
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,media)}))!.status,'ready');
+        await changeGallery(db,actor,{restaurantId:'centro',version:(await readGallery(db,'centro')).version,id:shared,action:'delete'});
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,media)}))!.status,'orphan');
+        const upload=randomUUID();
+        await db.insert(schema.mediaAssets).values({id:upload,objectKey:`papapasta/menu-images/${upload}.webp`,width:1200,height:800,mimeType:'image/webp',byteSize:100,blurDataURL:'',createdBy:actor});
+        gallery=await readGallery(db,'papapasta');
+        await saveGalleryEntry(db,actor,{restaurantId:'papapasta',version:gallery.version,alt:'Uploaded photo',visible:true},upload);
+        const newPhoto=(await readGallery(db,'papapasta')).images.find(i=>i.imageId===upload)!;
+        assert.ok(newPhoto);assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,upload)}))!.status,'ready');
+        const legacy=(await readPromotions(db)).find(p=>p.slug==='zestawy-obiadowe')!;
+        await deletePromotion(db,actor,{id:legacy.id,version:legacy.version});
+        await changeGallery(db,actor,{restaurantId:'papapasta',version:(await readGallery(db,'papapasta')).version,id:first.id,action:'delete'});
+        await seedContent(db);
+        assert.ok(!(await readPromotions(db)).some(p=>p.slug==='zestawy-obiadowe'));
+        assert.ok(!(await readGallery(db,'papapasta')).images.some(i=>i.id===first.id));
+        assert.equal((await readGallery(db,'papapasta')).images.find(i=>i.id===newPhoto.id)!.alt,'Uploaded photo');
     } finally { await pool.end(); }
 });

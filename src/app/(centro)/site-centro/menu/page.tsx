@@ -3,9 +3,9 @@ import OptionalMenuSection from '@/components/OptionalMenuSection';
 import MenuBanner from '@/components/MenuBanner';
 import DatabaseMenuSection from '@/components/DatabaseMenuSection';
 import Container from '@/components/ui/Container';
-import Gallery from '@/components/Gallery';
+import RestaurantGallery from '@/components/RestaurantGallery';
 import { centroCopy } from '@/config/centro';
-import { centroImages as images, centroGallery } from '@/config/centro-images';
+import { centroImages as images } from '@/config/centro-images';
 import { centroPageMetadata } from '@/config/metadata';
 import styles from '@/components/CentroPages/CentroPages.module.scss';
 export const metadata = centroPageMetadata('/menu', 'Papa Pasta Centro - Menu Restauracji', 'Menu Papa Pasta Centro: włoska pizza, domowe makarony, steki, owoce morza, śniadania i desery w Białymstoku.');
@@ -29,6 +29,6 @@ export default function CentroMenuPage() {
     <Container as="section" className={styles.section} aria-label="Menu bambini"><DatabaseMenuSection restaurantId="centro" menuKey="kids"/></Container>
 </OptionalMenuSection>
     <AdditionalMenuSections restaurantId="centro" className={styles.section} noteClassName={styles.note}/>
-    <Gallery name="Papa Pasta Centro" images={centroGallery} />
+    <RestaurantGallery restaurantId="centro"/>
   </>;
 }

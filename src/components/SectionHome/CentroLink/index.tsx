@@ -1,7 +1,6 @@
 'use client';
 
 import { useSyncExternalStore, type AnchorHTMLAttributes } from 'react';
-import Button from '@/components/ui/Button';
 import { centroPreviewURL } from '@/config/hosts';
 
 const subscribe = () => () => {};
@@ -18,5 +17,5 @@ export default function CentroLink({ href, ...props }: CentroLinkProps) {
     return local ? `${protocol}//centro.localhost${port ? ':' + port : ''}/` : href;
   }, () => href);
 
-  return <Button {...props} href={destination} />;
+  return <a {...props} href={destination} />;
 }

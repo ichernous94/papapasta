@@ -12,6 +12,6 @@
 }
 @media (max-width: 599px) { .dialog { --modal-padding: 2.75rem 1.25rem 1.5rem; border-radius: 1.5rem; } }
 
-.light { --modal-surface: #fff; --modal-color: #1e2128; --modal-backdrop: #29251f80; border-color: #c9a579; box-shadow: 0 20px 80px #0003; }
+.light { color: inherit; }
 
-.dialog:not(.light) { background-color: var(--page-background-color, #142119); background-image: var(--page-background-gradient); }
+.dialog { background-color: var(--page-background-color, #142119); background-image: var(--page-background-gradient); }

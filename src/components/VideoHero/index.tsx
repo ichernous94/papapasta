@@ -25,33 +25,49 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
   const userPaused = useRef(false);
   const reducedMotion = useReducedMotion();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackError, setPlaybackError] = useState('');
+  const retryPlayback = useRef<() => void>(() => {});
   const [hasFrame, setHasFrame] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const connection = (navigator as Navigator & { connection?: DataConnection }).connection;
+    let active = true;
+    let visible = video.getBoundingClientRect().bottom > 0;
+    const attempt = () => {
+      if (!active || !visible || document.hidden || userPaused.current || reducedMotion || connection?.saveData) return;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      if (!video.getAttribute('src')) video.src = videoSrc;
+      void video.play().catch((error: unknown) => {
+        if (active && error instanceof DOMException && error.name !== 'AbortError') setPlaybackError('Naciśnij odtwarzanie, aby uruchomić wideo.');
+      });
+    };
     const applyPreference = () => {
       if (reducedMotion || connection?.saveData) {
         video.pause();
         video.removeAttribute('src');
         video.load();
-        return;
-      }
-      if (!video.getAttribute('src')) video.src = videoSrc;
-      if (!userPaused.current) void video.play().catch(() => {});
+      } else attempt();
     };
+    retryPlayback.current = attempt;
     applyPreference();
     connection?.addEventListener?.('change', applyPreference);
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) video.pause();
-      else if (!userPaused.current && !reducedMotion && !connection?.saveData && video.getAttribute('src')) {
-        void video.play().catch(() => {});
-      }
+      visible = entry.isIntersecting;
+      if (!visible) video.pause();
+      else attempt();
     });
+    const visibility = () => { if (document.hidden) video.pause(); else attempt(); };
+    document.addEventListener('visibilitychange', visibility);
     observer.observe(video);
     return () => {
+      active = false;
+      retryPlayback.current = () => {};
       observer.disconnect();
+      document.removeEventListener('visibilitychange', visibility);
       connection?.removeEventListener?.('change', applyPreference);
       video.pause();
     };
@@ -65,8 +81,11 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
       video.pause();
     } else {
       userPaused.current = false;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
       if (!video.getAttribute('src')) video.src = videoSrc;
-      void video.play().catch(() => {});
+      void video.play().catch(() => setPlaybackError('Nie można odtworzyć wideo. Spróbuj ponownie.'));
     }
   };
 
@@ -91,10 +110,11 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         preload="metadata"
         aria-hidden="true"
         tabIndex={-1}
-        onPlaying={() => { setIsPlaying(true); setHasFrame(true); }}
+        onPlaying={() => { setIsPlaying(true); setHasFrame(true); setPlaybackError(''); }}
+        onCanPlay={() => retryPlayback.current()}
         onPause={() => setIsPlaying(false)}
         onEmptied={() => { setIsPlaying(false); setHasFrame(false); }}
-        onError={() => { setIsPlaying(false); setHasFrame(false); }}
+        onError={() => { setIsPlaying(false); setHasFrame(false); setPlaybackError('Nie można odtworzyć wideo. Spróbuj ponownie.'); }}
       />
       <div className={styles.content}>
         <h1 id={titleId}>
@@ -103,6 +123,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         </h1>
         {action && <Button href={action.href}>{action.label}</Button>}
       </div>
+      <span role="status" className={styles.visuallyHidden}>{playbackError}</span>
       <button
         type="button"
         className={styles.playback}

@@ -3,9 +3,7 @@ import VideoHero from '@/components/PapaPastaHome/VideoHero';
 import AboutSection from '@/components/PapaPastaHome/AboutSection';
 import DishesSection from '@/components/PapaPastaHome/DishesSection';
 import WineSection from '@/components/PapaPastaHome/WineSection';
-import Recommendations from '@/components/PapaPastaHome/Recommendations';
-import Gallery from '@/components/Gallery';
-import { galleryImages } from '@/config/papapasta-images';
+import RestaurantGallery from '@/components/RestaurantGallery';
 import { papaPastaMetadata } from '@/config/metadata';
 
 export const metadata: Metadata = {
@@ -20,8 +18,7 @@ export default function PapaPastaHomePage() {
       <AboutSection />
       <DishesSection />
       <WineSection />
-      <Recommendations />
-      <Gallery images={galleryImages} />
+      <RestaurantGallery restaurantId="papapasta"/>
     </>
   );
 }
