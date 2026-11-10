@@ -50,6 +50,13 @@
       "when": 1794268958729,
       "tag": "0006_papapasta_menu_refresh",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794271217536,
+      "tag": "0007_centro_menu_refresh",
+      "breakpoints": true
     }
   ]
 }

@@ -79,6 +79,15 @@ test('PostgreSQL: auth, mandatory MFA, roles, rate limits, revocation and conten
         const salame = defaultPapaItems.find(i => i.name === 'Salame Piccante')!;
         assert.ok(salame.recommended && salame.spicy && !salame.meatless);
         assert.ok(defaultPapaItems.every(i => !i.imageId && i.allergens?.length === 0));
+        const defaultCentro = original.filter(m => m.restaurantId === 'centro');
+        const defaultCentroItems = defaultCentro.flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items)));
+        assert.equal(defaultCentroItems.length, 115);
+        assert.equal(defaultCentro[0].categories[0].label, 'Śniadanie (do 12:00)');
+        assert.equal(defaultCentro[0].categories[0].columns, 2);
+        assert.ok(defaultCentroItems.find(i => i.name === 'Crema di pori')!.meatless);
+        assert.equal(defaultCentroItems.find(i => i.name === 'Zuppa di pesce')!.recommended, false);
+        assert.ok(defaultCentroItems.find(i => i.name === 'Tagiatelle ’Nduja')!.spicy);
+        assert.equal(defaultCentroItems.find(i => i.name === 'Cotto' && i.id.includes(':kids:'))!.price, '25');
         const main = original.find(m => m.id === 'papapasta:main')!;
         const group = main.categories[0].groups[0];
         const item = group.items[0];

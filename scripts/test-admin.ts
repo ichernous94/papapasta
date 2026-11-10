@@ -10,7 +10,7 @@ async function main() {
         created = true;
         const url = new URL(process.env.DATABASE_URL!);
         url.pathname = `/${name}`;
-        const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', 'tests/admin/unit.test.ts', 'tests/admin/integration.test.ts', 'tests/admin/fixed-sections.test.ts', 'tests/admin/menu-refresh.test.ts'], { stdio: 'inherit', env: { ...process.env, TEST_DATABASE_URL: url.toString(), NODE_ENV: 'test' } });
+        const result = spawnSync(process.execPath, ['--import', 'tsx', '--test', 'tests/admin/unit.test.ts', 'tests/admin/integration.test.ts', 'tests/admin/fixed-sections.test.ts', 'tests/admin/menu-refresh.test.ts', 'tests/admin/centro-menu-refresh.test.ts'], { stdio: 'inherit', env: { ...process.env, TEST_DATABASE_URL: url.toString(), NODE_ENV: 'test' } });
         process.exitCode = result.status ?? 1;
     }
     finally {

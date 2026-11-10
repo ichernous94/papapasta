@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import { itemInputSchema, createUserSchema, qrInputSchema } from '../../src/validation/admin';
 import { processDishImage } from '../../src/server/media/image-processing';
 import { contentOperationSchema } from '../../src/server/content/write';
-import { seedMenus, legacySeedMenus } from '../../src/server/content/seed-data';
+import { seedMenus } from '../../src/server/content/seed-data';
 import { isAdminHost } from '../../src/server/auth/origin';
 test('Only standard roles; price is a display string, server flags cannot be injected', () => {
     const user = { name: 'Editor', email: 'editor@example.test', password: 'temporary-password' };
@@ -16,13 +16,19 @@ test('Only standard roles; price is a display string, server flags cannot be inj
     assert.equal(isAdminHost('centro.localhost:3000'), false);
     assert.equal(isAdminHost('admin.papapasta.pl.evil.example'), false);
 });
-test('Seed has exactly three sections per restaurant, current PapaPasta screenshots and unchanged Centro identities', () => {
+test('Seed has exactly three sections per restaurant, current screenshot inventories and stable unique identities', () => {
     for (const restaurantId of ['papapasta','centro']) {
         const fixed = seedMenus.filter(m => m.restaurantId === restaurantId);
         assert.deepEqual(fixed.map(m => m.key), ['main','kids','drinks']);
         const identities = fixed.flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items.map(i => i.storageId))));
-        const original = legacySeedMenus.filter(m => m.restaurantId === restaurantId && m.key !== 'recommendations').flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items.map(i => `${restaurantId}:${m.key}:${c.id}:${g.id}:${i.id}`))));
-        if (restaurantId === 'centro') assert.deepEqual([...identities].sort(), original.sort());
+        if (restaurantId === 'centro') {
+            assert.equal(identities.length, 115);
+            assert.deepEqual(fixed[0].categories.map(c => c.label), ['Śniadanie (do 12:00)','Przystawki','Sałatki','Zupy','Makarony','Dania główne','Pizza','Desery']);
+            const breakfast = fixed[0].categories[0];
+            assert.equal(breakfast.columns, 2);
+            assert.deepEqual(breakfast.groups.map(g => g.title), ['Na słono:','Na słodko:']);
+            assert.equal(breakfast.groups.reduce((n,g) => n+g.items.length, 0), 10);
+        }
         else {
             assert.equal(identities.length, 151);
             assert.deepEqual(fixed[0].categories.map(c => c.label), ['Przystawki','Sałatki','Zupy','Makarony','Dania główne','Pizza','Desery','Napoje zimne','Napoje gorące']);
@@ -38,12 +44,15 @@ test('Seed has exactly three sections per restaurant, current PapaPasta screensh
         assert.equal(new Set(identities).size, identities.length);
         const drinks = fixed.find(m => m.key === 'drinks')!;
         if (restaurantId === 'centro') {
-            assert.ok(drinks.categories.some(c => c.id === 'napoje'));
-            assert.ok(drinks.categories.some(c => c.groups.some(g => g.id === 'hot-drinks')));
+            assert.deepEqual(drinks.categories.map(c => c.label), ['Napoje zimne','Napoje gorące']);
         } else assert.deepEqual(drinks.categories.map(c => c.label), ['Koktajle','Koktajle bezalkoholowe','Wina Czerwone','Wina Białe','Wermuty','Whisky','Piwo','Pozostałe alkohole']);
     }
     const main = seedMenus.find(m => m.restaurantId === 'centro' && m.key === 'main')!;
-    assert.equal(main.categories.flatMap(c => c.groups.flatMap(g => g.items)).find(i => i.name.toLowerCase().startsWith('gnocchi'))!.price, '54');
+    const centroItems = main.categories.flatMap(c => c.groups.flatMap(g => g.items));
+    assert.equal(centroItems.find(i => i.name === 'Tagiatelle ’Nduja')!.price, '49');
+    assert.equal(centroItems.find(i => i.name === 'Zuppa di pesce')!.recommended, false);
+    assert.equal(centroItems.find(i => i.name === 'Crema di pori')!.meatless, true);
+    assert.ok(!centroItems.some(i => i.id === 'gnocchi'));
 });
 test('Photo processing checks actual bytes, strips metadata, caps size and creates individual blur', async () => {
     const buffer = await sharp({ create: { width: 2000, height: 1000, channels: 3, background: '#ff8800' } }).jpeg().withMetadata().toBuffer();

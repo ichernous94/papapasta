@@ -76,13 +76,16 @@ test('PapaPasta import preserves identities/allergens/media/Centro, archives old
     const promotionsBefore = await db.select().from(schema.promotions).orderBy(schema.promotions.id);
     const beforeCategories = await db.select().from(schema.categories);
     const beforeGroups = await db.select().from(schema.groups);
+    // Bound this historical import test to 0006; later migrations may intentionally change Centro.
+    await writeFile(join(directory,'meta/_journal.json'), JSON.stringify({...journal,entries:journal.entries.slice(0,7)}));
+    await writeFile(join(directory,journal.entries[6].tag+'.sql'), await readFile('drizzle/'+journal.entries[6].tag+'.sql'));
     // Failure halfway through the DO block must roll the entire import back.
     await pool.query("ALTER TABLE public.menu_items ADD CONSTRAINT import_failure CHECK (name <> 'Bruchetta con burrata e anchovies')");
-    await assert.rejects(migrate(db,{migrationsFolder:'./drizzle'}));
+    await assert.rejects(migrate(db,{migrationsFolder:directory}));
     assert.deepEqual(await db.select().from(schema.items).orderBy(schema.items.id),beforeItems);
     assert.deepEqual(await readMenus(db),beforeMenus);
     await pool.query('ALTER TABLE public.menu_items DROP CONSTRAINT import_failure');
-    await migrate(db,{migrationsFolder:'./drizzle'});
+    await migrate(db,{migrationsFolder:directory});
     const papa = await readMenus(db,'papapasta');
     const imported = papa.flatMap(m=>m.categories.flatMap(c=>c.groups.flatMap(g=>g.items)));
     assert.equal(imported.length,151);
@@ -116,7 +119,7 @@ test('PapaPasta import preserves identities/allergens/media/Centro, archives old
     await db.update(schema.items).set({name:'Subsequent edit',price:'99',imageId,imageAlt:'New photo'}).where(eq(schema.items.id,matchedId));
     await db.update(schema.menus).set({title:'Subsequent title'}).where(eq(schema.menus.id,papa[0].id));
     const subsequent=await readMenus(db);
-    await migrate(db,{migrationsFolder:'./drizzle'});await seedContent(db);await seedContent(db);
+    await migrate(db,{migrationsFolder:directory});await seedContent(db);await seedContent(db);
     assert.deepEqual(await readMenus(db),subsequent);
     const oldSlug=dishSlug(beforeItems.find(i=>i.id===matchedId)!);
     assert.equal(findDish(await readMenus(db),'papapasta',oldSlug)?.id,matchedId);
