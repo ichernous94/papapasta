@@ -12,7 +12,7 @@
   section + section { border-inline-start: 1px solid theme.$colorGold; }
   h2 { margin-block-end: 1rem; font-size: clamp(1rem, 1.4vw, 1.25rem); font-weight: 700; line-height: 1.4; }
   address { font-style: normal; }
-  a:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+  a:focus-visible { outline: var(--public-focus-outline, 3px solid theme.$colorGold); outline-offset: 4px; }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
   .details {

@@ -15,7 +15,7 @@
 .cardBody { padding: clamp(1.25rem, 3vw, 2rem); h2 { font-size: clamp(1.125rem, 1.7vw, 1.375rem); line-height: 1.4; margin-block-end: 1.5rem; } span { font-size: 0.8125rem; } }
 .cardDate { display: block; border-block-start: 1px solid #e6dece; padding: 0.75rem 1.25rem; font-size: 0.875rem; }
 .article { font-size: 1rem; line-height: 1.75; h2 { font-size: 1.5rem; margin-block: 2rem 1rem; } p + p { margin-block-start: 1rem; } ul { margin-block: 1.5rem; list-style: disc; } img { inline-size: 100%; block-size: auto; margin-block-end: 2rem; } }
-.link:focus-visible, .card:focus-visible, .contact a:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+.link:focus-visible, .card:focus-visible, .contact a:focus-visible { outline: var(--public-focus-outline, 3px solid theme.$colorGold); outline-offset: 4px; }
 @media (max-width: 1023px) { .contacts { grid-template-columns: repeat(2, minmax(0, 1fr)); } .contactBlock { &:nth-child(3) { border-inline-start: 0; } &:nth-child(n+3) { border-block-start: 1px solid theme.$colorGold; } } }
 @media (max-width: 767px) { .contacts, .cards { grid-template-columns: minmax(0, 1fr); } .contactBlock { border-inline-start: 0; &:not(:first-child) { border-block-start: 1px solid theme.$colorGold; } } }
 @media (prefers-reduced-motion: reduce) { .card, .card img, .contact a { transition: none; } }

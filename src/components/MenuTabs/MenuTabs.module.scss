@@ -35,27 +35,19 @@
     transition: color 350ms ease;
     &[aria-selected='true'] { color: theme.$colorGoldText; }
     &:hover { color: theme.$colorGoldText; }
-    &:focus-visible { outline: 2px solid theme.$colorGoldText; outline-offset: -2px; }
+    &:focus-visible { outline: var(--public-focus-outline, 2px solid theme.$colorGoldText); outline-offset: -2px; }
   }
 }
 @media (prefers-reduced-motion: reduce) { .tablist a { transition: none; } }
-.panel:focus-visible { outline: 2px solid theme.$colorGold; outline-offset: 0.5rem; }
+.panel:focus-visible { outline: var(--public-focus-outline, 2px solid theme.$colorGold); outline-offset: 0.5rem; }
 .panel { scroll-margin-block-start: calc(var(--restaurant-header-height, 96px) + var(--menu-category-offset, 80px)); }
 .visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.centro .tablist {
+.centro .tablist, .papapasta .tablist {
   border-block-end: 1px solid #53666566;
   padding-block-end: 0;
   a { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
   a[aria-selected='true'] { border-block-end-color: theme.$colorGoldText; }
-}
-
-.papapasta .tablist {
-  border-block-end: 1px solid #e5e5e5;
-  padding-block-end: 0;
-  a { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
-  a[aria-selected='true'] { color: #d7bb91; border-block-end-color: #c9a579; }
-  a:hover { color: #d7bb91; }
 }
 
 .categoryTitle { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }

@@ -9,7 +9,7 @@
 
   a { transition: color 350ms ease; }
   a:hover { color: theme.$colorGoldText; }
-  a:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 4px; }
+  a:focus-visible { outline: var(--public-focus-outline, 3px solid theme.$colorGold); outline-offset: 4px; }
 }
 
 .content {

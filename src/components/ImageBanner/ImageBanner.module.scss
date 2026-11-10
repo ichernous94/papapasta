@@ -27,4 +27,4 @@
 
 .banner, .anchor { scroll-margin-block-start: var(--restaurant-header-height, 96px); }
 .anchor { position: absolute; inset-block-start: 0; inset-inline-start: 0; }
-.headingLink { color: inherit; text-decoration: none; &:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; } }
+.headingLink { color: inherit; text-decoration: none; &:focus-visible { outline: var(--public-focus-outline, 2px solid currentColor); outline-offset: 6px; } }

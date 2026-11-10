@@ -1,3 +1,4 @@
+import PublicFocusBoundary from '@/components/PublicFocusBoundary';
 import PhotoImage from '@/components/ui/PhotoImage';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -35,7 +36,7 @@ const restaurants = [
 
 export default function SectionHome() {
   return (
-    <section data-restaurant-selection data-selection-active="true" className={styles.selection} aria-labelledby="restaurant-selection-title">
+    <PublicFocusBoundary as="section" data-restaurant-selection data-selection-active="true" className={styles.selection} aria-labelledby="restaurant-selection-title">
       <SelectionScrollLock/>
       <h1 id="restaurant-selection-title" className={styles.visuallyHidden}>
         Wybierz restaurację
@@ -83,6 +84,6 @@ export default function SectionHome() {
           </div>
         </article>;
       })}
-    </section>
+    </PublicFocusBoundary>
   );
 }

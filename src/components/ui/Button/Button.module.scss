@@ -23,7 +23,7 @@
   transition: background-color 400ms ease, color 400ms ease, border-color 400ms ease;
 
   &:focus-visible {
-    outline: 3px solid theme.$colorGold;
+    outline: var(--public-focus-outline, 3px solid theme.$colorGold);
     outline-offset: 5px;
   }
 

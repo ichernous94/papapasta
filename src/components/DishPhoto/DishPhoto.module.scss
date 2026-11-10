@@ -1,6 +1,6 @@
 .thumbnail { float: left; width: 96px; height: 80px; margin: 4px 16px 8px 0; padding: 0; overflow: hidden; border-radius: 4px; cursor: zoom-in; background: #e9ece9;
   img { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms ease; }
-  &:focus-visible { outline: 3px solid #c9a579; outline-offset: 3px; }
+  &:focus-visible { outline: var(--public-focus-outline, 3px solid #c9a579); outline-offset: 3px; }
   @media (hover:hover) { &:hover img { transform: scale(1.05); } }
   @media (max-width: 767px) { width: 72px; height: 64px; margin-right: 12px; }
 }

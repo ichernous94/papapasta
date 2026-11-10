@@ -98,7 +98,8 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         fill
         placeholder="blur"
         sizes="(min-width: 1920px) 1920px, 100vw"
-        preload
+        loading="lazy"
+        fetchPriority="high"
       />
       <video
         ref={videoRef}

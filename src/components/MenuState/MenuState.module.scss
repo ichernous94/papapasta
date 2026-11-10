@@ -1,2 +1,2 @@
 .state { padding-block: 2.5rem; text-align: center; color: var(--site-muted, #62645f); line-height: 1.65; }
-.state button { margin-block-start: 1rem; min-block-size: 44px; padding: 0.5rem 1.25rem; border: 1px solid #c9a579; border-radius: 0.5rem; color: var(--site-text, #1e2128); &:focus-visible { outline: 2px solid #c9a579; outline-offset: 4px; } &:disabled { opacity: 0.6; cursor: wait; } }
+.state button { margin-block-start: 1rem; min-block-size: 44px; padding: 0.5rem 1.25rem; border: 1px solid #c9a579; border-radius: 0.5rem; color: var(--site-text, #1e2128); &:focus-visible { outline: var(--public-focus-outline, 2px solid #c9a579); outline-offset: 4px; } &:disabled { opacity: 0.6; cursor: wait; } }

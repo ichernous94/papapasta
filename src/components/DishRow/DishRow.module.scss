@@ -9,7 +9,7 @@
   padding-block: clamp(1.25rem, 2.5vw, 2rem);
   border-block-end: 1px dotted var(--site-divider, #536665);
   border-radius: 2px;
-  &:focus-visible { outline: 2px solid theme.$colorGold; outline-offset: 6px; }
+  &:focus-visible { outline: var(--public-focus-outline, 2px solid theme.$colorGold); outline-offset: 6px; }
 }
 .copy { min-inline-size: 0; }
 .heading {

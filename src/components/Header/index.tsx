@@ -11,6 +11,7 @@ import { papaPastaSite } from '@/config/papapasta';
 import type { RestaurantConfig } from '@/types/restaurant';
 import { restaurantPath } from '@/utils/restaurantPath';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
+import useMenuGestureLock from '@/hooks/useMenuGestureLock';
 import useExitPresence from '@/hooks/useExitPresence';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import useBurgerMenuStore from '@/store/useBurgerMenuStore';
@@ -33,6 +34,7 @@ export default function Header({ site = papaPastaSite }: { site?: RestaurantConf
   const menuPresent = reducedMotion ? isOpen : animatedPresence;
   const navigationTarget = useRef<string | null>(null);
   useBodyScrollLock(menuPresent);
+  useMenuGestureLock(menuPresent, menuId);
 
   const navigateToTop = (href: string) => {
     navigationTarget.current = href;

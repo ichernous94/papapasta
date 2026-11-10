@@ -19,7 +19,7 @@
   background-color: #171a16;
 
   img { object-fit: cover; transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1), filter 350ms ease; }
-  &:focus-visible { z-index: 1; outline: 3px solid theme.$colorGold; outline-offset: -5px; }
+  &:focus-visible { z-index: 1; outline: var(--public-focus-outline, 3px solid theme.$colorGold); outline-offset: -5px; }
   @media (hover: hover) and (pointer: fine) {
     &:hover img { transform: scale(1.025); filter: var(--photo-load-blur, blur(0px)) brightness(1.06); }
   }
@@ -90,6 +90,6 @@
 
 .strip { :global(.swiper-slide) { inline-size: 50%; } @media (min-width: 1024px) { :global(.swiper-slide) { inline-size: 25%; } } }
 .stripControls { display: flex; justify-content: space-between; position: absolute; z-index: 2; inset: 50% 0.5rem auto; transform: translateY(-50%); pointer-events: none; button { pointer-events: auto; border-radius: 50%; background: #142119cc; } button:disabled { opacity: 0.35; cursor: default; } }
-.control:focus-visible { outline: 3px solid theme.$colorGold; outline-offset: 3px; }
+.control:focus-visible { outline: var(--public-focus-outline, 3px solid theme.$colorGold); outline-offset: 3px; }
 
 .control:disabled { opacity: 0.35; cursor: default; }

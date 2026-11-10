@@ -1,3 +1,4 @@
+import PublicFocusBoundary from '@/components/PublicFocusBoundary';
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
@@ -10,11 +11,11 @@ export const metadata: Metadata = papaPastaMetadata;
 
 export default function PapaPastaLayout({ children, dish }: { children: React.ReactNode; dish: React.ReactNode }) {
   return (
-    <div className={styles.site}>
+    <PublicFocusBoundary className={styles.site}>
       <Suspense fallback={<div className={styles.headerFallback} aria-hidden="true"/>}><Header site={papaPastaDarkSite}/></Suspense>
       <main>{children}</main>
       {dish}
       <Footer site={papaPastaDarkSite}/>
-    </div>
+    </PublicFocusBoundary>
   );
 }

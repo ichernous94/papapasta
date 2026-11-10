@@ -1,0 +1,3 @@
+.boundary { --public-focus-outline: none; }
+.boundary[data-keyboard-focus='true'] { --public-focus-outline: 2px solid #f3ede0; }
+.boundary :where(a, button, input, select, textarea, [tabindex]):not([data-modal-heading]):focus-visible { outline: var(--public-focus-outline); }

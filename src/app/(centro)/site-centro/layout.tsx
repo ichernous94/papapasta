@@ -1,3 +1,4 @@
+import PublicFocusBoundary from '@/components/PublicFocusBoundary';
 import { Suspense } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,5 +9,5 @@ import styles from './Centro.module.scss';
 
 export const metadata = centroMetadata;
 export default function CentroLayout({ children, dish }: { children: React.ReactNode; dish: React.ReactNode }) {
-  return <div className={styles.site}><Suspense fallback={<div className={styles.headerFallback} aria-hidden="true"/>}><Header site={centro} /></Suspense><main>{children}</main>{dish}<DatabasePromotionalPopup/><Footer site={centro} /></div>;
+  return <PublicFocusBoundary className={styles.site}><Suspense fallback={<div className={styles.headerFallback} aria-hidden="true"/>}><Header site={centro} /></Suspense><main>{children}</main>{dish}<DatabasePromotionalPopup/><Footer site={centro} /></PublicFocusBoundary>;
 }

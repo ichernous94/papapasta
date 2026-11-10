@@ -2,24 +2,21 @@
 
 import Image from '@/components/ui/PhotoImage';
 import photoStyles from '@/components/ui/PhotoImage/PhotoImage.module.scss';
-import { useEffect, useId, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { PageFlip } from 'page-flip';
 import { useInView } from 'react-intersection-observer';
-import { IoChevronBackOutline, IoChevronForwardOutline, IoGridOutline, IoExpandOutline, IoRemoveOutline, IoAddOutline } from 'react-icons/io5';
+import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import Container from '@/components/ui/Container';
-import Modal from '@/components/ui/Modal';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import { centroBookPages as pages } from '@/config/centro-book';
 import cover from '../../../public/images/centro/mojito-promo.png';
 import styles from './CocktailBook.module.scss';
 
 // The library owns only the DOM appended inside mountRef, never React-owned nodes.
-function BookViewer({ initialPage, onPageChange, expanded = false }: {
-  initialPage: number; onPageChange: (page: number) => void; expanded?: boolean;
+function BookViewer({ initialPage, onPageChange }: {
+  initialPage: number; onPageChange: (page: number) => void;
 }) {
   const titleId = useId();
-  const thumbsId = useId();
-  const rootRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<HTMLDivElement>(null);
   const bookRef = useRef<PageFlip | null>(null);
@@ -29,21 +26,9 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
   const [landscape, setLandscape] = useState(false);
-  const [zoom, setZoom] = useState(1);
-  const [thumbnails, setThumbnails] = useState(false);
   const reducedMotion = useReducedMotion();
   const { ref: visibilityRef, inView } = useInView({ rootMargin: '300px', triggerOnce: true, fallbackInView: true });
-  const panRef = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
   const swipeRef = useRef<{ x: number; y: number } | null>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const [fallbackFullscreen, setFallbackFullscreen] = useState(false);
-  const [fullscreen, setFullscreen] = useState(false);
-  useEffect(() => {
-    const update = () => setFullscreen(document.fullscreenElement === rootRef.current);
-    document.addEventListener('fullscreenchange', update);
-    return () => document.removeEventListener('fullscreenchange', update);
-  }, []);
-
   useEffect(() => { onPageChangeRef.current = onPageChange; }, [onPageChange]);
 
   useEffect(() => {
@@ -116,7 +101,7 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
           if (cancelled) return;
           const index = event.data;
           currentRef.current = index;
-          setPage(index); setZoom(1);
+          setPage(index);
           loadNearby(index); centerCover(index);
           onPageChangeRef.current(index);
         });
@@ -124,7 +109,7 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
         bookRef.current = book;
         const spread = book.getOrientation() === 'landscape';
         setLandscape(spread);
-        setError(false); setZoom(1);
+        setError(false);
         const start = book.getCurrentPageIndex();
         const visibleImages = imageElements.slice(start, start + (spread && start > 0 && start < pages.length - 1 ? 2 : 1));
         void Promise.all(visibleImages.map(image => image.decode())).then(() => {
@@ -154,34 +139,25 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
   }, [inView, reducedMotion]);
 
   const lastIndex = pages.length - 1;
-  const spreadEnd = landscape && page > 0 && page < lastIndex ? Math.min(page + 1, lastIndex) : page;
+  const spreadEnd = !error && landscape && page > 0 && page < lastIndex ? Math.min(page + 1, lastIndex) : page;
+  const setBookPage = (index: number) => {
+    const next = Math.max(0, Math.min(lastIndex, index));
+    if (error || !bookRef.current) {
+      currentRef.current = next; setPage(next); onPageChangeRef.current(next);
+    } else bookRef.current.turnToPage(next);
+  };
   const turn = (direction: -1 | 1) => {
+    if (direction === -1 ? page === 0 : spreadEnd === lastIndex) return;
     const book = bookRef.current;
-    if (!book || (direction === -1 ? page === 0 : spreadEnd === lastIndex)) return;
-    setZoom(1);
+    if (error || !book) { setBookPage(page + direction); return; }
     if (reducedMotion) {
       const next = direction === 1 ? spreadEnd + 1 : page - (landscape && page > 1 ? 2 : 1);
-      book.turnToPage(Math.max(0, Math.min(lastIndex, next)));
+      setBookPage(next);
     } else if (direction === 1) book.flipNext();
     else book.flipPrev();
   };
-  const setBookPage = (index: number) => { setZoom(1); bookRef.current?.turnToPage(index); };
-  const toggleFullscreen = async () => {
-    if (document.fullscreenElement === rootRef.current) { await document.exitFullscreen(); return; }
-    try {
-      if (!rootRef.current?.requestFullscreen) throw new Error('Fullscreen unavailable');
-      await rootRef.current.requestFullscreen();
-    } catch { setFallbackFullscreen(true); }
-  };
-  const onPanStart = (event: PointerEvent<HTMLDivElement>) => {
-    if (zoom <= 1) { if (reducedMotion) swipeRef.current = { x: event.clientX, y: event.clientY }; return; }
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    panRef.current = { x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
 
-  return <div ref={rootRef} className={[styles.viewer, expanded && styles.expanded].filter(Boolean).join(' ')}>
+  return <div className={styles.viewer}>
     <div ref={visibilityRef}>
       <div role="region" aria-labelledby={titleId} tabIndex={0} onKeyDown={event => {
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); turn(event.key === 'ArrowLeft' ? -1 : 1); }
@@ -189,43 +165,33 @@ function BookViewer({ initialPage, onPageChange, expanded = false }: {
       }}>
         <h2 id={titleId} className={styles.visuallyHidden}>Karta koktajli i alkoholi Papa Pasta Centro</h2>
         <div ref={frameRef} className={styles.frame}>
-          <div ref={viewportRef} className={styles.viewport} data-zoomed={zoom > 1} onPointerDown={onPanStart} onPointerMove={event => {
-            const pan = panRef.current; const viewport = viewportRef.current;
-            if (pan && viewport) { viewport.scrollLeft = pan.left - event.clientX + pan.x; viewport.scrollTop = pan.top - event.clientY + pan.y; }
+          <div className={styles.viewport} onPointerDown={event => {
+            if (reducedMotion || error || event.pointerType === 'touch') swipeRef.current = { x: event.clientX, y: event.clientY };
           }} onPointerUp={event => {
             const swipe = swipeRef.current;
             if (swipe && Math.abs(event.clientX - swipe.x) > 45 && Math.abs(event.clientY - swipe.y) < 35) turn(event.clientX < swipe.x ? 1 : -1);
-            panRef.current = null; swipeRef.current = null;
-          }} onPointerCancel={() => { panRef.current = null; swipeRef.current = null; }}>
-            <div className={styles.zoomArea} style={{ width: `${zoom * 100}%`, height: `${zoom * 100}%` }}>
-              <div ref={mountRef} className={styles.mount} data-disabled={zoom > 1 || reducedMotion} style={{ width: `${100 / zoom}%`, height: `${100 / zoom}%`, transform: `scale(${zoom})` }} />
-            </div>
+            swipeRef.current = null;
+          }} onPointerCancel={() => { swipeRef.current = null; }}
+            // Own touch swipes without the library's short swipe timer; native vertical pan remains available.
+            onTouchStartCapture={event => event.stopPropagation()}
+            onTouchMoveCapture={event => event.stopPropagation()}
+            onTouchEndCapture={event => event.stopPropagation()}
+            onTouchCancelCapture={event => { event.stopPropagation(); swipeRef.current = null; }}>
+            <div ref={mountRef} className={styles.mount} data-disabled={reducedMotion || error}/>
           </div>
-          {!ready && <Image src={cover} alt="Okładka karty koktajli Papa Pasta Centro" fill placeholder="blur" sizes="(min-width: 1024px) 550px, 100vw" className={styles.cover} />}
+          {!ready && <Image src={error ? pages[page].src : cover} alt={error ? pages[page].title : 'Okładka karty koktajli Papa Pasta Centro'} fill placeholder={error ? 'empty' : 'blur'} sizes="(min-width: 1024px) 550px, 100vw" className={styles.cover}/>}
+
         </div>
-        {error && <p role="status">Nie udało się uruchomić książki. Otwórz strony z listy poniżej.</p>}
+        {error && <p role="status">Możesz przeglądać kartę strzałkami.</p>}
         <div className={styles.toolbar} role="group" aria-label="Sterowanie kartą">
-          <button type="button" disabled={!ready || page === 0} onClick={() => turn(-1)} aria-label="Poprzednia strona"><IoChevronBackOutline /></button>
+          <button type="button" disabled={(!ready && !error) || page === 0} onClick={() => turn(-1)} aria-label="Poprzednia strona"><IoChevronBackOutline /></button>
           <p className={styles.counter} aria-live="polite" aria-atomic="true">{page + 1}{spreadEnd !== page ? `–${spreadEnd + 1}` : ''} / {pages.length}</p>
-          <button type="button" disabled={!ready || spreadEnd === lastIndex} onClick={() => turn(1)} aria-label="Następna strona"><IoChevronForwardOutline /></button>
-          <button type="button" disabled={!ready} aria-label="Miniatury stron" aria-expanded={thumbnails} aria-controls={thumbsId} onClick={() => setThumbnails(!thumbnails)}><IoGridOutline /></button>
-          <button type="button" disabled={!ready || zoom <= 1} aria-label="Pomniejsz" onClick={() => setZoom(Math.max(1, zoom - 0.25))}><IoRemoveOutline /></button>
-          <span className={styles.zoomLabel}>{Math.round(zoom * 100)}%</span>
-          <button type="button" disabled={!ready || zoom >= 2} aria-label="Powiększ" onClick={() => setZoom(Math.min(2, zoom + 0.25))}><IoAddOutline /></button>
-          {!expanded && <button type="button" onClick={() => void toggleFullscreen()} aria-label={fullscreen ? "Wyjdź z pełnego ekranu" : "Pełny ekran"} aria-pressed={fullscreen}><IoExpandOutline /></button>}
+          <button type="button" disabled={(!ready && !error) || spreadEnd === lastIndex} onClick={() => turn(1)} aria-label="Następna strona"><IoChevronForwardOutline /></button>
         </div>
-        <div id={thumbsId} className={styles.thumbnails} hidden={!thumbnails}>
-          {thumbnails && pages.map((item, index) => <button key={item.id} type="button" aria-label={`${index + 1}. ${item.title}`} aria-pressed={index === page} onClick={() => setBookPage(index)}>
-            <Image src={item.src} alt="" width={100} height={142} sizes="100px" /><span>{index + 1}</span>
-          </button>)}
-        </div>
-        <details className={styles.links}><summary>Otwórz strony karty jako obrazy</summary><ol>{pages.map((item, index) => <li key={item.id}><a href={item.src}>{index + 1}. {item.title}</a></li>)}</ol></details>
+
       </div>
     </div>
-    {!expanded && <Modal open={fallbackFullscreen} onClose={() => setFallbackFullscreen(false)} labelledBy={titleId + '-fullscreen'} className={styles.fullscreenModal} animationDuration={400}>
-      <h2 id={titleId + '-fullscreen'} className={styles.visuallyHidden}>Karta alkoholi — pełny ekran</h2>
-      <BookViewer initialPage={page} onPageChange={index => { setBookPage(index); }} expanded />
-    </Modal>}
+
   </div>;
 }
 
