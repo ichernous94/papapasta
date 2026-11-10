@@ -7,6 +7,7 @@ import { IoPauseOutline, IoPlayOutline } from 'react-icons/io5';
 import Button from '@/components/ui/Button';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import styles from './VideoHero.module.scss';
+import { waitForVideoFrame } from './videoFrame';
 
 type DataConnection = {
   saveData?: boolean;
@@ -28,6 +29,8 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
   const [playbackError, setPlaybackError] = useState('');
   const retryPlayback = useRef<() => void>(() => {});
   const [hasFrame, setHasFrame] = useState(false);
+  const cancelFrame = useRef<() => void>(() => {});
+  const resetFrame = () => { cancelFrame.current(); setHasFrame(false); };
 
   useEffect(() => {
     const video = videoRef.current;
@@ -65,6 +68,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
     observer.observe(video);
     return () => {
       active = false;
+      cancelFrame.current();
       retryPlayback.current = () => {};
       observer.disconnect();
       document.removeEventListener('visibilitychange', visibility);
@@ -98,8 +102,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         fill
         placeholder="blur"
         sizes="(min-width: 1920px) 1920px, 100vw"
-        loading="lazy"
-        fetchPriority="high"
+        preload
       />
       <video
         ref={videoRef}
@@ -111,11 +114,17 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         preload="metadata"
         aria-hidden="true"
         tabIndex={-1}
-        onPlaying={() => { setIsPlaying(true); setHasFrame(true); setPlaybackError(''); }}
+        onPlaying={() => {
+          setIsPlaying(true); setPlaybackError('');
+          if (!hasFrame && videoRef.current) {
+            cancelFrame.current();
+            cancelFrame.current = waitForVideoFrame(videoRef.current, () => setHasFrame(true));
+          }
+        }}
         onCanPlay={() => retryPlayback.current()}
         onPause={() => setIsPlaying(false)}
-        onEmptied={() => { setIsPlaying(false); setHasFrame(false); }}
-        onError={() => { setIsPlaying(false); setHasFrame(false); setPlaybackError('Nie można odtworzyć wideo. Spróbuj ponownie.'); }}
+        onEmptied={() => { setIsPlaying(false); resetFrame(); }}
+        onError={() => { setIsPlaying(false); resetFrame(); setPlaybackError('Nie można odtworzyć wideo. Spróbuj ponownie.'); }}
       />
       <div className={styles.content}>
         <h1 id={titleId}>

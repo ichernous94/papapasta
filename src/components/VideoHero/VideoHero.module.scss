@@ -30,9 +30,9 @@
   inline-size: 100%;
   block-size: 100%;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: none;
 }
-.visible { opacity: 1; }
+.visible { opacity: 1; transition: opacity 400ms ease; }
 
 .content {
   position: relative;
@@ -74,7 +74,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .video { transition: none; }
+  .video, .visible { transition: none; }
 }
-
-@media (min-width: 1025px) { .poster { display: none; } }

@@ -1,4 +1,5 @@
 import VideoHero from '@/components/VideoHero';
+import poster from '../../../../public/images/video-posters/centro.webp';
 import ContentSection from '@/components/ContentSection';
 import RestaurantGallery from '@/components/RestaurantGallery';
 import Button from '@/components/ui/Button';
@@ -9,7 +10,7 @@ import { centroMetadata, centroPageMetadata } from '@/config/metadata';
 export const metadata = centroPageMetadata('/', centroMetadata.title, centroMetadata.description);
 export default function CentroHome() {
   return <>
-    <VideoHero videoSrc="/videos/centro.mp4" poster={images.cocktails} name="Papa Pasta Centro" logo={{ src: '/icons/centro_logo_big.svg', width: 140, height: 135 }} />
+    <VideoHero videoSrc="/videos/centro.mp4" poster={poster} name="Papa Pasta Centro" logo={{ src: '/icons/centro_logo_big.svg', width: 140, height: 135 }} />
     <ContentSection id="o-nas" title="O NAS" image={images.interior} imageAlt="Wnętrze Papa Pasta Centro"><p>{centroCopy.about}</p></ContentSection>
     <ContentSection id="cocktail-bar" title="COCKTAIL BAR" image={images.mojito} imageAlt="Autorski zielony koktajl" imageSide="left" actions={<Button href="/cocktail-bar#karta-koktajli">KARTA KOKTAJLI</Button>}><p>{centroCopy.cocktails}</p></ContentSection>
     <ContentSection id="nasze-potrawy" title="NASZE POTRAWY" image={images.chicken} imageAlt="Kurczak ze szparagami" actions={<Button href="/menu">ZOBACZ MENU</Button>}><p>{centroCopy.dishes}</p></ContentSection>

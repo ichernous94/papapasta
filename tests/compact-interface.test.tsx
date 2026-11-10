@@ -22,10 +22,12 @@ test('Cocktail reader exposes only accessible page arrows and counter, without r
   for(const label of ['Miniatury stron','Powiększ','Pomniejsz','Pełny ekran','Otwórz strony karty jako obrazy','>100%<'])assert.ok(!html.includes(label),label);
   assert.ok(html.includes('aria-live="polite"'));
 });
-test('Video fallback remains available in server markup without unconditional poster preloading', () => {
+test('Video preview is preloaded from server markup and retains manual playback', () => {
   const html=renderToStaticMarkup(<VideoHero videoSrc="/videos/test.mp4" poster={{src:'/images/poster.jpg',width:1200,height:800,blurDataURL:'data:image/png;base64,AA=='}} name="Restaurant" logo={{src:'/logo.svg',width:200,height:60}}/>);
-  assert.ok(html.includes('loading="lazy"'));
-  assert.ok(!html.includes('rel="preload"'));
+  const preview = html.match(/<img[^>]+>/)?.[0];
+  assert.ok(preview && !preview.includes('loading="lazy"'));
+  assert.ok(html.includes('rel="preload"'));
+  assert.ok(html.includes('as="image"'));
   assert.ok(html.includes('Odtwórz wideo'));
   assert.ok(html.includes('<video'));
 });
