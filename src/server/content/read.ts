@@ -1,18 +1,19 @@
+import { FIXED_MENU_KEYS } from '@/config/menu-sections';
 import type { createDatabase } from '@/server/db/connection';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { menus } from '@/server/db/schema';
 import type { EditorMenu } from '@/types/admin';
 import { publicImageURL } from '@/server/media/storage';
 export async function readMenus(db: ReturnType<typeof createDatabase>['db'], restaurantId?: string, onlyVisible = false): Promise<EditorMenu[]> {
     const rows = await db.query.menus.findMany({
-        where: restaurantId ? eq(menus.restaurantId, restaurantId) : undefined,
+        where: and(inArray(menus.key, [...FIXED_MENU_KEYS]), restaurantId ? eq(menus.restaurantId, restaurantId) : undefined),
         orderBy: (m, { asc }) => [asc(m.sortOrder)],
         with: { bannerImage: true, categories: { orderBy: (c, { asc }) => [asc(c.sortOrder)], with: { groups: { orderBy: (g, { asc }) => [asc(g.sortOrder)], with: { items: {
                                 where: (i) => onlyVisible ? eq(i.visible, true) : undefined,
                                 orderBy: (i, { asc }) => [asc(i.sortOrder), asc(i.id)], with: { image: true },
                             } } } } } },
     });
-    return rows.map(m => ({ id: m.id, restaurantId: m.restaurantId, key: m.key, title: m.title, subtitle: m.subtitle, version: m.version, bannerImageId: m.bannerImageId,
+    return rows.sort((a, b) => a.restaurantId.localeCompare(b.restaurantId) || FIXED_MENU_KEYS.indexOf(a.key as typeof FIXED_MENU_KEYS[number]) - FIXED_MENU_KEYS.indexOf(b.key as typeof FIXED_MENU_KEYS[number])).map(m => ({ id: m.id, restaurantId: m.restaurantId, key: m.key, title: m.title, subtitle: m.subtitle, version: m.version, bannerImageId: m.bannerImageId,
         bannerImage: m.bannerImage?.status === 'ready' && publicImageURL(m.bannerImage.objectKey) ? { src: publicImageURL(m.bannerImage.objectKey)!, width: m.bannerImage.width, height: m.bannerImage.height, blurDataURL: m.bannerImage.blurDataURL, alt: m.title } : undefined,
         categories: m.categories.map(c => ({ id: c.id, label: c.label, note: c.note, columns: c.columns === 2 ? 2 as const : undefined, columnBreak: c.columnBreak,
             groups: c.groups.map(g => ({ id: g.id, title: g.title, note: g.note, afterNote: g.afterNote, items: g.items.map(i => {

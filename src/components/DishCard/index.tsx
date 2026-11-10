@@ -15,7 +15,7 @@ export default function DishCard({ dish, modal = false }: { dish: Dish; modal?: 
       {dish.portion && <p className={styles.portion}>{dish.portion}</p>}
       {dish.isNew && <p className={styles.badge}>Nowość</p>}
       {dish.description?.map((line, index) => <p key={index} className={styles.description}>{menuText(line)}</p>)}
-      <AllergenList allergens={dish.allergens}/>
+      <AllergenList allergens={dish.allergens} meatless={dish.meatless}/>
     </div>
   </article>;
 }

@@ -13,7 +13,7 @@ import { createAuth } from '../../src/server/auth/config';
 import * as schema from '../../src/server/db/schema';
 import { seedContent } from '../../src/server/content/seed';
 import { readMenus } from '../../src/server/content/read';
-import { saveItem, moveItem, saveStructure, changeContent, createMenu } from '../../src/server/content/write';
+import { saveItem, moveItem, saveStructure, changeContent } from '../../src/server/content/write';
 function totp(uri: string) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     let bits = '';
@@ -72,7 +72,13 @@ test('PostgreSQL: auth, mandatory MFA, roles, rate limits, revocation and conten
         } finally { await rm(legacyDir, {recursive:true,force:true}); }
         await seedContent(db);
         const original = await readMenus(db);
-        assert.equal(original.length, 10);
+        assert.equal(original.length, 6);
+        const defaultPapaItems = original.filter(m => m.restaurantId === 'papapasta').flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items)));
+        assert.equal(defaultPapaItems.length, 151);
+        assert.ok(defaultPapaItems.find(i => i.name === 'Crema di pomodoro')!.meatless);
+        const salame = defaultPapaItems.find(i => i.name === 'Salame Piccante')!;
+        assert.ok(salame.recommended && salame.spicy && !salame.meatless);
+        assert.ok(defaultPapaItems.every(i => !i.imageId && i.allergens?.length === 0));
         const main = original.find(m => m.id === 'papapasta:main')!;
         const group = main.categories[0].groups[0];
         const item = group.items[0];
@@ -135,7 +141,7 @@ test('PostgreSQL: auth, mandatory MFA, roles, rate limits, revocation and conten
         await assert.rejects(saveItem(db,'test-actor',{...allergyPayload,version:(await findMenu(main.id)).version,allergens:['not-an-allergen']}));
         await saveItem(db,'test-actor',{...allergyPayload,version:(await findMenu(main.id)).version,allergens:[]});
         assert.deepEqual((await db.query.items.findFirst({where:eq(schema.items.id,allergyItem.id)}))!.allergens,[]);
-        const recommendations=await findMenu('papapasta:recommendations');
+        const recommendations=await findMenu('papapasta:kids');
         await saveItem(db,'test-actor',{...payload,id:undefined,menuId:recommendations.id,version:recommendations.version,groupId:recommendations.categories[0].groups[0].id,name:'Independent allergen recommendation',allergens:['nuts']});
         assert.deepEqual((await db.query.items.findFirst({where:eq(schema.items.id,allergyItem.id)}))!.allergens,[]);
         const recItem=(await findMenu(recommendations.id)).categories[0].groups[0].items.find(i=>i.name==='Independent allergen recommendation')!;
@@ -263,12 +269,12 @@ test('Fresh database installs all migrations and keeps the Drizzle snapshot alig
         original.pathname='/'+name; fresh=createDatabase(original.toString());
         await migrate(fresh.db,{migrationsFolder:'./drizzle'});
         await seedContent(fresh.db);
-        assert.equal((await readMenus(fresh.db)).length,10);
+        assert.equal((await readMenus(fresh.db)).length,6);
         const tables = await fresh.pool.query("select tablename from pg_tables where schemaname='public'");
         assert.ok(tables.rows.some(row=>row.tablename==='qr_codes'));
         assert.equal(tables.rows.length,17);
         const {generateDrizzleJson,generateMigration}=await import('drizzle-kit/api');
-        const snapshot=JSON.parse(await readFile('drizzle/meta/0004_snapshot.json','utf8'));
+        const snapshot=JSON.parse(await readFile('drizzle/meta/0005_snapshot.json','utf8'));
         const current=generateDrizzleJson(schema,snapshot.id,['public']);
         assert.deepEqual(await generateMigration(snapshot,current),[]);
     } finally { if(fresh) await fresh.pool.end(); if(created) await source.pool.query(`DROP DATABASE "${name}" WITH (FORCE)`); await source.pool.end(); }
@@ -284,7 +290,7 @@ test('Sections: banner lifecycle, shared photos, protected deletion and optimist
     const input = (version:number, removeBanner=false) => ({ menuId:extraId, id:extraId, version, kind:'menu', title:'Seasonal', note:'Subtitle', afterNote:'', removeBanner });
     try {
         await db.insert(schema.restaurants).values({ id:restaurantId, name:'Test sections' });
-        await db.insert(schema.menus).values([{id:mainId,restaurantId,key:'main',title:'Main'},{id:extraId,restaurantId,key:'autumn',title:'Seasonal'},{id:recId,restaurantId,key:'recommendations',title:'Recommendations'}]);
+        await db.insert(schema.menus).values([{id:mainId,restaurantId,key:'main',title:'Main'},{id:extraId,restaurantId,key:'drinks',title:'Drinks'},{id:recId,restaurantId,key:'recommendations',title:'Recommendations'}]);
         for (const id of [photo,replacement,wrong]) await db.insert(schema.mediaAssets).values({ id,objectKey:`papapasta/menu-images/${id}.webp`,width:1200,height:600,mimeType:'image/webp',byteSize:100,blurDataURL:'data:image/webp;base64,AA==',createdBy:id===wrong?'someone-else':actor });
         await assert.rejects(saveStructure(db,actor,input(1),wrong),/unavailable/);
         await saveStructure(db,actor,input(1),photo);
@@ -300,54 +306,38 @@ test('Sections: banner lifecycle, shared photos, protected deletion and optimist
         assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,replacement)}))!.status,'orphan');
         const dto=(await readMenus(db,restaurantId)).find(m=>m.id===extraId)!;
         assert.equal(dto.bannerImageId,null);
-        for(const id of [mainId,recId]) await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:id,version:1}),/cannot be deleted/);
+        for(const id of [mainId,recId]) await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:id,version:1}),/Invalid/);
         // A banner reference must keep an image alive when its last dish is removed.
         await db.update(schema.menus).set({bannerImageId:photo}).where(eq(schema.menus.id,extraId));
         await changeContent(db,actor,{action:'deleteItem',menuId:mainId,version:1,id:itemId});
         assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'ready');
-        // Deleting a populated section cascades its entire hierarchy and releases its banner.
-        await db.insert(schema.categories).values({id:'delete-'+categoryId,menuId:extraId,slug:'test',label:'Delete'});
-        await db.insert(schema.groups).values({id:'delete-'+groupId,categoryId:'delete-'+categoryId});
-        await db.insert(schema.items).values({id:'delete-'+itemId,groupId:'delete-'+groupId,name:'Delete me'});
-        await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:extraId,version:3}),/already changed/);
-        await changeContent(db,actor,{action:'deleteMenu',menuId:extraId,version:4});
-        assert.equal(await db.query.items.findFirst({where:eq(schema.items.id,'delete-'+itemId)}),undefined);
-        assert.equal(await db.query.categories.findFirst({where:eq(schema.categories.id,'delete-'+categoryId)}),undefined);
-        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'orphan');
-        assert.equal((await db.query.auditLog.findFirst({where:eq(schema.auditLog.targetId,extraId),orderBy:(a,{desc})=>[desc(a.createdAt)]}))!.action,'menu.delete');
+        // The retired delete operation cannot remove a populated fixed section or its media.
+        await assert.rejects(changeContent(db,actor,{action:'deleteMenu',menuId:extraId,version:4}));
+        assert.ok(await db.query.menus.findFirst({where:eq(schema.menus.id,extraId)}));
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,photo)}))!.status,'ready');
     } finally { await pool.end(); }
 });
 
-test('New sections: independent IDs, serialized order, upload ownership, audit and CRUD', { skip: !process.env.TEST_DATABASE_URL }, async () => {
-    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!, 4);
-    const actor = 'section-create-test';
-    const photo = randomUUID();
-    const input = { restaurantId: 'centro', title: 'Menu letnie', subtitle: 'Estate' };
+test('Fixed sections: editable names/banners, stable purpose/order, repeat seed and no create/delete', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!,4);
     try {
-        await db.insert(schema.mediaAssets).values({ id: photo, objectKey: `test/${photo}.webp`, width: 1200, height: 600, mimeType: 'image/webp', byteSize: 100, blurDataURL: '', createdBy: actor });
-        const before = await readMenus(db, 'centro');
-        await assert.rejects(createMenu(db, 'other-editor', input, photo), /unavailable/);
-        assert.equal((await readMenus(db, 'centro')).length, before.length);
-        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'pending');
-        const [first, second] = await Promise.all([createMenu(db, actor, input, photo), createMenu(db, actor, input)]);
-        assert.notEqual(first.menuId, second.menuId);
-        const rows = await db.query.menus.findMany({ where: eq(schema.menus.restaurantId, 'centro'), orderBy: (m, { asc }) => [asc(m.sortOrder)] });
-        const created = rows.filter(m => [first.menuId, second.menuId].includes(m.id));
-        assert.equal(created.length, 2);
-        assert.equal(new Set(created.map(m => m.sortOrder)).size, 2);
-        assert.ok(created.every(m => m.key.startsWith('section-') && m.version === 1));
-        assert.ok(rows.slice(-2).every(m => [first.menuId, second.menuId].includes(m.id)));
-        const section = (await readMenus(db, 'centro')).find(m => m.id === first.menuId)!;
-        assert.equal(section.bannerImageId, photo);
-        assert.deepEqual(section.categories, []);
-        assert.ok(!(await readMenus(db, 'papapasta')).some(m => m.id === first.menuId));
-        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'ready');
-        assert.equal((await db.query.auditLog.findFirst({ where: eq(schema.auditLog.targetId, first.menuId) }))!.action, 'menu.create');
-        await changeContent(db, actor, { action: 'createCategory', menuId: first.menuId, version: 1, title: 'Starters', note: '', columns: 1, columnBreak: 1 });
-        await assert.rejects(saveStructure(db, actor, { menuId: first.menuId, id: first.menuId, version: 1, kind: 'menu', title: 'Stale', note: '', afterNote: '' }), /already changed/);
-        await changeContent(db, actor, { action: 'deleteMenu', menuId: first.menuId, version: 2 });
-        assert.equal((await db.query.mediaAssets.findFirst({ where: eq(schema.mediaAssets.id, photo) }))!.status, 'orphan');
-        await changeContent(db, actor, { action: 'deleteMenu', menuId: second.menuId, version: 1 });
+        for (const restaurantId of ['papapasta','centro']) {
+            const before = await readMenus(db,restaurantId);
+            assert.deepEqual(before.map(m=>m.key),['main','kids','drinks']);
+            for (const menu of before) {
+                await saveStructure(db,'fixed-test',{menuId:menu.id,id:menu.id,version:menu.version,kind:'menu',title:`Renamed ${menu.key}`,note:'New subtitle',afterNote:''});
+                await assert.rejects(changeContent(db,'fixed-test',{action:'deleteMenu',menuId:menu.id,version:menu.version+1}));
+                await assert.rejects(saveStructure(db,'fixed-test',{menuId:menu.id,id:menu.id,version:menu.version,kind:'menu',title:'Stale',note:'',afterNote:''}),/already changed/);
+            }
+            await seedContent(db);
+            const after = await readMenus(db,restaurantId);
+            assert.deepEqual(after.map(m=>m.key),['main','kids','drinks']);
+            for (const [index, menu] of after.entries()) {
+                assert.equal(menu.title,`Renamed ${menu.key}`);
+                assert.deepEqual(menu.categories,before[index].categories);
+                assert.equal(menu.id,before[index].id);
+            }
+        }
     } finally { await pool.end(); }
 });
 

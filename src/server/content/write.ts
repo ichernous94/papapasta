@@ -1,8 +1,9 @@
+import { isFixedMenuKey } from '@/config/menu-sections';
 import { randomUUID } from 'node:crypto';
 import { and, eq, sql } from 'drizzle-orm';
 import type { createDatabase } from '@/server/db/connection';
-import { menus, categories, groups, items, mediaAssets, auditLog, restaurants } from '@/server/db/schema';
-import { itemInputSchema, structureInputSchema, createMenuSchema } from '@/validation/admin';
+import { menus, categories, groups, items, auditLog } from '@/server/db/schema';
+import { itemInputSchema, structureInputSchema } from '@/validation/admin';
 import { z } from 'zod';
 type Database = ReturnType<typeof createDatabase>['db'];
 type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
@@ -13,6 +14,7 @@ async function lockMenu(tx: Transaction, menuId: string, version: number) {
     const [menu] = await tx.select().from(menus).where(eq(menus.id, menuId)).for('update');
     if (!menu)
         throw new ContentError('Menu section not found');
+    if (!isFixedMenuKey(menu.key)) throw new ContentError('This menu section is archived and cannot be edited');
     if (menu.version !== version)
         throw new ContentError('This menu was already changed by another editor. Copy your changes and refresh the page.');
     return menu;
@@ -96,7 +98,7 @@ export async function saveStructure(db: Database, actorId: string, raw: unknown,
         }
         else if (input.kind === 'category') {
             if (uploadId || input.removeBanner) throw new ContentError('Only menu sections have banners');
-            if (['main', 'wine'].includes(menu.key) && !input.title) throw new ContentError('The category name cannot be empty');
+            if (['main', 'drinks'].includes(menu.key) && !input.title) throw new ContentError('The category name cannot be empty');
             const result = await tx.update(categories).set({ label: input.title, note: input.note, ...(input.columns !== undefined ? { columns: input.columns } : {}), ...(input.columnBreak !== undefined ? { columnBreak: input.columnBreak } : {}) }).where(and(eq(categories.id, input.id), eq(categories.menuId, menu.id))).returning({ id: categories.id });
             if (!result.length)
                 throw new ContentError('Category not found');
@@ -112,7 +114,6 @@ export async function saveStructure(db: Database, actorId: string, raw: unknown,
 }
 
 export const contentOperationSchema = z.discriminatedUnion('action', [
-    z.object({ action: z.literal('deleteMenu'), menuId: z.string(), version: z.number().int().positive() }).strict(),
     z.object({ action: z.literal('deleteItem'), menuId: z.string(), version: z.number().int().positive(), id: z.string() }),
     z.object({ action: z.literal('reorder'), menuId: z.string(), version: z.number().int().positive(), groupId: z.string(), ids: z.array(z.string()).min(1) }),
     z.object({ action: z.literal('createCategory'), menuId: z.string(), version: z.number().int().positive(), title: z.string().trim().min(1).max(200), note: z.string().max(6000), columns: z.number().int().min(1).max(2), columnBreak: z.number().int().min(1) }),
@@ -125,17 +126,6 @@ export async function changeContent(db: Database, actorId: string, raw: unknown)
     const input = contentOperationSchema.parse(raw);
     return db.transaction(async tx => {
         const menu = await lockMenu(tx, input.menuId, input.version);
-        if (input.action === 'deleteMenu') {
-            if (['main', 'recommendations'].includes(menu.key)) throw new ContentError('This menu section cannot be deleted.');
-            const photos = await tx.select({ imageId: items.imageId }).from(items).innerJoin(groups, eq(items.groupId, groups.id)).innerJoin(categories, eq(groups.categoryId, categories.id)).where(eq(categories.menuId, menu.id));
-            const imageIds = [...new Set([...photos.map(p => p.imageId), menu.bannerImageId].filter((id): id is string => !!id))].sort();
-            // Lock affected media in a stable order before detaching references.
-            for (const imageId of imageIds) await tx.select({ id: mediaAssets.id }).from(mediaAssets).where(eq(mediaAssets.id, imageId)).for('update');
-            await tx.delete(menus).where(eq(menus.id, menu.id));
-            for (const imageId of imageIds) await orphanUnused(tx, imageId);
-            await tx.insert(auditLog).values({ actorId, action: 'menu.delete', targetId: menu.id, details: { restaurantId: menu.restaurantId, title: menu.title } });
-            return menu.restaurantId;
-        }
         let target = 'id' in input ? input.id : randomUUID();
         if (input.action === 'deleteItem') {
             const item = await tx.query.items.findFirst({ where: eq(items.id, input.id) });
@@ -171,22 +161,6 @@ export async function changeContent(db: Database, actorId: string, raw: unknown)
         }
         await finish(tx, actorId, menu.id, input.action, target);
         return menu.restaurantId;
-    });
-}
-
-export async function createMenu(db: Database, actorId: string, raw: unknown, uploadId?: string) {
-    const input = createMenuSchema.parse(raw);
-    return db.transaction(async tx => {
-        // Serialize creation per restaurant so simultaneous sections receive distinct positions.
-        const [restaurant] = await tx.select().from(restaurants).where(eq(restaurants.id, input.restaurantId)).for('update');
-        if (!restaurant) throw new ContentError('Restaurant not found.');
-        const [last] = await tx.select({ order: sql<number>`coalesce(max(${menus.sortOrder}), -1)` }).from(menus).where(eq(menus.restaurantId, input.restaurantId));
-        const key = `section-${randomUUID()}`;
-        const id = `${input.restaurantId}:${key}`;
-        if (uploadId) await attachUpload(tx, actorId, uploadId);
-        await tx.insert(menus).values({ id, key, ...input, sortOrder: Number(last.order) + 1, bannerImageId: uploadId ?? null });
-        await tx.insert(auditLog).values({ actorId, action: 'menu.create', targetId: id, details: { restaurantId: input.restaurantId, title: input.title } });
-        return { restaurantId: input.restaurantId, menuId: id };
     });
 }
 

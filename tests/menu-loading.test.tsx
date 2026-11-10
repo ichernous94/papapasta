@@ -6,7 +6,7 @@ import { PassThrough } from 'node:stream';
 import { renderToPipeableStream, renderToStaticMarkup } from 'react-dom/server';
 import { redirect } from 'next/navigation';
 import MenuSkeleton from '../src/components/MenuSkeleton';
-import { loadMenuState, findMenuSection, hasPublishedItems, publishedCategories, additionalMenuSections } from '../src/server/content/menu-state';
+import { loadMenuState, findMenuSection, hasPublishedItems, publishedCategories } from '../src/server/content/menu-state';
 import { menuHeadings } from '../src/config/menu-headings';
 import { seedMenus } from '../src/server/content/seed-data';
 import type { EditorMenu, EditorItem } from '../src/types/admin';
@@ -88,11 +88,10 @@ test('Delayed server data streams static shell and skeleton before actual dishes
   assert.ok(chunks.includes('Published dish'));
 });
 
-test('Dynamic sections preserve order, admin copy and restaurant isolation without duplicating built-ins', () => {
+test('Only fixed section identities resolve; renamed sections keep their purpose', () => {
   const custom = { ...menu, id: 'new', key: 'section-stable-id', title: 'Menu letnie' };
-  const another = { ...custom, id: 'newer', key: 'section-another' };
-  const state = { status: 'ready' as const, menus: [menu, { ...menu, key: 'wine' }, { ...menu, key: 'recommendations' }, custom, { ...custom, restaurantId: 'centro' }, another] };
-  assert.deepEqual(additionalMenuSections(state, 'papapasta'), [custom, another]);
-  assert.deepEqual(additionalMenuSections(state, 'centro'), [{ ...custom, restaurantId: 'centro' }]);
-  assert.deepEqual(additionalMenuSections({ status: 'error' }, 'centro'), []);
+  const state = { status: 'ready' as const, menus: [menu, { ...menu, key: 'drinks', title: 'Bar i wina' }, { ...menu, key: 'recommendations' }, custom] };
+  assert.equal(findMenuSection(state, 'papapasta', 'drinks')?.title, 'Bar i wina');
+  assert.equal(findMenuSection(state, 'papapasta', 'recommendations'), undefined);
+  assert.equal(findMenuSection(state, 'papapasta', custom.key), undefined);
 });

@@ -69,11 +69,12 @@ test('PapaPasta and Centro lookup, metadata and recommendations remain isolated'
   const rec = { ...papa, key: 'recommendations', categories: [{ ...papa.categories[0], groups: [{ ...papa.categories[0].groups[0], items: [recommendation] }] }] };
   const menus = [menu, papa, rec];
   const dishes = listRestaurantDishes(menus, 'papapasta');
-  assert.equal(dishes.length, 2);
+  assert.equal(dishes.length, 1);
+  assert.equal(findRestaurantDish(menus, 'papapasta', dishSlug(recommendation)), undefined);
   assert.equal(findRestaurantDish(menus, 'centro', dishSlug(papaItem)), undefined);
   assert.equal(findRestaurantDish(menus, 'papapasta', dishSlug(item)), undefined);
-  assert.equal(dishes[1].price, '49');
-  assert.deepEqual(dishes[1].allergens, ['gluten']);
+  assert.equal(dishes[0].price, '61');
+  assert.deepEqual(dishes[0].allergens, ['milk']);
   assert.equal(new URL(String(dishMetadata(dishes[0]).metadataBase)).origin, 'https://papapasta.pl');
   assert.equal(dishStructuredData(dishes[0]).url, 'https://papapasta.pl' + dishes[0].href);
   const html = renderToStaticMarkup(<MenuList variant="papapasta" groups={[{ id: 'g', items: [papaItem] }]} columns={2}/>);

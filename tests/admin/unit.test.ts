@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { itemInputSchema, createUserSchema, qrInputSchema, createMenuSchema } from '../../src/validation/admin';
+import { itemInputSchema, createUserSchema, qrInputSchema } from '../../src/validation/admin';
 import { processDishImage } from '../../src/server/media/image-processing';
-import { seedMenus } from '../../src/server/content/seed-data';
+import { contentOperationSchema } from '../../src/server/content/write';
+import { seedMenus, legacySeedMenus } from '../../src/server/content/seed-data';
 import { isAdminHost } from '../../src/server/auth/origin';
 test('Only standard roles; price is a display string, server flags cannot be injected', () => {
     const user = { name: 'Editor', email: 'editor@example.test', password: 'temporary-password' };
@@ -15,18 +16,34 @@ test('Only standard roles; price is a display string, server flags cannot be inj
     assert.equal(isAdminHost('centro.localhost:3000'), false);
     assert.equal(isAdminHost('admin.papapasta.pl.evil.example'), false);
 });
-test('Seed preserves complete independent menus and stable IDs', () => {
-    const count = (restaurantId: string, key: string) => seedMenus.find(m => m.restaurantId === restaurantId && m.key === key)!.categories.flatMap(c => c.groups.flatMap(g => g.items)).length;
-    assert.equal(count('centro', 'main'), 87);
-    assert.equal(count('centro', 'recommendations'), 10);
-    assert.equal(count('papapasta', 'recommendations'), 9);
-    assert.equal(count('centro', 'breakfast'), 10);
-    assert.equal(count('centro', 'autumn'), 6);
-    assert.equal(count('centro', 'kids'), 5);
+test('Seed has exactly three sections per restaurant, current PapaPasta screenshots and unchanged Centro identities', () => {
+    for (const restaurantId of ['papapasta','centro']) {
+        const fixed = seedMenus.filter(m => m.restaurantId === restaurantId);
+        assert.deepEqual(fixed.map(m => m.key), ['main','kids','drinks']);
+        const identities = fixed.flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items.map(i => i.storageId))));
+        const original = legacySeedMenus.filter(m => m.restaurantId === restaurantId && m.key !== 'recommendations').flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items.map(i => `${restaurantId}:${m.key}:${c.id}:${g.id}:${i.id}`))));
+        if (restaurantId === 'centro') assert.deepEqual([...identities].sort(), original.sort());
+        else {
+            assert.equal(identities.length, 151);
+            assert.deepEqual(fixed[0].categories.map(c => c.label), ['Przystawki','Sałatki','Zupy','Makarony','Dania główne','Pizza','Desery','Napoje zimne','Napoje gorące']);
+            const items = fixed.flatMap(m => m.categories.flatMap(c => c.groups.flatMap(g => g.items)));
+            assert.equal(items.filter(i => i.name === 'Finlandia').length, 1);
+            assert.equal(items.find(i => i.id === 'gamberetti-mela')!.price, '59');
+            assert.equal(items.find(i => i.id === 'gamberetti-mela')!.recommended, true);
+            assert.equal(items.find(i => i.id === 'crema-pomodoro')!.meatless, true);
+            assert.equal(items.find(i => i.id === 'salame-piccante')!.spicy, true);
+            assert.equal(items.find(i => i.id === 'salame-piccante')!.recommended, true);
+            assert.ok(items.filter(i => i.name.startsWith('Altiero')).every(i => !i.meatless));
+        }
+        assert.equal(new Set(identities).size, identities.length);
+        const drinks = fixed.find(m => m.key === 'drinks')!;
+        if (restaurantId === 'centro') {
+            assert.ok(drinks.categories.some(c => c.id === 'napoje'));
+            assert.ok(drinks.categories.some(c => c.groups.some(g => g.id === 'hot-drinks')));
+        } else assert.deepEqual(drinks.categories.map(c => c.label), ['Koktajle','Koktajle bezalkoholowe','Wina Czerwone','Wina Białe','Wermuty','Whisky','Piwo','Pozostałe alkohole']);
+    }
     const main = seedMenus.find(m => m.restaurantId === 'centro' && m.key === 'main')!;
-    const recs = seedMenus.find(m => m.restaurantId === 'centro' && m.key === 'recommendations')!;
     assert.equal(main.categories.flatMap(c => c.groups.flatMap(g => g.items)).find(i => i.name.toLowerCase().startsWith('gnocchi'))!.price, '54');
-    assert.equal(recs.categories.flatMap(c => c.groups.flatMap(g => g.items)).find(i => i.name.toLowerCase().startsWith('gniocchi'))!.price, '53');
 });
 test('Photo processing checks actual bytes, strips metadata, caps size and creates individual blur', async () => {
     const buffer = await sharp({ create: { width: 2000, height: 1000, channels: 3, background: '#ff8800' } }).jpeg().withMetadata().toBuffer();
@@ -91,10 +108,7 @@ test('QR links permit only absolute HTTP(S) URLs and known restaurants', () => {
     assert.equal(qrInputSchema.safeParse({...base,url:'https://example.test',restaurantId:'other'}).success,false);
 });
 
-test('Section creation validates names, isolates restaurant IDs and rejects internal fields', () => {
-    const input = { restaurantId: 'centro', title: '  Menu letnie  ', subtitle: '  Estate  ' };
-    assert.deepEqual(createMenuSchema.parse(input), { restaurantId: 'centro', title: 'Menu letnie', subtitle: 'Estate' });
-    for (const raw of [{ ...input, title: ' ' }, { ...input, title: 'a'.repeat(201) }, { ...input, restaurantId: 'other' }, { ...input, key: 'main' }, { ...input, bannerImageId: 'unowned-image' }]) {
-        assert.equal(createMenuSchema.safeParse(raw).success, false);
-    }
+test('Server operation validation rejects legacy section creation/deletion requests', () => {
+    assert.equal(contentOperationSchema.safeParse({ action:'deleteMenu', menuId:'papapasta:main', version:1 }).success, false);
+    assert.equal(contentOperationSchema.safeParse({ action:'createMenu', restaurantId:'centro', title:'Another section', subtitle:'' }).success, false);
 });

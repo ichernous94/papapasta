@@ -22,9 +22,3 @@ export const structureInputSchema = z.object({
 }).strict();
 export type ItemInput = z.infer<typeof itemInputSchema>;
 export const qrInputSchema = z.object({ restaurantId: z.enum(['papapasta', 'centro']), name: z.string().trim().min(1).max(200), url: z.string().trim().max(2048).url().refine(value => { try { return ['http:', 'https:'].includes(new URL(value).protocol); } catch { return false; } }, 'Use an HTTP(S) URL'), active: z.boolean() }).strict();
-
-export const createMenuSchema = z.object({
-    restaurantId: z.enum(['papapasta', 'centro']),
-    title: z.string().trim().min(1, 'Enter a section name').max(200),
-    subtitle: z.string().trim().max(6000),
-}).strict();

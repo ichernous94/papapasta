@@ -1,3 +1,4 @@
+import { isFixedMenuKey } from '@/config/menu-sections';
 import { createHash } from 'node:crypto';
 import type { Metadata } from 'next';
 import type { EditorMenu } from '@/types/admin';
@@ -21,7 +22,7 @@ export function dishPath(item: Pick<MenuItem, 'id' | 'name'>) {
 
 // Only published records with a ready, publicly addressable photo get detail URLs.
 export function listDishes(menus: readonly EditorMenu[], restaurantId: RestaurantId): Dish[] {
-  return menus.filter(menu => menu.restaurantId === restaurantId).flatMap(menu => menu.categories.flatMap(category =>
+  return menus.filter(menu => menu.restaurantId === restaurantId && isFixedMenuKey(menu.key)).flatMap(menu => menu.categories.flatMap(category =>
     category.groups.flatMap(group => group.items.flatMap(item => item.visible && item.image ? [{
       ...item, restaurantId, image: item.image, category: category.label || group.title || menu.title,
       menuTitle: menu.title, slug: dishSlug(item), href: dishPath(item),

@@ -4,13 +4,12 @@ import MenuSkeleton from '@/components/MenuSkeleton';
 import MenuState from '@/components/MenuState';
 import { publicMenuState } from '@/server/content/public';
 import { findMenuSection, hasPublishedItems, publishedCategories } from '@/server/content/menu-state';
-import { menuHeadings } from '@/config/menu-headings';
 import type { RestaurantId } from '@/server/content/dishes';
 
 type Props = { restaurantId: RestaurantId };
 async function Heading({ restaurantId }: Props) {
   const menu = findMenuSection(await publicMenuState(restaurantId), restaurantId, 'recommendations');
-  const heading = menu ?? menuHeadings[restaurantId].recommendations;
+  const heading = menu ?? { title: 'Z CAŁEGO SERCA', subtitle: 'polecamy' };
   return <RecommendationHeading title={heading.title} subtitle={heading.subtitle}/>;
 }
 async function Content({ restaurantId }: Props) {
@@ -23,7 +22,7 @@ async function Content({ restaurantId }: Props) {
 }
 export default function DatabaseRecommendations({ restaurantId }: Props) {
   return <RecommendationsFrame variant={restaurantId === 'centro' ? 'light' : 'dark'}
-    heading={<Suspense fallback={<RecommendationHeading {...menuHeadings[restaurantId].recommendations}/>}><Heading restaurantId={restaurantId}/></Suspense>}>
+    heading={<Suspense fallback={<RecommendationHeading {...{ title: 'Z CAŁEGO SERCA', subtitle: 'polecamy' }}/>}><Heading restaurantId={restaurantId}/></Suspense>}>
     <Suspense fallback={<MenuSkeleton restaurantId={restaurantId} showTabs={false} rows={3}/>}><Content restaurantId={restaurantId}/></Suspense>
   </RecommendationsFrame>;
 }

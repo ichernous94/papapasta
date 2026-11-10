@@ -39,9 +39,9 @@ test('Public allergen list is omitted when unassigned and has labelled decorativ
 });
 
 test('Admin picker restores checked selections and submits an explicit empty list',()=>{
-  const html=renderToStaticMarkup(<AllergenPicker selected={['milk','peanuts']}/>);
-  assert.equal((html.match(/type="checkbox"/g)??[]).length,14);
-  assert.equal((html.match(/checked=""/g)??[]).length,2);
+  const html=renderToStaticMarkup(<AllergenPicker selected={['milk','peanuts']} meatless/>);
+  assert.equal((html.match(/type="checkbox"/g)??[]).length,15);
+  assert.equal((html.match(/checked=""/g)??[]).length,3);
   assert.ok(html.includes('Tree nuts'));
   assert.ok(html.includes('Peanuts'));
   assert.equal((renderToStaticMarkup(<AllergenPicker/>).match(/checked=""/g)??[]).length,0);
@@ -54,6 +54,15 @@ test('Modal and standalone dish cards share allergen presentation; empty cards h
     assert.ok(html.includes('Alergeny:'));
     assert.ok(html.includes('Mleko'));
     assert.ok(!renderToStaticMarkup(<DishCard dish={{...dish,allergens:[]}} modal={modal}/>).includes('Alergeny:'));
+    for (const restaurantId of ['papapasta','centro'] as const) {
+      const marked=renderToStaticMarkup(<DishCard dish={{...dish,restaurantId,allergens:[],meatless:true,recommended:true,spicy:true}} modal={modal}/>);
+      const section=marked.indexOf('<section');
+      assert.ok(section>=0);
+      assert.ok(marked.slice(section).includes('Dania bez mięsa'));
+      assert.ok(!marked.slice(0,section).includes('Dania bez mięsa'));
+      assert.ok(marked.slice(0,section).includes('aria-label="Polecamy"'));
+      assert.ok(marked.slice(0,section).includes('aria-label="Danie pikantne"'));
+    }
   }
 });
 

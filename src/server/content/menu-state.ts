@@ -1,3 +1,4 @@
+import { isFixedMenuKey } from '@/config/menu-sections';
 import { unstable_rethrow } from 'next/navigation';
 import type { EditorMenu } from '@/types/admin';
 import type { RestaurantId } from './dishes';
@@ -11,7 +12,7 @@ export async function loadMenuState(load: () => Promise<EditorMenu[]>): Promise<
 }
 
 export function findMenuSection(state: MenuLoadState, restaurantId: RestaurantId, key: string) {
-  return state.status === 'ready' ? state.menus.find(menu => menu.restaurantId === restaurantId && menu.key === key) : undefined;
+  return state.status === 'ready' && isFixedMenuKey(key) ? state.menus.find(menu => menu.restaurantId === restaurantId && menu.key === key) : undefined;
 }
 
 export function publishedCategories(menu: EditorMenu) {
@@ -20,13 +21,4 @@ export function publishedCategories(menu: EditorMenu) {
 
 export function hasPublishedItems(menu: EditorMenu) {
   return menu.categories.some(category => category.groups.some(group => group.items.some(item => item.visible)));
-}
-
-// Existing special sections retain their own layouts/anchors; all other sections render dynamically.
-const builtInSections = {
-  papapasta: new Set(['main', 'recommendations', 'autumn', 'kids', 'wine']),
-  centro: new Set(['main', 'recommendations', 'breakfast', 'autumn', 'kids']),
-};
-export function additionalMenuSections(state: MenuLoadState, restaurantId: RestaurantId) {
-  return state.status === 'ready' ? state.menus.filter(menu => menu.restaurantId === restaurantId && !builtInSections[restaurantId].has(menu.key)) : [];
 }

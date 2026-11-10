@@ -1,3 +1,4 @@
+export type FixedMenuKey = 'main' | 'kids' | 'drinks';
 import type { AllergenId } from '@/config/allergens';
 export type DishImage = { src: string; width: number; height: number; blurDataURL: string; alt: string };
 export type MenuItem = {

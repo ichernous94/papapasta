@@ -17,4 +17,5 @@
   &:has(input:checked) { background: #edf6f0; border-color: #80b69d; }
   &:focus-within { outline: 2px solid #07563b; outline-offset: 2px; }
 }
+.grid .meatless svg { color: #397322; }
 @media (max-width: 450px) { .grid { grid-template-columns: minmax(0, 1fr); } }

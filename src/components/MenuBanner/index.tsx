@@ -5,7 +5,9 @@ import { publicMenuState } from '@/server/content/public';
 import { findMenuSection } from '@/server/content/menu-state';
 import type { RestaurantId } from '@/server/content/dishes';
 
-type Props = Omit<ComponentProps<typeof ImageBanner>, 'title' | 'subtitle' | 'content'> & { restaurantId: RestaurantId; menuKey: string };
+import type { FixedMenuKey } from '@/types/menu';
+
+type Props = Omit<ComponentProps<typeof ImageBanner>, 'title' | 'subtitle' | 'content'> & { restaurantId: RestaurantId; menuKey: FixedMenuKey };
 async function ResolvedBanner({ restaurantId, menuKey, ...props }: Props) {
   const fallback = (menuHeadings[restaurantId] as Record<string, { title: string; subtitle: string }>)[menuKey];
   const menu = findMenuSection(await publicMenuState(restaurantId), restaurantId, menuKey);

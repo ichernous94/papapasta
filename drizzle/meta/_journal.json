@@ -36,6 +36,20 @@
       "when": 1794247782990,
       "tag": "0004_restaurant_content",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794263273949,
+      "tag": "0005_fixed_menu_sections",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794268958729,
+      "tag": "0006_papapasta_menu_refresh",
+      "breakpoints": true
     }
   ]
 }
