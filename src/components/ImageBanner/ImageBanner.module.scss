@@ -22,7 +22,6 @@
 .kids {
   background: #41415e;
   .image { object-position: right center; }
-  &::after { background: rgb(35 34 75 / 80%); }
 }
 
 .banner, .anchor { scroll-margin-block-start: var(--restaurant-header-height, 96px); }
