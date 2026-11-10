@@ -13,7 +13,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   background-color: var(--site-surface, #{theme.$colorBgWhite});
-  box-shadow: 0 8px 16px rgb(0 0 0 / 8%);
+  box-shadow: 0 4px 18px rgb(0 0 0 / 12%);
   opacity: 1;
   transform: translateY(0);
   transition: opacity var(--menu-duration, 350ms) ease-in-out, transform var(--menu-duration, 350ms) ease-in-out;

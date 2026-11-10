@@ -6,6 +6,10 @@ export type Promotion = {
   published: boolean; version: number; imageId: string | null; staticImage: string | null;
   imageAlt: string; image?: DishImage;
 };
+export type PromotionPopup = {
+  version: number; title: string; description: string; imageAlt: string; enabled: boolean;
+  imageId: string | null; staticImage: string | null; image?: DishImage;
+};
 export type GalleryEntry = {
   id: string; imageId: string | null; staticImage: string | null; alt: string;
   visible: boolean; sortOrder: number; image?: DishImage;

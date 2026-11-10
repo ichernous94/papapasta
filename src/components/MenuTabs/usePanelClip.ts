@@ -18,6 +18,7 @@ export default function usePanelClip(rootRef: RefObject<HTMLDivElement | null>, 
       const bar = sticky.getBoundingClientRect();
       let bounds = panel.getBoundingClientRect();
       if (bar.height <= 0 || bounds.height <= 0) return;
+      panel.style.setProperty('--menu-category-offset', `${sticky.offsetHeight + (parseFloat(getComputedStyle(sticky).marginBlockEnd) || 0)}px`);
       if (focusTarget && focusTarget === document.activeElement && panel.contains(focusTarget)) {
         const target = focusTarget.getBoundingClientRect();
         const headerHeight = parseFloat(getComputedStyle(root).getPropertyValue('--restaurant-header-height')) || 96;
@@ -64,6 +65,7 @@ export default function usePanelClip(rootRef: RefObject<HTMLDivElement | null>, 
       root.removeEventListener('focusin', focus);
       root.removeAttribute('data-clip-ready');
       panel.style.removeProperty('--menu-panel-clip-top');
+      panel.style.removeProperty('--menu-category-offset');
     };
   }, [rootRef, stickyRef, enabled, activeKey]);
 }

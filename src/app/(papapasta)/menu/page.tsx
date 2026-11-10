@@ -1,3 +1,4 @@
+import MenuAnchors from '@/components/MenuAnchors';
 import Container from '@/components/ui/Container';
 import type { Metadata } from 'next';
 import MenuBanner from '@/components/MenuBanner';
@@ -18,6 +19,7 @@ export const metadata: Metadata = papaPastaPageMetadata(
 export default function MenuPage() {
   return (
     <>
+      <MenuAnchors/>
       <MenuBanner restaurantId="papapasta" menuKey="main" image={steakAndSides} headingLevel="h1" preload />
       <Container size="text" className={styles.intro}>{papaPastaCopy.dishes.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</Container>
       <Container as="section" className={styles.menuSection} aria-label="Menu główne">

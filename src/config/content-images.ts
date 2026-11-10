@@ -53,5 +53,11 @@ export const contentImages = {
     "width": 1200,
     "height": 628,
     "blurDataURL": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAQCdASoIAAQABABoJZQCdAEekshg2wAA/tusO+oHDompWb05wMGqcBSM3D4A"
-  }
+  },
+  "/images/promotional/promotional-image.jpg": {
+  "src": "/images/promotional/promotional-image.jpg",
+  "width": 2079,
+  "height": 2954,
+  "blurDataURL": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAABQAQCdASoIAAsABABoJQBOgCgAAP7wQj+vuBmh/l0rIzotb13nevIfgAA="
+}
 };

@@ -1,9 +1,10 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
+import { CENTRO_POPUP_SLUG, popupEnabled } from '@/config/promotion-popup';
 import type { createDatabase } from '@/server/db/connection';
 import { promotions, galleryEntries, restaurantGalleries } from '@/server/db/schema';
 import { contentImages } from '@/config/content-images';
 import { publicImageURL } from '@/server/media/storage';
-import type { Promotion, RestaurantGallery, RestaurantId } from '@/types/content';
+import type { Promotion, PromotionPopup, RestaurantGallery, RestaurantId } from '@/types/content';
 import type { DishImage } from '@/types/menu';
 type Database = ReturnType<typeof createDatabase>['db'];
 export async function resolveContentImage(db: Database, imageId: string | null, staticImage: string | null, alt: string): Promise<DishImage | undefined> {
@@ -16,8 +17,15 @@ export async function resolveContentImage(db: Database, imageId: string | null, 
   return initial ? { ...initial, alt } : undefined;
 }
 export async function readPromotions(db: Database, onlyPublished = false): Promise<Promotion[]> {
-  const rows = await db.query.promotions.findMany({ where: onlyPublished ? and(eq(promotions.restaurantId, 'centro'), eq(promotions.published, true)) : eq(promotions.restaurantId, 'centro'), orderBy: (p, { desc, asc }) => [desc(p.date), asc(p.id)] });
+  const rows = await db.query.promotions.findMany({ where: and(eq(promotions.restaurantId, 'centro'), ne(promotions.slug, CENTRO_POPUP_SLUG), onlyPublished ? eq(promotions.published, true) : undefined), orderBy: (p, { desc, asc }) => [desc(p.date), asc(p.id)] });
   return Promise.all(rows.map(async row => ({ ...row, image: await resolveContentImage(db, row.imageId, row.staticImage, row.imageAlt || row.title) })));
+}
+export async function readPromotionPopup(db: Database, onlyEnabled = false): Promise<PromotionPopup | null> {
+  const row = await db.query.promotions.findFirst({ where: and(eq(promotions.restaurantId, 'centro'), eq(promotions.slug, CENTRO_POPUP_SLUG)) });
+  if (!row || (onlyEnabled && !popupEnabled(row))) return null;
+  const image = await resolveContentImage(db, row.imageId, row.staticImage, row.imageAlt || row.title);
+  if (onlyEnabled && !image) return null;
+  return { version: row.version, title: row.title, description: row.body.map(b => b.text).join('\n\n'), enabled: popupEnabled(row), imageId: row.imageId, staticImage: row.staticImage, imageAlt: row.imageAlt, image };
 }
 export async function readGallery(db: Database, restaurantId: RestaurantId, onlyVisible = false): Promise<RestaurantGallery> {
   const parent = await db.query.restaurantGalleries.findFirst({ where: eq(restaurantGalleries.restaurantId, restaurantId) });

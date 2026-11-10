@@ -6,18 +6,19 @@ import { requireAdministrator } from '@/server/auth/guards';
 import { prepareUpload } from '@/server/media/upload';
 import { orphanUnused } from '@/server/media/references';
 import { ContentError } from './errors';
-import { savePromotion, deletePromotion, saveGalleryEntry, changeGallery } from './site-write';
-import { promotionInputSchema, galleryInputSchema } from '@/validation/site-content';
-import { invalidatePromotions, invalidateGallery } from './site-invalidation';
-async function uploadedAction(raw: unknown, form: FormData, kind: 'promotion' | 'gallery') {
+import { savePromotion, savePromotionPopup, deletePromotion, saveGalleryEntry, changeGallery } from './site-write';
+import { popupInputSchema, promotionInputSchema, galleryInputSchema } from '@/validation/site-content';
+import { invalidatePromotions, invalidatePromotionPopup, invalidateGallery } from './site-invalidation';
+async function uploadedAction(raw: unknown, form: FormData, kind: 'promotion' | 'popup' | 'gallery') {
   const { user } = await requireAdministrator();
   let uploadId: string | undefined;
   try {
-    const input = kind === 'promotion' ? promotionInputSchema.parse(raw) : galleryInputSchema.parse(raw);
+    const input = kind === 'promotion' ? promotionInputSchema.parse(raw) : kind === 'popup' ? popupInputSchema.parse(raw) : galleryInputSchema.parse(raw);
     const file = form.get('image');
     if (file instanceof File && file.size) uploadId = await prepareUpload(file, user.id);
     await requireAdministrator();
     if (kind === 'promotion') { await savePromotion(getDb(), user.id, input, uploadId); invalidatePromotions(); }
+    else if (kind === 'popup') { await savePromotionPopup(getDb(), user.id, input, uploadId); invalidatePromotionPopup(); }
     else { const restaurantId = await saveGalleryEntry(getDb(), user.id, input, uploadId); invalidateGallery(restaurantId); }
     return { success: true };
   } catch (error) {
@@ -27,6 +28,7 @@ async function uploadedAction(raw: unknown, form: FormData, kind: 'promotion' | 
   }
 }
 export async function savePromotionAction(raw: unknown, form: FormData) { return uploadedAction(raw, form, 'promotion'); }
+export async function savePromotionPopupAction(raw: unknown, form: FormData) { return uploadedAction(raw, form, 'popup'); }
 export async function saveGalleryAction(raw: unknown, form: FormData) { return uploadedAction(raw, form, 'gallery'); }
 export async function deletePromotionAction(raw: unknown) {
   const { user } = await requireAdministrator();

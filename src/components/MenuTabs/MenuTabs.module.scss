@@ -8,8 +8,7 @@
   background-color: var(--site-surface, #fdfdfd);
   margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
 }
-.papapasta .sticky { background-color: var(--site-surface, #142119); }
-.centro .sticky {
+.papapasta .sticky, .centro .sticky {
   background-color: var(--page-background-color, #142119);
   background-image: var(--page-background-gradient);
 }
@@ -22,7 +21,10 @@
   border-block-end: 2px solid var(--site-divider, #{theme.$colorFont});
   padding: 0.25rem 0.25rem 0.75rem;
   scrollbar-width: thin;
-  button {
+  a {
+    display: block;
+    text-align: center;
+    text-decoration: none;
     flex: 1 0 auto;
     min-block-size: 2.75rem;
     padding: 0.75rem clamp(0.75rem, 1vw, 1.25rem);
@@ -36,23 +38,24 @@
     &:focus-visible { outline: 2px solid theme.$colorGoldText; outline-offset: -2px; }
   }
 }
-@media (prefers-reduced-motion: reduce) { .tablist button { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tablist a { transition: none; } }
 .panel:focus-visible { outline: 2px solid theme.$colorGold; outline-offset: 0.5rem; }
+.panel { scroll-margin-block-start: calc(var(--restaurant-header-height, 96px) + var(--menu-category-offset, 80px)); }
 .visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .centro .tablist {
   border-block-end: 1px solid #53666566;
   padding-block-end: 0;
-  button { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
-  button[aria-selected='true'] { border-block-end-color: theme.$colorGoldText; }
+  a { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
+  a[aria-selected='true'] { border-block-end-color: theme.$colorGoldText; }
 }
 
 .papapasta .tablist {
   border-block-end: 1px solid #e5e5e5;
   padding-block-end: 0;
-  button { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
-  button[aria-selected='true'] { color: #d7bb91; border-block-end-color: #c9a579; }
-  button:hover { color: #d7bb91; }
+  a { border-block-end: 2px solid transparent; margin-block-end: -1px; font-weight: 700; }
+  a[aria-selected='true'] { color: #d7bb91; border-block-end-color: #c9a579; }
+  a:hover { color: #d7bb91; }
 }
 
 .categoryTitle { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -62,7 +65,7 @@
 }
 
 // Progressive enhancement: keep the opaque surface until a valid clip has been computed.
-.centro[data-clip-ready='true'] {
+.papapasta[data-clip-ready='true'], .centro[data-clip-ready='true'] {
   > .sticky { background: transparent; }
   > .panel:not([hidden]) { clip-path: inset(var(--menu-panel-clip-top, 0px) 0 0); }
   > .panel:focus-visible { outline-offset: -2px; }

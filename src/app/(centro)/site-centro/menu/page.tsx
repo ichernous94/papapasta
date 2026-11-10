@@ -1,3 +1,4 @@
+import MenuAnchors from '@/components/MenuAnchors';
 import MenuBanner from '@/components/MenuBanner';
 import DatabaseMenuSection from '@/components/DatabaseMenuSection';
 import Container from '@/components/ui/Container';
@@ -9,6 +10,7 @@ import styles from '@/components/CentroPages/CentroPages.module.scss';
 export const metadata = centroPageMetadata('/menu', 'Papa Pasta Centro - Menu Restauracji', 'Menu Papa Pasta Centro: włoska pizza, domowe makarony, steki, owoce morza, śniadania i desery w Białymstoku.');
 export default function CentroMenuPage() {
   return <>
+    <MenuAnchors/>
     <MenuBanner restaurantId="centro" menuKey="main" image={images.platter} headingLevel="h1" preload />
     <Container size="text" className={styles.intro}><p>{centroCopy.menu}</p></Container>
     <Container as="section" className={styles.section} aria-label="Menu główne Centro">

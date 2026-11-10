@@ -10,8 +10,20 @@
   &::backdrop { backdrop-filter: blur(7px); }
   > button { background: transparent; inset-block-start: 0.75rem; inset-inline-end: 0.75rem; }
 }
-@media (max-width: 599px) { .dialog { --modal-padding: 2.75rem 1.25rem 1.5rem; border-radius: 1.5rem; } }
+@media (max-width: 599px) { .dialog { --modal-padding: 2.75rem 1.25rem 1.5rem; border-radius: 1.5rem; > button { inset-block-start: 0.25rem; inset-inline-end: 0.25rem; } } }
 
 .light { color: inherit; }
 
 .dialog { background-color: var(--page-background-color, #142119); background-image: var(--page-background-gradient); }
+
+// Transitions preserve the current frame when a user closes during the opening animation.
+.dialog[open] {
+  animation: none;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity var(--modal-duration, 280ms) ease, transform var(--modal-duration, 280ms) ease;
+  &::backdrop { animation: none; opacity: 1; transition: opacity var(--modal-duration, 280ms) ease; }
+}
+.dialog[open][data-state='closing'] { animation: none; opacity: 0; transform: scale(0.98); &::backdrop { animation: none; opacity: 0; } }
+@starting-style { .dialog[open] { opacity: 0; transform: scale(0.98); } .dialog[open]::backdrop { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dialog[open], .dialog[open]::backdrop { transition: none; } }

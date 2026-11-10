@@ -429,3 +429,49 @@ test('Content: category order, independent badges, promotions, galleries, confli
         assert.equal((await readGallery(db,'papapasta')).images.find(i=>i.id===newPhoto.id)!.alt,'Uploaded photo');
     } finally { await pool.end(); }
 });
+
+test('Centro popup: visibility, reserved article isolation, versions, repeat seed and shared image protection', { skip: !process.env.TEST_DATABASE_URL }, async () => {
+    const { db, pool } = createDatabase(process.env.TEST_DATABASE_URL!,4);
+    const { readPromotionPopup, readPromotions } = await import('../../src/server/content/site-read');
+    const { savePromotionPopup, savePromotion, deletePromotion } = await import('../../src/server/content/site-write');
+    const { CENTRO_POPUP_SLUG } = await import('../../src/config/promotion-popup');
+    const { unreferencedMedia, orphanUnused } = await import('../../src/server/media/references');
+    const actor='popup-test';
+    try {
+        const originalMenus=await readMenus(db);
+        let popup=(await readPromotionPopup(db))!;
+        assert.ok(popup.enabled&&popup.image&&popup.description.includes('Crème Brulée'));
+        assert.ok((await readPromotionPopup(db,true))?.image);
+        assert.ok(!(await readPromotions(db)).some(p=>p.slug===CENTRO_POPUP_SLUG));
+        assert.ok(!(await readPromotions(db,true)).some(p=>p.slug===CENTRO_POPUP_SLUG));
+        const record=(await db.query.promotions.findFirst({where:eq(schema.promotions.slug,CENTRO_POPUP_SLUG)}))!;
+        assert.equal(record.published,false); // Even pre-update article readers must not publish the popup.
+        await assert.rejects(deletePromotion(db,actor,{id:record.id,version:popup.version}),/cannot be deleted/);
+        await assert.rejects(savePromotion(db,actor,{id:record.id,version:popup.version,title:'Wrong editor',date:'2026-11-10',body:[],published:false,imageAlt:'',removeImage:false}),/dedicated popup editor/);
+        const input={version:popup.version,title:'Updated popup',description:'Accessible updated text',imageAlt:'New poster',enabled:false,removeImage:true};
+        await savePromotionPopup(db,actor,input);
+        popup=(await readPromotionPopup(db))!;
+        assert.equal(popup.enabled,false);assert.equal(popup.image,undefined);
+        assert.equal(await readPromotionPopup(db,true),null);
+        await migrate(db,{migrationsFolder:'./drizzle'});await seedContent(db);await seedContent(db);
+        assert.deepEqual(await readPromotionPopup(db),popup);
+        await assert.rejects(savePromotionPopup(db,actor,input),/already changed/);
+        await assert.rejects(savePromotionPopup(db,actor,{...input,version:popup.version,enabled:true,removeImage:false}),/needs an image/);
+        const media=randomUUID();
+        await db.insert(schema.mediaAssets).values({id:media,objectKey:`papapasta/menu-images/${media}.webp`,width:900,height:1400,mimeType:'image/webp',byteSize:100,blurDataURL:'',createdBy:actor});
+        await assert.rejects(savePromotionPopup(db,'another-actor',{...input,version:popup.version,enabled:true},media),/unavailable/);
+        await savePromotionPopup(db,actor,{...input,version:popup.version,enabled:true},media);
+        popup=(await readPromotionPopup(db,true))!;
+        assert.equal(popup.imageId,media);assert.equal(popup.image?.width,900);
+        assert.ok(!(await db.select().from(schema.mediaAssets).where(unreferencedMedia(media))).some(m=>m.id===media));
+        const shared=randomUUID();
+        await db.insert(schema.galleryEntries).values({id:shared,restaurantId:'centro',imageId:media,alt:'Shared popup image'});
+        await savePromotionPopup(db,actor,{...input,version:popup.version});
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,media)}))!.status,'ready');
+        await db.delete(schema.galleryEntries).where(eq(schema.galleryEntries.id,shared));
+        await db.transaction(tx=>orphanUnused(tx,media));
+        assert.equal((await db.query.mediaAssets.findFirst({where:eq(schema.mediaAssets.id,media)}))!.status,'orphan');
+        assert.deepEqual(await readMenus(db),originalMenus);
+        assert.ok((await db.select().from(schema.auditLog)).some(row=>row.action==='popup.update'&&row.targetId===record.id));
+    } finally {await pool.end();}
+});

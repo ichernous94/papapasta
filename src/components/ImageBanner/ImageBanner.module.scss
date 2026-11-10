@@ -24,3 +24,7 @@
   .image { object-position: right center; }
   &::after { background: rgb(35 34 75 / 80%); }
 }
+
+.banner, .anchor { scroll-margin-block-start: var(--restaurant-header-height, 96px); }
+.anchor { position: absolute; inset-block-start: 0; inset-inline-start: 0; }
+.headingLink { color: inherit; text-decoration: none; &:focus-visible { outline: 2px solid currentColor; outline-offset: 6px; } }

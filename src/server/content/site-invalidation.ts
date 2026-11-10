@@ -14,3 +14,8 @@ export function invalidatePromotions() {
   revalidatePath('/site-centro/sitemap.xml');
   revalidatePath('/site-admin/promotion');
 }
+export function invalidatePromotionPopup() {
+  updateTag('popup:centro');
+  revalidatePath('/(centro)/site-centro', 'layout');
+  revalidatePath('/site-admin/promotion');
+}

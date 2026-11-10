@@ -3,23 +3,14 @@
   min-inline-size: 0;
   --reveal-offset: -1rem;
   &[data-direction='up'] { --reveal-offset: 1rem; }
-  &[data-effect='scale'] { overflow: hidden; }
+  &[data-effect='none'] { overflow: hidden; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .reveal[data-visible='true'][data-effect='slide'] {
     animation: slideIn 1200ms cubic-bezier(0.25, 0.1, 0.25, 1) var(--reveal-delay, 0ms) both;
   }
-  .reveal[data-visible='true'][data-effect='scale'] img {
-    animation: zoomIn 1200ms cubic-bezier(0.25, 0.1, 0.25, 1) var(--reveal-delay, 0ms) both;
-  }
 }
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(var(--reveal-offset)); }
   to { opacity: 1; transform: translateY(0); }
-}
-@keyframes zoomIn {
-  // Animate the image inside its clipped container. The independent scale
-  // property also lets the hover transform remain smooth after the reveal.
-  from { opacity: 0; scale: 1.05; }
-  to { opacity: 1; scale: 1; }
 }

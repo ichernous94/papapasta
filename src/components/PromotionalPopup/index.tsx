@@ -1,41 +1,31 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useId, useState, type CSSProperties } from 'react';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import Image from '@/components/ui/PhotoImage';
 import Modal from '@/components/ui/Modal';
-import promotionalImage from '../../../public/images/promotional/promotional-image.jpg';
+import type { PromotionPopup } from '@/types/content';
 import styles from './PromotionalPopup.module.scss';
 
-const offers = [
-  ['Crème Brulée — 38 zł', 'Kremowy, deserowy koktajl na rumie z nutą wanilii, Cointreau i aksamitną pianką.'],
-  ['Vanilla Pear — 37 zł', 'Rześki gin sour z soczystą gruszką, waniliowym akcentem i delikatną pianką.'],
-  ['Aperol Martini — 38 zł', 'Tequila reposado i Aperol w duecie z cydrem, limonką oraz pikantnym miodem.'],
-  ['Golden Fall — 39 zł', 'Bourbon Maker’s Mark i amaretto w słodko-kwaśnym wydaniu z cynamonem i pianką.'],
-  ['Cinnamone Fashion — 39 zł, pikantny', 'Korzenny miks bourbonu i Jack Daniel’s Fire ze słodkim cynamonem oraz rześkim cydrem.'],
-] as const;
-
-export default function PromotionalPopup() {
-  // Centro's persistent layout owns this state. A new document shows the offer again.
+export default function PromotionalPopup({ popup }: { popup: PromotionPopup }) {
+  // Persistent layout state keeps dismissal during navigation; a new document shows it again.
   const [open, setOpen] = useState(true);
   const titleId = useId();
   const reducedMotion = useReducedMotion();
-
+  if (!popup.enabled || !popup.image) return null;
+  const image = popup.image;
   return <Modal open={open} onClose={() => setOpen(false)} labelledBy={titleId}
     animationDuration={open ? 600 : reducedMotion ? 0 : 450} closeLabel="Zamknij ofertę promocyjną" className={styles.dialog}
+    style={{ '--poster-ratio': image.width / image.height } as CSSProperties}
     onKeyDown={event => {
-      // The poster has only one interactive control; keep both Tab directions on it.
       if (event.key === 'Tab') {
         event.preventDefault();
         event.currentTarget.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
       }
     }}>
-    <Image className={styles.poster} src={promotionalImage} alt="" placeholder="blur" loading="eager"
-      sizes="(max-height: 499px) min(480px, calc(100vw - 36px)), min(680px, calc(100vw - 36px), calc((100svh - 36px) * 2079 / 2954))"/>
-    <div className={styles.transcript}>
-      <h2 id={titleId}>Rozgrzewające menu — Włoska Jesień</h2>
-      <p>Papa Pasta Centro</p>
-      <ul>{offers.map(([name, description]) => <li key={name}><h3>{name}</h3><p>{description}</p></li>)}</ul>
-    </div>
+    <Image className={styles.poster} src={image.src} width={image.width} height={image.height} alt={popup.imageAlt}
+      blurDataURL={image.blurDataURL} placeholder={image.blurDataURL ? 'blur' : 'empty'} loading="eager"
+      sizes={`min(680px, calc(100vw - 36px), calc((100svh - 36px) * ${image.width / image.height}))`}/>
+    <div className={styles.transcript}><h2 id={titleId}>{popup.title}</h2><p>{popup.description}</p></div>
   </Modal>;
 }

@@ -47,7 +47,7 @@ export default function Reveal({ as: Tag = 'div', children, className, id, direc
         if (onceKey && registry && event.target === event.currentTarget) startReveal(registry, onceKey, owner.current);
       }}
       data-direction={direction}
-      data-effect={Tag === 'div' ? 'scale' : 'slide'}
+      data-effect={Tag === 'div' ? 'none' : 'slide'}
       style={{ '--reveal-delay': `${delay}ms` } as CSSProperties}
     >{children}</Tag>
   );

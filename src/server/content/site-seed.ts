@@ -1,5 +1,6 @@
 import type { createDatabase } from '@/server/db/connection';
 import { restaurantGalleries, galleryEntries, promotions } from '@/server/db/schema';
+import { defaultPromotionPopup } from '@/config/promotion-popup';
 const defaults = {
   papapasta: [['pizza-preparation.jpg','Przygotowanie pizzy w Papa Pasta'],['wine-pouring.jpg','Nalewanie wina do kieliszka'],['steak-serving.jpg','Stek serwowany w Papa Pasta'],['restaurant-interior.jpg','Wnętrze restauracji Papa Pasta']],
   centro: [['bar-interior.jpg','Bar Papa Pasta Centro z pomarańczowymi fotelami'],['signature-cocktail.jpg','Autorski koktajl z owocami i rozmarynem'],['neon-sign.jpg','Neon Centro Papa Pasta'],['food-sharing-platter.jpg','Deska z owocami morza w Papa Pasta Centro']],
@@ -22,5 +23,6 @@ export async function seedSiteContent(db: ReturnType<typeof createDatabase>['db'
         ],
       }).onConflictDoNothing();
     }
+    await tx.insert(promotions).values(defaultPromotionPopup).onConflictDoNothing({ target: promotions.slug });
   });
 }

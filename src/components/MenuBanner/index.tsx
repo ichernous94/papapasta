@@ -6,14 +6,15 @@ import { findMenuSection } from '@/server/content/menu-state';
 import type { RestaurantId } from '@/server/content/dishes';
 
 import type { FixedMenuKey } from '@/types/menu';
+import { menuSectionAnchor } from '@/utils/menuAnchor';
 
 type Props = Omit<ComponentProps<typeof ImageBanner>, 'title' | 'subtitle' | 'content'> & { restaurantId: RestaurantId; menuKey: FixedMenuKey };
 async function ResolvedBanner({ restaurantId, menuKey, ...props }: Props) {
   const fallback = (menuHeadings[restaurantId] as Record<string, { title: string; subtitle: string }>)[menuKey];
   const menu = findMenuSection(await publicMenuState(restaurantId), restaurantId, menuKey);
-  return <ImageBanner {...props} restaurantId={restaurantId} revealKey={`menu:${menuKey}`} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
+  return <ImageBanner {...props} id={props.id ?? menuSectionAnchor(menuKey)} menuAnchor={menuSectionAnchor(menuKey)} restaurantId={restaurantId} revealKey={`menu:${menuKey}`} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
 }
 export default function MenuBanner(props: Props) {
   const fallback = (menuHeadings[props.restaurantId] as Record<string, { title: string; subtitle: string }>)[props.menuKey];
-  return <Suspense fallback={<ImageBanner {...props} {...fallback} revealKey={`menu:${props.menuKey}`}/>}><ResolvedBanner {...props}/></Suspense>;
+  return <Suspense fallback={<ImageBanner {...props} {...fallback} id={props.id ?? menuSectionAnchor(props.menuKey)} menuAnchor={menuSectionAnchor(props.menuKey)} revealKey={`menu:${props.menuKey}`}/>}><ResolvedBanner {...props}/></Suspense>;
 }

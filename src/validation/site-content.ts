@@ -1,5 +1,11 @@
 import { z } from 'zod';
 const version = z.number().int().positive();
+export const popupInputSchema = z.object({
+  version, title: z.string().trim().min(1).max(200), description: z.string().trim().max(6000),
+  imageAlt: z.string().trim().max(300), enabled: z.boolean(), removeImage: z.boolean(),
+}).strict().superRefine((input, ctx) => {
+  if (input.enabled && !input.description) ctx.addIssue({ code: 'custom', message: 'An enabled popup needs a text alternative' });
+});
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => !Number.isNaN(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s, 'Enter a valid date');
 export const promotionInputSchema = z.object({
   id: z.string().uuid().optional(), version: version.optional(), title: z.string().trim().min(1).max(200), date,

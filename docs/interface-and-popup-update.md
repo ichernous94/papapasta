@@ -1,0 +1,47 @@
+# Restaurant interface, menu anchors and editable Centro popup — 2026-11-10
+
+The requested interface changes apply to both public restaurants while preserving menu inventories, restaurant identities, existing routes, admin/MFA and media handling.
+
+## Navigation and presentation
+
+- Selection panels retain a single keyboard-accessible full-panel link. The visible button is above the link's stretched hit area, so only its own hover changes its appearance. Keyboard focus remains visible for the whole panel and button. No nested links are introduced.
+- Every fixed menu banner has a stable section fragment (`#menu-main`, `#menu-kids`, `#menu-drinks`). Banner headings are actual links. PapaPasta's old `#kartawin` remains on the drinks banner with a new section alias.
+- Category tabs expose real links whose fragments combine fixed section identity and immutable category storage ID. Example: `/menu#menu-main--papapasta:main:pizza`; Centro: `/menu#menu-main--centro:main:pizza`. Names/order are not used to generate fragments. Single-category Bambini also has a category target without unnecessary tabs. Tab/arrow/Home/End/Enter/Space semantics and horizontal tab visibility remain supported.
+- Clicking a tab updates browser history and the address bar. Initial QR links and Back/Forward restore the selected category, waiting for streamed content and any open popup/burger/modal before scrolling. Scroll accounts for measured Header and tab heights, settles a competing initial browser fragment restoration for at most 1.8 seconds, and releases on user wheel/touch/scroll keys. Reduced motion uses an immediate position change. Returning from a dish with an unchanged menu hash retains the original row scroll position.
+- PapaPasta category bars now use Centro's transparent enhancement and panel clipping, with an opaque gradient fallback until measurements are ready. Dish content stays below the sticky bar. Burger panels use the same shadow as Header.
+- Image-wrapper reveal zoom/fade is removed. Heading reveal, native image placeholders/loading blur and explicit hover effects remain independent.
+- Dish close buttons, Escape and backdrop first start the reversible 280 ms fade/scale exit; history navigation occurs only after exit presence ends. Scroll lock remains through the transition, with reduced motion supported. Mobile dish crosses keep a 44 px target and sit 0.25 rem from the top/right edges.
+
+## Kontakt
+
+Both contact pages use the shared dark Centro gradient with light text and gold accents, and a full-width introduction: ZAPRASZAMY / do kontaktu, then address, telephone, email and social profiles. Four desktop columns become a divided 2×2 tablet grid and a vertically divided single mobile column. PapaPasta keeps its existing reservation dialog/policy; Centro's reservation button calls its own restaurant number. No PapaPasta reservation policy is assigned to Centro.
+
+The lower dark ZNAJDŹ NAS / rounded map / address / gold map-opening button composition stays, with smaller address text and a narrower 26 rem button. Each restaurant uses its own contact and map data. Social profiles appear once, in the top grid. The introduction inherits the restaurant theme, including its gold social buttons and light reservation-button text; the page gradient continues through both contact blocks. The screenshot references determine structure, not a white background.
+
+## Centro popup persistence and administration
+
+Centro's persistent layout streams `DatabasePromotionalPopup`; database content is read at request time, outside the tagged cached function. A loading marker coordinates pending QR scrolling. Disabled/missing popup settings or an unavailable popup read do not block the rest of the site. A new document shows the enabled poster; dismissal survives internal navigation within the current document.
+
+The existing versioned `promotions` table stores one reserved Centro record (`centro-promotion-popup`). This is a settings record, not an article: readers omit it from article lists, direct article lookup and sitemap, and article save/delete operations reject it. The record remains unpublished for compatibility with older article readers; its independent enabled flag is stored in the reserved JSON body. There is no schema change or new dependency. Data-only migration 0008 and fresh-install seed initialize the existing poster and its complete text alternative exactly once; repeat seed preserves later edits and disabled state.
+
+Admin → Promotion has a separate popup card/editor supporting poster replacement/removal, accessible title, image description, full poster transcript and enabled state. Enabled popups require an image and text alternative. Server validation accepts no client restaurant/record ID, locks Centro/settings rows, checks the version and reuses administrator/MFA revalidation after upload, image processing/R2 ownership, action audit and failed-upload cleanup. A separate `popup:centro` tag and layout/admin invalidation publish edits. Existing promotion media reference checks also protect popup images, including images shared with galleries or dishes.
+
+The poster adapts to each image's dimensions and available viewport height, including short landscape screens. It fits entirely without an internal scroll container. Wheel/touch cannot scroll the poster; the existing viewport lock keeps the background in place until the 450 ms fade-out completes. The close button and Tab trap remain available.
+
+## Verification and release
+
+Verification evidence and connected-database application result are recorded below after the browser run. No website deployment is included.
+
+Passed TypeScript, targeted ESLint, 27 affected component/unit tests, 18 PostgreSQL/admin tests and the default production build (39 static routes). Database checks cover fresh initialization, repeat seed/migrations, independent enable/disable, mandatory image/text, reserved-record/article separation, stale versions, upload ownership, audit and referenced/shared media protection. The build used an intentionally unavailable DATABASE_URL, confirming no build-time database reads.
+
+Production Chromium checks passed for both restaurants at 320, 375, 768 and 1440 px: 4/2/1-column contacts, no document overflow, transparent category bars, QR URL updates, category Back/Forward and burger shadows. Direct category/section URLs, PapaPasta `#kartawin`, single-category Bambini, drinks categories, native same-document hashes and reduced-motion scrolling passed. Poster wheel/touch emulation and a 375×260 short-landscape viewport stayed scroll-free with the whole image and close button visible. Selection hover was verified separately over the panel and over the button, retaining full-panel click targets. Image wrapper animations were absent.
+
+Dish tests passed for cross, Escape and backdrop, reopening the same cached route and retaining the originating row position for both restaurants. The 280 ms exit remains visible before Back, including the mobile cross position/hit area. Local HTTPS administration checks used a test-only administrator and the existing MFA setup/login; editing title/transcript and toggling the popup updated the public view immediately through cache invalidation while leaving article cards separate. No browser runtime exceptions were found. Desktop/mobile Kontakt and short popup screenshots were visually reviewed.
+
+Rehearsal used an isolated content-only copy of the connected database, with no copied auth records. Only that test copy received a preview administrator and two temporary photographed dish references; no corresponding production data or R2 object was changed. Existing R2 image requests for those fixture dishes were substituted in the test browser with a local image, while static assets/poster remained real. Real R2 writes/uploads and physical iPhone/Safari or Android/Chrome were not exercised; upload processing/ownership/reference behavior is covered by the existing and extended tests.
+
+Data-only migration `0008_centro_popup_settings` was applied successfully to the currently connected database on 2026-11-10. It added exactly one reserved settings record for the existing Centro poster. All pre-existing restaurant/menu/category/group/item rows, article promotions, gallery collections/entries and all 16 media rows/statuses were compared unchanged; no R2 writes or deletions occurred. Repeat migration/seed preserved the result. The content-only pre-migration backup is `/private/tmp/papapasta-ui-connected-before.json` with mode 0600, outside the repository.
+
+For another environment, run normal migrations/seed before starting updated code. Restart an already running application after a CLI data migration so its in-memory public cache reloads. The new record's unpublished article status makes migration safe for the prior article readers while the current poster remains enabled in the dedicated settings. No website was deployed.
+
+Kontakt theme correction: the reference screenshots describe the layout, while both restaurants retain Centro's dark gradient. The introduction now inherits light text, gold social buttons and the shared page canvas, preserving the contact grid and map layout. Verified in production Chromium at 375 and 1440 px for both restaurants, including transparent section backgrounds, inherited gradient, text/social colors and no overflow; screenshots were reviewed. Existing contact tests, TypeScript and production build passed. No migration or database write was needed.

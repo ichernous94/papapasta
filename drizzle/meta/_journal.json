@@ -57,6 +57,13 @@
       "when": 1794271217536,
       "tag": "0007_centro_menu_refresh",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794272805921,
+      "tag": "0008_centro_popup_settings",
+      "breakpoints": true
     }
   ]
 }

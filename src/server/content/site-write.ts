@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { and, eq, sql } from 'drizzle-orm';
 import type { createDatabase } from '@/server/db/connection';
 import { promotions, galleryEntries, restaurantGalleries, restaurants, auditLog } from '@/server/db/schema';
-import { promotionInputSchema, promotionDeleteSchema, galleryInputSchema, galleryOperationSchema } from '@/validation/site-content';
+import { popupInputSchema, promotionInputSchema, promotionDeleteSchema, galleryInputSchema, galleryOperationSchema } from '@/validation/site-content';
+import { CENTRO_POPUP_SLUG } from '@/config/promotion-popup';
 import { attachUpload, orphanUnused } from '@/server/media/references';
 import { ContentError } from './errors';
 type Database = ReturnType<typeof createDatabase>['db'];
@@ -18,6 +19,7 @@ export async function savePromotion(db: Database, actorId: string, raw: unknown,
     await tx.select().from(restaurants).where(eq(restaurants.id, 'centro')).for('update');
     const old = input.id ? (await tx.select().from(promotions).where(and(eq(promotions.id, input.id), eq(promotions.restaurantId, 'centro'))).for('update'))[0] : undefined;
     if (input.id && !old) throw new ContentError('Promotion not found');
+    if (old?.slug === CENTRO_POPUP_SLUG) throw new ContentError('Use the dedicated popup editor');
     if (old && old.version !== input.version) throw conflict();
     if (uploadId) await attachUpload(tx, actorId, uploadId);
     const imageId = uploadId ?? (input.removeImage ? null : old?.imageId ?? null);
@@ -38,10 +40,30 @@ export async function deletePromotion(db: Database, actorId: string, raw: unknow
   await db.transaction(async tx => {
     const [old] = await tx.select().from(promotions).where(and(eq(promotions.id, input.id), eq(promotions.restaurantId, 'centro'))).for('update');
     if (!old) throw new ContentError('Promotion not found');
+    if (old.slug === CENTRO_POPUP_SLUG) throw new ContentError('The popup cannot be deleted. Disable it in the popup editor.');
     if (old.version !== input.version) throw conflict();
     await tx.delete(promotions).where(eq(promotions.id, old.id));
     if (old.imageId) await orphanUnused(tx, old.imageId);
     await audit(tx, actorId, 'promotion.delete', old.id);
+  });
+}
+export async function savePromotionPopup(db: Database, actorId: string, raw: unknown, uploadId?: string) {
+  const input = popupInputSchema.parse(raw);
+  await db.transaction(async tx => {
+    await tx.select().from(restaurants).where(eq(restaurants.id, 'centro')).for('update');
+    const [old] = await tx.select().from(promotions).where(and(eq(promotions.restaurantId, 'centro'), eq(promotions.slug, CENTRO_POPUP_SLUG))).for('update');
+    if (!old) throw new ContentError('Popup is not initialized. Run migrations and db:seed.');
+    if (old.version !== input.version) throw conflict();
+    if (uploadId) await attachUpload(tx, actorId, uploadId);
+    const imageId = uploadId ?? (input.removeImage ? null : old.imageId);
+    const staticImage = uploadId || input.removeImage ? null : old.staticImage;
+    if (input.enabled && !imageId && !staticImage) throw new ContentError('An enabled popup needs an image');
+    const body = [{ type: 'paragraph' as const, text: input.description, enabled: input.enabled }];
+    await tx.update(promotions).set({ title: input.title, body,
+      published: false, imageAlt: input.imageAlt, imageId, staticImage, version: old.version + 1, updatedAt: new Date(),
+    }).where(eq(promotions.id, old.id));
+    if (old.imageId && old.imageId !== imageId) await orphanUnused(tx, old.imageId);
+    await audit(tx, actorId, 'popup.update', old.id);
   });
 }
 async function lockGallery(tx: Transaction, restaurantId: string, version: number) {
