@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import DishCard from '@/components/DishCard';
+import { DishCardSkeleton } from '@/components/MenuSkeleton';
 import DishOverlay from '@/components/DishOverlay';
 import { requireDish } from '@/server/content/dish-page';
 import { dishMetadata } from '@/server/content/dishes';
@@ -9,8 +10,8 @@ export async function generateMetadata({ params }: Props) {
 }
 async function Content({ params }: Props) {
   const dish = await requireDish('centro', (await params).slug);
-  return <DishOverlay restaurantId="centro"><DishCard dish={dish} modal/></DishOverlay>;
+  return <DishCard dish={dish} modal/>;
 }
 export default function DishModal(props: Props) {
-  return <Suspense fallback={null}><Content {...props}/></Suspense>;
+  return <DishOverlay restaurantId="centro"><Suspense fallback={<DishCardSkeleton modal/>}><Content {...props}/></Suspense></DishOverlay>;
 }

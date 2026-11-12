@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import { permanentRedirect } from 'next/navigation';
 import PromotionArticle from '@/components/PromotionArticle';
+import PromotionArticleLoading from '@/components/PromotionArticle/Loading';
+import RestaurantGallery from '@/components/RestaurantGallery';
 import { requirePromotion } from '@/server/content/promotion-page';
 import { centroPageMetadata } from '@/config/metadata';
 import { promotionPath } from '@/types/content';
@@ -16,4 +18,4 @@ async function Content({ params }: Props) {
   if (promotion.slug === 'zestawy-obiadowe') permanentRedirect('/zestawy-obiadowe');
   return <PromotionArticle promotion={promotion}/>;
 }
-export default function Page(props: Props) { return <Suspense fallback={<p>Ładowanie promocji…</p>}><Content {...props}/></Suspense>; }
+export default function Page(props: Props) { return <><Suspense fallback={<PromotionArticleLoading/>}><Content {...props}/></Suspense><RestaurantGallery restaurantId="centro"/></>; }

@@ -35,13 +35,13 @@
 @media (max-width: 599px) {
   .restaurant {
     --site-divider: #c9a57999;
-    --menu-price-color: #d7bb91;
+    .group:first-child > .groupTitle { padding-block-start: 0.75rem; }
     .list { gap: 0; }
     .item { padding-block: 1.25rem; border-block-end: 1px dotted var(--site-divider); margin: 0; }
-    .heading { flex-direction: column; align-items: start; gap: 0.375rem; }
+    .heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0.75rem; }
     .leader { display: none; }
-    .price { max-inline-size: 100%; font: 700 1.125rem/1.4 var(--font-lato), sans-serif; text-align: start; color: var(--menu-price-color); }
+    .price { max-inline-size: min(40vw, 9rem); overflow-wrap: anywhere; color: var(--site-text, #f3ede0); }
     .description { margin-block-start: 0.5rem; }
   }
-  .papapasta { --menu-price-color: #d7bb91; --site-divider: #c9a579; }
+  .papapasta { --site-divider: #c9a579; }
 }

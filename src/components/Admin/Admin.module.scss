@@ -94,3 +94,15 @@
 
 .contentBlock { margin-block: 1rem; padding: 1rem; border: 1px solid #d9dde4; border-radius: 0.5rem; textarea { min-block-size: 7rem; } }
 .popupSettings { margin-block-end: 1.5rem; .pageHeader { margin-block-end: 1rem; } }
+
+// Grid/flex children must be allowed to shrink around long uploaded filenames.
+.form, .formRow, .form > *, .formRow > *, .form fieldset { min-inline-size: 0; }
+.upload { min-inline-size: 0; grid-template-columns: minmax(0, 1fr); > * { min-inline-size: 0; max-inline-size: 100%; } }
+.uploadLabel { inline-size: 100%; min-inline-size: 0; cursor: pointer; overflow-wrap: anywhere; }
+.fileControl { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; min-inline-size: 0; }
+.fileButton { flex-shrink: 0; border: 1px solid #d8d9e2; border-radius: 8px; padding: 0.5rem 0.75rem; background: #f2f3f5; color: #243833; }
+.uploadLabel:focus-within .fileButton { outline: 3px solid #b39051; outline-offset: 3px; }
+.fileName { min-inline-size: 0; max-inline-size: 100%; overflow-wrap: anywhere; white-space: normal; }
+.fileControl .fileName { flex: 1 1 12rem; }
+.imagePreview { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-inline-size: 0; button { white-space: normal; } }
+@media (max-width: 600px) { .imagePreview { grid-template-columns: 72px minmax(0, 1fr); .preview { inline-size: 72px; block-size: 56px; } button { grid-column: 1 / -1; justify-self: end; } } }

@@ -15,3 +15,5 @@
 
 
 .heading :is(h1, h2):focus { outline: none; }
+
+@media (max-width: 599px) { .copy { min-block-size: 15rem; } }

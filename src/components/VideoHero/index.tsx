@@ -24,6 +24,8 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
   const titleId = useId();
   const videoRef = useRef<HTMLVideoElement>(null);
   const userPaused = useRef(false);
+  const manualStarted = useRef(false);
+  const startPlayback = useRef<(manual?: boolean) => void>(() => {});
   const reducedMotion = useReducedMotion();
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackError, setPlaybackError] = useState('');
@@ -36,25 +38,43 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
     const video = videoRef.current;
     if (!video) return;
     const connection = (navigator as Navigator & { connection?: DataConnection }).connection;
-    let active = true;
-    let visible = video.getBoundingClientRect().bottom > 0;
-    const attempt = () => {
-      if (!active || !visible || document.hidden || userPaused.current || reducedMotion || connection?.saveData) return;
+    let active = true, pending = false, blocked = false, request = 0;
+    const rect = video.getBoundingClientRect();
+    let visible = rect.bottom > 0 && rect.top < window.innerHeight;
+    const attempt = (manual = false) => {
+      if (!active) return;
+      if (!manual && (!visible || document.hidden || userPaused.current || blocked || pending ||
+        ((reducedMotion || connection?.saveData) && !manualStarted.current))) return;
+      if (manual) { userPaused.current = false; manualStarted.current = true; blocked = false; setPlaybackError(''); }
+      if (!video.paused && !video.error) return;
       video.muted = true;
       video.defaultMuted = true;
       video.playsInline = true;
-      if (!video.getAttribute('src')) video.src = videoSrc;
-      void video.play().catch((error: unknown) => {
-        if (active && error instanceof DOMException && error.name !== 'AbortError') setPlaybackError('Naciśnij odtwarzanie, aby uruchomić wideo.');
-      });
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      const retry = !!video.error;
+      if (video.getAttribute('src') !== videoSrc) video.src = videoSrc;
+      if (retry) video.load();
+      const id = ++request;
+      pending = true;
+      const failed = (error: unknown) => {
+        if (!active || id !== request || (error instanceof DOMException && error.name === 'AbortError')) return;
+        if (error instanceof DOMException && error.name === 'NotAllowedError') blocked = true;
+        setIsPlaying(false);
+        setPlaybackError(manual ? 'Nie można odtworzyć wideo. Spróbuj ponownie.' : 'Naciśnij odtwarzanie, aby uruchomić wideo.');
+      };
+      // Keep this call synchronous with the user's click for mobile Safari.
+      try { void video.play().catch(failed).finally(() => { if (id === request) pending = false; }); }
+      catch (error) { pending = false; failed(error); }
     };
     const applyPreference = () => {
-      if (reducedMotion || connection?.saveData) {
+      if ((reducedMotion || connection?.saveData) && !manualStarted.current) {
         video.pause();
         video.removeAttribute('src');
         video.load();
       } else attempt();
     };
+    startPlayback.current = attempt;
     retryPlayback.current = attempt;
     applyPreference();
     connection?.addEventListener?.('change', applyPreference);
@@ -70,6 +90,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
       active = false;
       cancelFrame.current();
       retryPlayback.current = () => {};
+      startPlayback.current = () => {};
       observer.disconnect();
       document.removeEventListener('visibilitychange', visibility);
       connection?.removeEventListener?.('change', applyPreference);
@@ -84,12 +105,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
       userPaused.current = true;
       video.pause();
     } else {
-      userPaused.current = false;
-      video.muted = true;
-      video.defaultMuted = true;
-      video.playsInline = true;
-      if (!video.getAttribute('src')) video.src = videoSrc;
-      void video.play().catch(() => setPlaybackError('Nie można odtworzyć wideo. Spróbuj ponownie.'));
+      startPlayback.current(true);
     }
   };
 
@@ -110,7 +126,6 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         muted
         loop
         playsInline
-        autoPlay={!reducedMotion}
         preload="metadata"
         aria-hidden="true"
         tabIndex={-1}
@@ -133,7 +148,7 @@ export default function VideoHero({ videoSrc, poster, name, logo, action }: Vide
         </h1>
         {action && <Button href={action.href}>{action.label}</Button>}
       </div>
-      <span role="status" className={styles.visuallyHidden}>{playbackError}</span>
+      <span role="status" className={playbackError ? styles.error : styles.visuallyHidden}>{playbackError}</span>
       <button
         type="button"
         className={styles.playback}

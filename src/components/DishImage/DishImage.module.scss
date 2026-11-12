@@ -1,0 +1,6 @@
+.frame { display: block; position: relative; inline-size: 100%; block-size: 100%; min-inline-size: 0; }
+.frame .image { filter: blur(0); transition: transform 600ms ease, filter 350ms ease; }
+.placeholder { position: absolute; inset: 0; display: block; opacity: 0; pointer-events: none; transition: opacity 350ms ease; }
+.frame[data-state='loading'] { .image { filter: blur(5px); } .placeholder { opacity: 1; } }
+.frame[data-state='error'] .placeholder { transition: none; }
+@media (prefers-reduced-motion: reduce) { .frame .image { filter: none; transition: none; } .placeholder { transition: none; } }

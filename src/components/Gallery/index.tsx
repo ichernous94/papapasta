@@ -85,7 +85,7 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
         >
           {images.map((item) => (
             <SwiperSlide key={item.id} className={styles.slide}>
-              <Image src={item.image} alt={item.alt} fill placeholder="blur" sizes="(min-width: 1248px) 1200px, calc(100vw - 48px)" />
+              <Image src={item.image} alt={item.alt} fill placeholder="blur" style={{ objectFit: 'contain', objectPosition: 'center' }} sizes="(min-width: 1248px) 1200px, calc(100vw - 48px)" />
             </SwiperSlide>
           ))}
         </Swiper>
