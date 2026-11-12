@@ -14,7 +14,7 @@ import bar from '../../public/images/centro/bar-interior.jpg';
 import signature from '../../public/images/centro/signature-cocktail.jpg';
 import neon from '../../public/images/centro/neon-sign.jpg';
 
-export const centroImages = { interior, exterior, mojito, cocktails, chicken, platter, breakfast, autumn, kids, landscape, promotion };
+export const centroImages = { interior, exterior, mojito, signature, cocktails, chicken, platter, breakfast, autumn, kids, landscape, promotion };
 export const centroGallery: readonly GalleryImage[] = [
   { id: 'bar', image: bar, alt: 'Bar Papa Pasta Centro z pomarańczowymi fotelami' },
   { id: 'cocktail', image: signature, alt: 'Autorski koktajl z owocami i rozmarynem' },
