@@ -2,7 +2,7 @@
 
 import type { StaticImageData } from 'next/image';
 import Image from '@/components/ui/PhotoImage';
-import { useId, useRef, useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { IoChevronBackOutline, IoChevronForwardOutline } from 'react-icons/io5';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { A11y, Keyboard } from 'swiper/modules';
@@ -13,6 +13,7 @@ import Modal from '@/components/ui/Modal';
 import useReducedMotion from '@/hooks/useReducedMotion';
 import 'swiper/css';
 import styles from './Gallery.module.scss';
+import { GALLERY_SPEED, syncGallerySpeed } from './motion';
 
 export type GalleryImage = { id: string; image: StaticImageData | import('@/types/menu').DishImage; alt: string };
 type GalleryProps = { images: readonly GalleryImage[]; variant?: 'strip' | 'grid'; name?: string };
@@ -31,6 +32,11 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
   const [currentIndex, setCurrentIndex] = useState(0);
   const swiperRef = useRef<SwiperInstance | null>(null);
   const reducedMotion = useReducedMotion();
+  const speed = reducedMotion ? 0 : GALLERY_SPEED;
+  useLayoutEffect(() => {
+    syncGallerySpeed(stripRef.current, speed);
+    syncGallerySpeed(swiperRef.current, speed);
+  }, [speed]);
 
   return (
     <section className={[styles.gallery, variant === 'grid' && styles.contained].filter(Boolean).join(' ')} aria-label={"Galeria restauracji " + name}>
@@ -41,9 +47,9 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           </button>
         </Reveal>)}
       </Container> : <>
-        <Swiper id={stripId} key={images.map(i => i.id).join(',')} className={styles.strip} modules={[A11y]} slidesPerView={2} breakpoints={{ 1024: { slidesPerView: 4 } }} watchOverflow speed={reducedMotion ? 0 : 450}
+        <Swiper id={stripId} key={images.map(i => i.id).join(',')} className={styles.strip} modules={[A11y]} slidesPerView={2} breakpoints={{ 1024: { slidesPerView: 4 } }} watchOverflow speed={speed}
           a11y={{ containerMessage: 'Galeria restauracji ' + name, slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
-          onSwiper={swiper => { stripRef.current = swiper; syncEdges(swiper); }}
+          onSwiper={swiper => { stripRef.current = swiper; syncGallerySpeed(swiper, speed); syncEdges(swiper); }}
           onSlideChange={syncEdges}
           onUpdate={syncEdges}
           onLock={syncEdges}
@@ -56,8 +62,8 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           </SwiperSlide>)}
         </Swiper>
         {images.length > 2 && <div className={styles.stripControls}>
-          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Poprzednie zdjęcia" disabled={edges.first} onClick={() => stripRef.current?.slidePrev()}><IoChevronBackOutline aria-hidden="true"/></button>
-          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Następne zdjęcia" disabled={edges.last} onClick={() => stripRef.current?.slideNext()}><IoChevronForwardOutline aria-hidden="true"/></button>
+          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Poprzednie zdjęcia" disabled={edges.first} onClick={() => stripRef.current?.slidePrev(speed)}><IoChevronBackOutline aria-hidden="true"/></button>
+          <button type="button" className={styles.control} aria-controls={stripId} aria-label="Następne zdjęcia" disabled={edges.last} onClick={() => stripRef.current?.slideNext(speed)}><IoChevronForwardOutline aria-hidden="true"/></button>
         </div>}
       </>}
       <Modal
@@ -74,11 +80,12 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           initialSlide={activeIndex}
           slidesPerView={1}
           loop={images.length > 1}
-          speed={reducedMotion ? 0 : 450}
+          speed={speed}
           keyboard={{ enabled: true, onlyInViewport: false }}
           a11y={{ containerMessage: 'Zdjęcia restauracji ' + name, slideLabelMessage: 'Zdjęcie {{index}} z {{slidesLength}}' }}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
+            syncGallerySpeed(swiper, speed);
             requestAnimationFrame(() => { if (!swiper.destroyed) swiper.update(); });
           }}
           onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
@@ -90,11 +97,11 @@ export default function Gallery({ images, variant = 'strip', name = 'Papa Pasta'
           ))}
         </Swiper>
         <div className={styles.controls}>
-          <button type="button" className={styles.control} aria-label="Poprzednie zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slidePrev()}>
+          <button type="button" className={styles.control} aria-label="Poprzednie zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slidePrev(speed)}>
             <IoChevronBackOutline aria-hidden="true" />
           </button>
           <p aria-live="polite" aria-atomic="true">{currentIndex + 1} / {images.length}</p>
-          <button type="button" className={styles.control} aria-label="Następne zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slideNext()}>
+          <button type="button" className={styles.control} aria-label="Następne zdjęcie" disabled={images.length < 2} onClick={() => swiperRef.current?.slideNext(speed)}>
             <IoChevronForwardOutline aria-hidden="true" />
           </button>
         </div>
