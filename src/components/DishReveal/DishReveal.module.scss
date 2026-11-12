@@ -1,0 +1,6 @@
+.root { position: relative; min-inline-size: 0; }
+.body { opacity: 1; transition: opacity 350ms ease; }
+.body img { filter: none; }
+.placeholder { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 350ms ease; }
+.root[data-state='loading'] { > .body { opacity: 0; pointer-events: none; } > .placeholder { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .body, .placeholder { transition: none; } }

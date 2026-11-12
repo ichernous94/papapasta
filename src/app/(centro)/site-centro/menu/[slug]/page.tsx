@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import DishCard from '@/components/DishCard';
+import { DishCardSkeleton } from '@/components/MenuSkeleton';
 import Container from '@/components/ui/Container';
 import JsonLd from '@/components/JsonLd';
 import { requireDish } from '@/server/content/dish-page';
@@ -12,12 +13,11 @@ export async function generateMetadata({ params }: Props) {
 }
 async function Content({ params }: Props) {
   const dish = await requireDish('centro', (await params).slug);
-  return <Container as="section" className={styles.page}>
-    <Link href="/menu" className={styles.back}>← Wróć do menu</Link>
-    <div className={styles.surface}><DishCard dish={dish}/></div>
-    <JsonLd data={dishStructuredData(dish)}/>
-  </Container>;
+  return <><DishCard dish={dish}/><JsonLd data={dishStructuredData(dish)}/></>;
 }
 export default function DishPage(props: Props) {
-  return <Suspense fallback={<p className={styles.loading}>Ładowanie dania…</p>}><Content {...props}/></Suspense>;
+  return <Container as="section" className={styles.page}>
+    <Link href="/menu" className={styles.back}>← Wróć do menu</Link>
+    <div className={styles.surface}><Suspense fallback={<DishCardSkeleton/>}><Content {...props}/></Suspense></div>
+  </Container>;
 }

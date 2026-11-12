@@ -1,6 +1,6 @@
 'use client';
 import { useId, useState } from 'react';
-import Image from '@/components/ui/PhotoImage';
+import Image from '@/components/DishImage';
 import Modal from '@/components/ui/Modal';
 import type { DishImage } from '@/types/menu';
 import styles from './DishPhoto.module.scss';

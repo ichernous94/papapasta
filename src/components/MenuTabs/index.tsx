@@ -92,6 +92,7 @@ export default function MenuTabs({ label, tabs, menuKey, variant = 'default' }: 
           ))}
         </div>
       </div>
+      {variant !== 'default' && <noscript><style>{`.${styles.papapasta} > .${styles.sticky},.${styles.centro} > .${styles.sticky}{position:relative;inset-block-start:auto}`}</style></noscript>}
       {tabs.map((tab, index) => (
         <div key={tab.id} id={menuKey ? menuCategoryAnchor(menuKey, tab.id) : `${groupId}-panel-${tab.id}`} data-menu-category role="tabpanel" aria-labelledby={`${groupId}-tab-${tab.id}`} hidden={index !== active} tabIndex={0} className={styles.panel}>
           <h2 className={variant === 'default' ? styles.visuallyHidden : styles.categoryTitle}>{tab.label}</h2>

@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import PromotionArticle from '@/components/PromotionArticle';
+import PromotionArticleLoading from '@/components/PromotionArticle/Loading';
+import RestaurantGallery from '@/components/RestaurantGallery';
 import { requirePromotion } from '@/server/content/promotion-page';
 import { centroPageMetadata } from '@/config/metadata';
 export async function generateMetadata() {
@@ -7,4 +9,4 @@ export async function generateMetadata() {
   return centroPageMetadata('/zestawy-obiadowe', `${promotion.title} - Papa Pasta Centro`, promotion.body.map(b => b.text).join(' ').slice(0,160));
 }
 async function Content() { return <PromotionArticle promotion={await requirePromotion('zestawy-obiadowe')}/>; }
-export default function LunchPage() { return <Suspense fallback={<p>Ładowanie promocji…</p>}><Content/></Suspense>; }
+export default function LunchPage() { return <><Suspense fallback={<PromotionArticleLoading legacy/>}><Content/></Suspense><RestaurantGallery restaurantId="centro"/></>; }

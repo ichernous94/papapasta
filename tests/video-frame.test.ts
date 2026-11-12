@@ -71,3 +71,35 @@ test('Browsers without frame callbacks wait for current data and a paint; cleanu
     else Reflect.deleteProperty(globalThis, 'cancelAnimationFrame');
   }
 });
+
+test('A moving media clock reveals playback even when the native frame callback never arrives', () => {
+  const previousRequest = globalThis.requestAnimationFrame;
+  const previousCancel = globalThis.cancelAnimationFrame;
+  let paint: FrameRequestCallback | undefined;
+  let reveals = 0, nativeCancelled = false;
+  globalThis.requestAnimationFrame = callback => { paint = callback; return 13; };
+  globalThis.cancelAnimationFrame = () => {};
+  try {
+    const video = Object.assign(media(), {
+      paused: false, currentTime: 0,
+      requestVideoFrameCallback: () => 5,
+      cancelVideoFrameCallback: () => { nativeCancelled = true; },
+    });
+    const cancel = waitForVideoFrame(video as unknown as HTMLVideoElement, () => reveals++);
+    paint!(0);
+    assert.equal(reveals, 0);
+    video.currentTime = 0.04;
+    paint!(40);
+    assert.equal(reveals, 1);
+    assert.equal(nativeCancelled, true);
+    video.dispatchEvent(new Event('timeupdate'));
+    paint!(50);
+    assert.equal(reveals, 1);
+    cancel();
+  } finally {
+    if (previousRequest) globalThis.requestAnimationFrame = previousRequest;
+    else Reflect.deleteProperty(globalThis, 'requestAnimationFrame');
+    if (previousCancel) globalThis.cancelAnimationFrame = previousCancel;
+    else Reflect.deleteProperty(globalThis, 'cancelAnimationFrame');
+  }
+});

@@ -195,7 +195,7 @@ function BookViewer({ initialPage, onPageChange }: {
   </div>;
 }
 
-export default function CocktailBook() {
+export default function CocktailBook({ className }: { className?: string }) {
   const [page, setPage] = useState(0);
-  return <Container as="section" id="karta-koktajli" className={styles.section} aria-label="Karta koktajli i alkoholi"><BookViewer initialPage={page} onPageChange={setPage} /></Container>;
+  return <Container as="section" id="karta-koktajli" className={[styles.section, className].filter(Boolean).join(' ')} aria-label="Karta koktajli i alkoholi"><BookViewer initialPage={page} onPageChange={setPage} /></Container>;
 }

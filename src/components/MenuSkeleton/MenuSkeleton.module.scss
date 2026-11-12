@@ -44,3 +44,14 @@
 @media (max-width: 599px) {
   .category { display: block; padding-block: 0.5rem 1.25rem; border-block-end: 1px dotted var(--skeleton-line); span { display: block; inline-size: 50%; block-size: 2rem; border-radius: 0.3rem; background: var(--skeleton-accent); opacity: 0.6; } }
 }
+
+.imageOnly { --skeleton-strong: #395653; display: block; inline-size: 100%; block-size: 100%; .photo { inline-size: 100%; block-size: 100%; aspect-ratio: auto; border-radius: inherit; } }
+
+.singleRow, .singleRow > .row { block-size: 100%; }
+.detail > .visuallyHidden { position: absolute; }
+.detail .photo { inline-size: 100%; block-size: 100%; aspect-ratio: auto; }
+.detailCopy { display: grid; gap: 1.25rem; align-content: start; padding-block-start: 0.5rem; }
+.detailCopy .heading { margin: 0; }
+.labelBar { inline-size: 7rem; block-size: 1.5rem; margin-block-end: 1.25rem; border-radius: 0.25rem; background: var(--skeleton-accent); opacity: 0.6; }
+
+@media (max-width: 599px) { .detailCopy { min-block-size: 15rem; } }

@@ -1,0 +1,13 @@
+.root { position: relative; min-inline-size: 0; }
+.content { opacity: 1; transition: opacity 350ms ease; }
+.placeholder { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 350ms ease; overflow: hidden; }
+.root[data-state='loading'] { > .content { opacity: 0; pointer-events: none; } > .placeholder { opacity: 1; } }
+.skeleton { display: flex; flex-direction: column; min-inline-size: 0; block-size: 100%; gap: 2rem; }
+.skeletonImage { flex: 0 0 auto; aspect-ratio: var(--article-image-ratio, 1.91); overflow: hidden; }
+.skeletonCopy { display: grid; align-content: start; gap: 1.5rem; flex: 1; padding-block: 2rem; }
+.skeletonTitle, .skeletonParagraph { display: grid; gap: 0.75rem; span { display: block; block-size: 1rem; inline-size: 100%; border-radius: 0.25rem; background: #395653; } span:last-child { inline-size: 70%; } }
+.skeletonTitle span { block-size: 1.5rem; background: #536665; }
+.skeletonDate { block-size: 1rem; inline-size: 9rem; border-radius: 0.25rem; background: #395653; }
+.skeletonButton { block-size: 3rem; inline-size: min(15rem, 100%); border-radius: 0.25rem; background: #536665; margin-block-start: 1rem; }
+.visuallyHidden { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .content, .placeholder { transition: none; } }
