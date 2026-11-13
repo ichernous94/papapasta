@@ -22,12 +22,12 @@ test('Cocktail reader exposes only accessible page arrows and counter, without r
   for(const label of ['Miniatury stron','Powiększ','Pomniejsz','Pełny ekran','Otwórz strony karty jako obrazy','>100%<'])assert.ok(!html.includes(label),label);
   assert.ok(html.includes('aria-live="polite"'));
 });
-test('Video preview is preloaded from server markup and retains manual playback', () => {
+test('Native video poster and autoplay are available from server markup alongside manual playback', () => {
   const html=renderToStaticMarkup(<VideoHero videoSrc="/videos/test.mp4" poster={{src:'/images/poster.jpg',width:1200,height:800,blurDataURL:'data:image/png;base64,AA=='}} name="Restaurant" logo={{src:'/logo.svg',width:200,height:60}}/>);
-  const preview = html.match(/<img[^>]+>/)?.[0];
-  assert.ok(preview && !preview.includes('loading="lazy"'));
-  assert.ok(html.includes('rel="preload"'));
-  assert.ok(html.includes('as="image"'));
+  const video = html.match(/<video[^>]+>/)?.[0];
+  assert.ok(video?.includes('poster="/images/poster.jpg"'));
+  assert.ok(/autoPlay=""/i.test(video!));
+  assert.ok(html.includes('<source src="/videos/test.mp4" type="video/mp4"'));
   assert.ok(html.includes('Odtwórz wideo'));
   assert.ok(html.includes('<video'));
 });
