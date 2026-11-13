@@ -21,7 +21,6 @@
   }
 }
 
-.poster,
 .video { object-fit: cover; object-position: center; }
 .video {
   position: absolute;
@@ -29,10 +28,7 @@
   inset: 0;
   inline-size: 100%;
   block-size: 100%;
-  opacity: 0;
-  transition: none;
 }
-.visible { opacity: 1; transition: opacity 400ms ease; }
 
 .content {
   position: relative;
@@ -71,10 +67,6 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .video, .visible { transition: none; }
 }
 
 .error { position: absolute; z-index: 2; inset-inline: 1rem 4.5rem; inset-block-end: 1rem; margin-inline-start: auto; max-inline-size: 25rem; padding: 0.5rem 0.75rem; border-radius: 0.25rem; background: rgb(0 0 0 / 75%); color: #fff; font-size: 0.875rem; line-height: 1.4; }
