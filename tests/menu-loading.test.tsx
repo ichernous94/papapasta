@@ -15,14 +15,19 @@ import type { EditorMenu, EditorItem } from '../src/types/admin';
 const item: EditorItem = { id:'item', groupId:'group', name:'Published dish', portion:'', price:'55', description:[], isNew:false, visible:true, imageId:null, imageAlt:'', sortOrder:0, allergens:[] };
 const menu: EditorMenu = { id:'papa:main', restaurantId:'papapasta', key:'main', title:'Edited title', subtitle:'Edited subtitle', version:1, bannerImageId:null, categories:[{ id:'cat', label:'Category', groups:[{ id:'group', title:'', note:'', afterNote:'', items:[item] }] }] };
 
-test('Pending menu banners keep QR targets without loading a provisional photograph', () => {
+test('Pending menu banners inline the preview and keep QR targets without loading a provisional photograph', () => {
+  const image = { src: '/default-banner-must-not-load.jpg', width: 1200, height: 800, blurDataURL: 'data:image/jpeg;base64,cHJldmlldw==' };
   for (const anchor of ['menu-main', 'menu-kids', 'menu-drinks']) {
     const id = anchor === 'menu-drinks' ? 'kartawin' : anchor;
-    const html = renderToStaticMarkup(<ImageBannerPlaceholder id={id} menuAnchor={anchor}/>);
+    const html = renderToStaticMarkup(<ImageBannerPlaceholder image={image} id={id} menuAnchor={anchor}/>);
     assert.ok(html.includes(`id="${id}"`));
     assert.ok(html.includes(`id="${anchor}"`));
     assert.ok(html.includes('aria-busy="true"'));
     assert.ok(!/<img\b|<link\b|<h[12]\b/.test(html));
+    assert.ok(html.includes('background-image:'));
+    assert.ok(html.includes('data:image/svg+xml'));
+    assert.ok(html.includes('cHJldmlldw'));
+    assert.ok(!html.includes(image.src));
   }
 });
 

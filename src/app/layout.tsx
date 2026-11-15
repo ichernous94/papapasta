@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pl-PL">
+    <html lang="pl-PL" data-scroll-behavior="smooth">
       <body
         className={`${lato.variable} ${openSans.variable} ${roboto.variable} ${notoSans.variable} ${allura.variable}`}
       >
