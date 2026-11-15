@@ -61,3 +61,16 @@
   > .panel:not([hidden]) { clip-path: inset(var(--menu-panel-clip-top, 0px) 0 0); }
   > .panel:focus-visible { outline-offset: -2px; }
 }
+
+@keyframes clipPanel {
+  from { clip-path: inset(0% 0 0); }
+  to { clip-path: inset(var(--menu-clip-end, 100%) 0 0); }
+}
+// Geometric clipping, not a decorative motion effect: retain it with reduced motion.
+@supports (animation-timeline: view()) and (animation-range: exit-crossing 0% exit-crossing calc(100% - 1px)) {
+  .tabs[data-clip-mode='native'] > .panel:not([hidden]) {
+    animation: clipPanel linear both;
+    animation-timeline: view(block var(--menu-clip-boundary) 0px);
+    animation-range: exit-crossing 0% exit-crossing var(--menu-clip-end, 100%);
+  }
+}

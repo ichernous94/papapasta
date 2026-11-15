@@ -27,3 +27,31 @@
 .dialog[open][data-state='closing'] { animation: none; opacity: 0; transform: scale(0.98); &::backdrop { animation: none; opacity: 0; } }
 @starting-style { .dialog[open] { opacity: 0; transform: scale(0.98); } .dialog[open]::backdrop { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .dialog[open], .dialog[open]::backdrop { transition: none; } }
+
+// The frame never scrolls or changes size when streamed content replaces its skeleton.
+.dialog {
+  block-size: min(calc(100dvh - 2rem), 32rem);
+  max-block-size: calc(100dvh - 2rem);
+  overflow: hidden;
+  overscroll-behavior: none;
+  &::backdrop, > button { touch-action: pinch-zoom; }
+}
+.viewport {
+  block-size: 100%;
+  min-block-size: 0;
+  [data-dish-reveal], [data-dish-content] { block-size: 100%; min-block-size: 0; }
+  [data-dish-card] { block-size: 100%; min-block-size: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+  [data-dish-image] { min-block-size: 0; block-size: 100%; aspect-ratio: auto; touch-action: pinch-zoom; }
+  [data-dish-copy] {
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: none;
+    touch-action: pan-y pinch-zoom;
+    scrollbar-width: thin;
+    &:focus-visible { outline: var(--public-focus-outline, 2px solid #d7bb91); outline-offset: -2px; }
+  }
+}
+@media (max-width: 599px) {
+  .dialog { block-size: min(calc(100dvh - 2rem), 42rem); }
+  .viewport [data-dish-card] { grid-template-rows: minmax(0, 2fr) minmax(0, 3fr); }
+}

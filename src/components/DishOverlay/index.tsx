@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useCallback, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import Modal from '@/components/ui/Modal';
+import DishViewport from './Viewport';
 import styles from './DishOverlay.module.scss';
 export default function DishOverlay({ children, restaurantId }: { children: ReactNode; restaurantId: 'papapasta' | 'centro' }) {
   const router = useRouter();
@@ -37,5 +38,5 @@ export default function DishOverlay({ children, restaurantId }: { children: Reac
     window.addEventListener('wheel', stop, { passive: true }); window.addEventListener('touchmove', stop, { passive: true }); window.addEventListener('pointerdown', stop, { passive: true });
     router.back(); frame = requestAnimationFrame(restore);
   }, [router]);
-  return <Modal open={open} onClose={() => setOpen(false)} onExited={goBack} labelledBy="dish-title" closeLabel="Zamknij kartę dania" className={`${styles.dialog} ${restaurantId === 'papapasta' ? styles.light : ''}`}>{children}</Modal>;
+  return <Modal open={open} onClose={() => setOpen(false)} onExited={goBack} labelledBy="dish-title" closeLabel="Zamknij kartę dania" className={`${styles.dialog} ${restaurantId === 'papapasta' ? styles.light : ''}`}><DishViewport>{children}</DishViewport></Modal>;
 }

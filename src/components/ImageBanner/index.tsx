@@ -23,6 +23,13 @@ export function ImageBannerHeading({ title, subtitle, headingLevel: Heading = 'h
   return <><Reveal as={Heading} onceKey={revealKey}>{menuAnchor ? <MenuAnchorLink anchor={menuAnchor} className={styles.headingLink}>{title}</MenuAnchorLink> : title}</Reveal>{subtitle && <p>{subtitle}</p>}</>;
 }
 
+export function ImageBannerPlaceholder({ id, menuAnchor, variant = 'photo' }: Pick<ImageBannerProps, 'id' | 'menuAnchor' | 'variant'>) {
+  return <section id={id} className={[styles.banner, variant === 'kids' && styles.kids].filter(Boolean).join(' ')} aria-label="Ładowanie sekcji menu" aria-busy="true">
+    {menuAnchor && menuAnchor !== id && <span id={menuAnchor} className={styles.anchor} aria-hidden="true"/>}
+    <div className={`${styles.content} ${styles.placeholder}`} aria-hidden="true"><span/><span/></div>
+  </section>;
+}
+
 export default function ImageBanner({ image, title, subtitle, headingLevel = 'h2', preload = false, id, variant = 'photo', content, restaurantId = 'papapasta', revealKey, menuAnchor }: ImageBannerProps) {
   return (
     <section id={id} className={[styles.banner, variant === 'kids' && styles.kids].filter(Boolean).join(' ')} aria-label={title}>

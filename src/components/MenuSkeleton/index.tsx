@@ -33,9 +33,9 @@ export function DishRowSkeleton() {
 }
 
 export function DishCardSkeleton({ decorative = false, modal = false }: { decorative?: boolean; modal?: boolean }) {
-  return <div className={`${styles.skeleton} ${cardStyles.card} ${styles.detail}`} data-restaurant="centro" aria-hidden={decorative || undefined} role={decorative ? undefined : 'status'} aria-busy={decorative ? undefined : true}>
+  return <div data-dish-card className={`${styles.skeleton} ${cardStyles.card} ${styles.detail}`} data-restaurant="centro" aria-hidden={decorative || undefined} role={decorative ? undefined : 'status'} aria-busy={decorative ? undefined : true}>
     {!decorative && (modal ? <h2 id="dish-title" data-modal-heading tabIndex={-1} className={styles.visuallyHidden}>Ładowanie dania…</h2> : <span className={styles.visuallyHidden}>Ładowanie dania…</span>)}
-    <div className={cardStyles.image}><SkeletonPhoto/></div>
-    <div className={styles.detailCopy}><div className={styles.labelBar}/><div className={styles.heading}><span/><span/></div><div className={styles.lines}><span/><span/><span/></div></div>
+    <div data-dish-image className={cardStyles.image}><SkeletonPhoto/></div>
+    <div data-dish-copy className={styles.detailCopy}><div className={styles.labelBar}/><div className={styles.heading}><span/><span/></div><div className={styles.lines}><span/><span/><span/></div></div>
   </div>;
 }

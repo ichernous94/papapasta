@@ -6,6 +6,7 @@ import { PassThrough } from 'node:stream';
 import { renderToPipeableStream, renderToStaticMarkup } from 'react-dom/server';
 import { redirect } from 'next/navigation';
 import MenuSkeleton from '../src/components/MenuSkeleton';
+import { ImageBannerPlaceholder } from '../src/components/ImageBanner';
 import { loadMenuState, findMenuSection, hasPublishedItems, publishedCategories } from '../src/server/content/menu-state';
 import { menuHeadings } from '../src/config/menu-headings';
 import { seedMenus } from '../src/server/content/seed-data';
@@ -13,6 +14,17 @@ import type { EditorMenu, EditorItem } from '../src/types/admin';
 
 const item: EditorItem = { id:'item', groupId:'group', name:'Published dish', portion:'', price:'55', description:[], isNew:false, visible:true, imageId:null, imageAlt:'', sortOrder:0, allergens:[] };
 const menu: EditorMenu = { id:'papa:main', restaurantId:'papapasta', key:'main', title:'Edited title', subtitle:'Edited subtitle', version:1, bannerImageId:null, categories:[{ id:'cat', label:'Category', groups:[{ id:'group', title:'', note:'', afterNote:'', items:[item] }] }] };
+
+test('Pending menu banners keep QR targets without loading a provisional photograph', () => {
+  for (const anchor of ['menu-main', 'menu-kids', 'menu-drinks']) {
+    const id = anchor === 'menu-drinks' ? 'kartawin' : anchor;
+    const html = renderToStaticMarkup(<ImageBannerPlaceholder id={id} menuAnchor={anchor}/>);
+    assert.ok(html.includes(`id="${id}"`));
+    assert.ok(html.includes(`id="${anchor}"`));
+    assert.ok(html.includes('aria-busy="true"'));
+    assert.ok(!/<img\b|<link\b|<h[12]\b/.test(html));
+  }
+});
 
 test('Skeleton has one accessible loading message, decorative rows and explicit themes', () => {
   for (const restaurantId of ['papapasta','centro'] as const) {
