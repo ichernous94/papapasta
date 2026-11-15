@@ -1,5 +1,5 @@
 import { Suspense, type ComponentProps } from 'react';
-import ImageBanner from '@/components/ImageBanner';
+import ImageBanner, { ImageBannerPlaceholder } from '@/components/ImageBanner';
 import { menuHeadings } from '@/config/menu-headings';
 import { publicMenuState } from '@/server/content/public';
 import { findMenuSection } from '@/server/content/menu-state';
@@ -15,6 +15,5 @@ async function ResolvedBanner({ restaurantId, menuKey, ...props }: Props) {
   return <ImageBanner {...props} id={props.id ?? menuSectionAnchor(menuKey)} menuAnchor={menuSectionAnchor(menuKey)} restaurantId={restaurantId} revealKey={`menu:${menuKey}`} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
 }
 export default function MenuBanner(props: Props) {
-  const fallback = (menuHeadings[props.restaurantId] as Record<string, { title: string; subtitle: string }>)[props.menuKey];
-  return <Suspense fallback={<ImageBanner {...props} {...fallback} id={props.id ?? menuSectionAnchor(props.menuKey)} menuAnchor={menuSectionAnchor(props.menuKey)} revealKey={`menu:${props.menuKey}`}/>}><ResolvedBanner {...props}/></Suspense>;
+  return <Suspense fallback={<ImageBannerPlaceholder id={props.id ?? menuSectionAnchor(props.menuKey)} menuAnchor={menuSectionAnchor(props.menuKey)} variant={props.variant}/>}><ResolvedBanner {...props}/></Suspense>;
 }

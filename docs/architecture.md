@@ -401,3 +401,8 @@ Discuss and document before implementation:
 **Confirmed gallery viewport scroll correction — 2026-11-13**
 - Only the shared Gallery lightbox overrides its dialog's viewport sizing: one bounded dynamic-viewport height, a shrinkable image row plus controls, hidden overflow and no overscroll chaining. Native pinch zoom remains available and Swiper owns horizontal swipes; the default pan-y is overridden within the lightbox.
 - This supersedes the gallery's old independent slider height and inherited small-viewport limit. The shared Modal and other overlays retain their existing scrolling behavior. Width, contain-fit images, controls and motion timings remain. Details and verification: [gallery-viewport-scroll.md](gallery-viewport-scroll.md).
+
+**Confirmed menu scrolling and dish viewport correction — 2026-11-16**
+- Transparent public category bars use native view-timeline clipping when supported, with immediate scroll-event clipping as fallback. Geometry observations retain header/category alignment. Only fresh Tab navigation can reveal a clipped focused row; pointer activation and programmatic dialog focus return do not move the page.
+- Dish overlays use a bounded dynamic-viewport frame shared by their loading and resolved states. Only overflowing text scrolls; the frame/photo/background remain stationary through the exit animation. Standalone dish pages and other overlays retain their behavior. Existing history restoration and category/QR navigation remain.
+- MenuBanner's pending state is a dimensioned neutral placeholder with section targets and no provisional image/preload. The resolved banner chooses saved or default media once. This supersedes earlier photographic menu fallbacks. Details: [menu-stability.md](menu-stability.md).
