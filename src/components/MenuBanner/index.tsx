@@ -15,5 +15,5 @@ async function ResolvedBanner({ restaurantId, menuKey, ...props }: Props) {
   return <ImageBanner {...props} id={props.id ?? menuSectionAnchor(menuKey)} menuAnchor={menuSectionAnchor(menuKey)} restaurantId={restaurantId} revealKey={`menu:${menuKey}`} title={menu?.title ?? fallback.title} subtitle={menu?.subtitle ?? fallback.subtitle} image={menu?.bannerImage ?? props.image}/>;
 }
 export default function MenuBanner(props: Props) {
-  return <Suspense fallback={<ImageBannerPlaceholder id={props.id ?? menuSectionAnchor(props.menuKey)} menuAnchor={menuSectionAnchor(props.menuKey)} variant={props.variant}/>}><ResolvedBanner {...props}/></Suspense>;
+  return <Suspense fallback={<ImageBannerPlaceholder image={props.image} id={props.id ?? menuSectionAnchor(props.menuKey)} menuAnchor={menuSectionAnchor(props.menuKey)} variant={props.variant}/>}><ResolvedBanner {...props}/></Suspense>;
 }
