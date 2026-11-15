@@ -396,3 +396,8 @@ Discuss and document before implementation:
 - Both home heroes use direct `/videos/papapasta.mp4` and `/videos/centro.mp4` sources with native autoPlay/muted/loop/playsInline, metadata preload and the corresponding native poster in server HTML. The mount effect only sets defaultMuted and auto preload. The video API and custom range handling have been removed.
 - This supersedes earlier startup preference/visibility controllers, source resets, first-frame callbacks and 400ms opacity reveal for VideoHero. The application always requests native autoplay, with no reduced-motion/save-data gate or automatic play/pause/retry loop. The video remains visible; the browser owns its poster transition and media policies.
 - Manual controls follow native media state and retain real-error feedback. Hero geometry, branding, action links and video files remain unchanged. Details and physical-device/deployment limits: [mobile-video-autoplay.md](mobile-video-autoplay.md). Only audit point 1 is affected.
+
+
+**Confirmed gallery viewport scroll correction — 2026-11-13**
+- Only the shared Gallery lightbox overrides its dialog's viewport sizing: one bounded dynamic-viewport height, a shrinkable image row plus controls, hidden overflow and no overscroll chaining. Native pinch zoom remains available and Swiper owns horizontal swipes; the default pan-y is overridden within the lightbox.
+- This supersedes the gallery's old independent slider height and inherited small-viewport limit. The shared Modal and other overlays retain their existing scrolling behavior. Width, contain-fit images, controls and motion timings remain. Details and verification: [gallery-viewport-scroll.md](gallery-viewport-scroll.md).
