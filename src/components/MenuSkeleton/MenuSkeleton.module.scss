@@ -54,4 +54,4 @@
 .detailCopy .heading { margin: 0; }
 .labelBar { inline-size: 7rem; block-size: 1.5rem; margin-block-end: 1.25rem; border-radius: 0.25rem; background: var(--skeleton-accent); opacity: 0.6; }
 
-@media (max-width: 599px) { .detailCopy { min-block-size: 15rem; } }
+@media (max-width: 767px) { .detailCopy { min-block-size: 15rem; } }

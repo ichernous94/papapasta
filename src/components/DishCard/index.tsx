@@ -9,7 +9,7 @@ export default function DishCard({ dish, modal = false }: { dish: Dish; modal?: 
   const Heading = modal ? 'h2' : 'h1';
   return <DishReveal imageSrc={dish.image.src} layout="card"><article data-dish-card className={`${styles.card} ${dish.restaurantId === 'papapasta' ? styles.light : ''}`}>
     <div data-dish-image className={styles.image}><Image src={dish.image.src} alt={dish.image.alt} width={dish.image.width} height={dish.image.height}
-      sizes="(max-width: 599px) calc(100vw - 80px), (max-width: 1023px) 38vw, 430px" placeholder="blur" blurDataURL={dish.image.blurDataURL} loading="eager"/></div>
+      sizes="(max-width: 767px) calc(100vw - 80px), (max-width: 1023px) 38vw, 430px" placeholder="blur" blurDataURL={dish.image.blurDataURL} loading="eager"/></div>
     <div data-dish-copy className={styles.copy} tabIndex={modal ? 0 : undefined} role={modal ? 'region' : undefined} aria-labelledby={modal ? 'dish-title' : undefined}>
       <p className={styles.category}>{dish.category}</p>
       <div className={styles.heading}><Heading id="dish-title" data-modal-heading={modal ? '' : undefined} tabIndex={modal ? -1 : undefined}>{dish.name}<DishBadges item={dish}/></Heading>{dish.price && <span className={styles.price}>{menuText(dish.price)}</span>}</div>
